@@ -1,0 +1,27 @@
+# thanks to https://github.com/SierraSoftworks/sierralib.api.views/blob/master/.github/workflows/package.yml for helping me figure this out
+# GitHub's own documentation was a bit lacking.
+name: Publish to GitHub Packages
+
+on:
+  push:
+    branches:
+      - master
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the project
+        uses: actions/checkout@master
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.100'
+      - name: Run the package
+        run: |
+          dotnet pack -o out
+          dotnet nuget push ./out/*.nupkg -s GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
