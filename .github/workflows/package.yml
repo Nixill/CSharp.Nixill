@@ -19,8 +19,9 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
-      - name: Run the package
+      - name: Run the packing
         run: |
+          cd CS-NixLib/
           dotnet pack -o out
           dotnet nuget push ./out/*.nupkg -s GitHub
         env:

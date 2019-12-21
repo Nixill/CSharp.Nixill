@@ -1,18 +1,14 @@
 using NUnit.Framework;
+using Nixill.Utils;
 
 namespace CS_NixLib_Test
 {
-    public class Tests
+  public class NumbersTests
+  {
+    [Test]
+    public void Test1()
     {
-        [SetUp]
-        public void Setup()
-        {
-        }
-
-        [Test]
-        public void Test1()
-        {
-            Assert.Pass();
-        }
+      Assert.AreEqual(Numbers.IntToString(5, 2), "101");
     }
+  }
 }
