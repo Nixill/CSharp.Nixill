@@ -21,3 +21,5 @@ jobs:
           dotnet-version: '3.1.100'
       - name: Run the test
         run: dotnet test
+        env:
+          RELEASE_VERSION: ${{ github.sha }}

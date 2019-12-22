@@ -16,10 +16,24 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.100'
-      - name: Run the packing
+      - name: Test the package
+        run: dotnet test
+        env:
+          RELEASE_VERSION: ${{ github.ref }}
+      - name: Pack the thing up
         run: |
           cd CS-NixLib/
           dotnet pack -o out
-          dotnet nuget push ./out/*.nupkg -s GitHub
+        env:
+          RELEASE_VERSION: ${{ github.ref }}
+      - name: Push to github release
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./out/*.nupkg
+      - name: Push to github packages
+        run: dotnet nuget push ./out/*.nupkg -s GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

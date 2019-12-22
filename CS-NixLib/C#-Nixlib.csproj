@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <PackageId>NixLib-CS</PackageId>
-    <Version>0.1.0</Version>
+    <Version>$(RELEASE_VERSION)</Version>
     <Authors>Nixill</Authors>
     <PackageDescription>Some niche but neat things Nix oft needs.</PackageDescription>
     <RepositoryUrl>https://github.com/ShadowFoxNixill/C--NixLib</RepositoryUrl>
