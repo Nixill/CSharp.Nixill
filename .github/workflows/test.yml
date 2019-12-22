@@ -1,6 +1,6 @@
 # thanks to https://github.com/SierraSoftworks/sierralib.api.views/blob/master/.github/workflows/package.yml for helping me figure this out
 # GitHub's own documentation was a bit lacking.
-name: Publish to GitHub Packages
+name: Test the package
 
 on:
   push:
@@ -22,4 +22,4 @@ jobs:
       - name: Run the test
         run: dotnet test
         env:
-          RELEASE_VERSION: ${{ join('0.0.0-test+', github.sha) }}
+          RELEASE_VERSION: ${{ join(['0.0.0-test+', github.sha]) }}
