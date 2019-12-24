@@ -31,6 +31,10 @@ namespace Nixill.Utils {
       Minor = minor;
       Patch = patch;
 
+      if (major < 0) throw new ArgumentException("Violation of spec item 8: Major version must be a non-negative integer.");
+      if (minor < 0) throw new ArgumentException("Violation of spec item 7: Minor version must be a non-negative integer.");
+      if (patch < 0) throw new ArgumentException("Violation of spec item 8: Patch must be a non-negative integer.");
+
       // Check PreRelease to make sure it's right
       if (prerelease != null) {
         if (PreReleaseRegex.IsMatch(prerelease)) PreRelease = prerelease;
@@ -165,10 +169,10 @@ namespace Nixill.Utils {
 
     public override int GetHashCode() {
       return
-        (Major & 0x1F << 27) |
-        (Minor & 0x1F << 22) |
-        (Patch & 0x1F << 17) |
-        (((PreRelease?.GetHashCode()) ?? 0) & 0x1FFFF);
+        (Major & 0x4 << 28) |
+        (Minor & 0x8 << 20) |
+        (Patch & 0x4 << 16) |
+        (((PreRelease?.GetHashCode()) ?? 0) & 0xF);
     }
 
     public static bool operator ==(SemVer left, SemVer right) => left.Equals(right);
@@ -177,5 +181,39 @@ namespace Nixill.Utils {
     public static bool operator <(SemVer left, SemVer right) => left.CompareTo(right) < 0;
     public static bool operator >=(SemVer left, SemVer right) => left.CompareTo(right) >= 0;
     public static bool operator <=(SemVer left, SemVer right) => left.CompareTo(right) <= 0;
+
+    /// <summary>
+    /// Creates a new copy of this SemVer with the specified major version number.
+    /// </summary>
+    public SemVer WithMajor(int maj) => new SemVer(maj, Minor, Patch, PreRelease, BuildMetadata);
+    /// <summary>
+    /// Creates a new copy of this SemVer with the specified minor version number.
+    /// </summary>
+    public SemVer WithMinor(int min) => new SemVer(Major, min, Patch, PreRelease, BuildMetadata);
+    /// <summary>
+    /// Creates a new copy of this SemVer with the specified patch number.
+    /// </summary>
+    public SemVer WithPatch(int pat) => new SemVer(Major, Minor, pat, PreRelease, BuildMetadata);
+    /// <summary>
+    /// Creates a new copy of this SemVer with the specified pre-release tag.
+    ///
+    /// Use <c>null</c> to omit the pre-release tag from the copy.
+    /// </summary>
+    public SemVer WithPreRelease(string pr) => new SemVer(Major, Minor, Patch, pr, BuildMetadata);
+    /// <summary>
+    /// Creates a new copy of this SemVer with the specified build metadata.
+    ///
+    /// Use <c>null</c> to omit the build metadata from the copy.
+    /// </summary>
+    public SemVer WithBuildMetadata(string build) => new SemVer(Major, Minor, Patch, PreRelease, build);
+
+    /// <summary>Creates a new copy of this SemVer with no pre-release tag or build metadata.</summary>
+    public SemVer Release() => new SemVer(Major, Minor, Patch);
+    /// <summary>Creates a new copy of this SemVer representing the next patch after this one.</summary>
+    public SemVer BumpPatch() => new SemVer(Major, Minor, Patch + 1);
+    /// <summary>Creates a new copy of this SemVer representing the next minor version after this one.</summary>
+    public SemVer BumpMinor() => new SemVer(Major, Minor + 1, 0);
+    /// <summary>Creates a new copy of this SemVer representing the next major version after this one.</summary>
+    public SemVer BumpMajor() => new SemVer(Major + 1, 0, 0);
   }
 }

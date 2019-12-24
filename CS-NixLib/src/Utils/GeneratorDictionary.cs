@@ -2,31 +2,55 @@ using System;
 using System.Collections.Generic;
 
 namespace Nixill.Utils {
+  /// <summary>
+  /// A class that extends <a cref="Dictionary">Dictionary</a>, adding
+  /// automatic generation of values from keys.
+  /// </summary>
+  /// <typeparam name="K">
+  /// The type of the keys used in the dictionary.
+  /// </typeparam>
+  /// <typeparam name="V">
+  /// The type of the values used in the dictionary.
+  /// </typeparam>
   public class GeneratorDictionary<K, V> : Dictionary<K, V> {
-    public Generator<K, V> Generator { get; protected set; }
+    /// <summary>
+    /// The <a cref="Generator">Generator</a> used by this
+    /// <c>GeneratorDictionary</c>.
+    /// </summary>
+    public Generator<K, V> Generator { get; }
 
-    public GeneratorDictionary(Generator<K, V> func) {
-      Generator = func;
+    /// <summary>
+    /// Creates a new, empty Dictionary with the default initial capacity
+    /// and default equality comparer.
+    /// </summary>
+    /// <param name="gen">The Generator to use.</param>
+    public GeneratorDictionary(Generator<K, V> gen) {
+      Generator = gen;
     }
 
-    public GeneratorDictionary(IDictionary<K, V> dictionary, Generator<K, V> func) : base(dictionary) {
-      Generator = func;
+    /// <summary>
+    /// Copies an existing IDictionary into a new GeneratorDictionary.
+    /// </summary>
+    /// <param name="dictionary">The IDictionary to copy.</param>
+    /// <param name="gen">The Generator to use.</param>
+    public GeneratorDictionary(IDictionary<K, V> dictionary, Generator<K, V> gen) : base(dictionary) {
+      Generator = gen;
     }
 
-    public GeneratorDictionary(IEqualityComparer<K> comparer, Generator<K, V> func) : base(comparer) {
-      Generator = func;
+    public GeneratorDictionary(IEqualityComparer<K> comparer, Generator<K, V> gen) : base(comparer) {
+      Generator = gen;
     }
 
-    public GeneratorDictionary(int capacity, Generator<K, V> func) : base(capacity) {
-      Generator = func;
+    public GeneratorDictionary(int capacity, Generator<K, V> gen) : base(capacity) {
+      Generator = gen;
     }
 
-    public GeneratorDictionary(IDictionary<K, V> dictionary, IEqualityComparer<K> comparer, Generator<K, V> func) : base(dictionary, comparer) {
-      Generator = func;
+    public GeneratorDictionary(IDictionary<K, V> dictionary, IEqualityComparer<K> comparer, Generator<K, V> gen) : base(dictionary, comparer) {
+      Generator = gen;
     }
 
-    public GeneratorDictionary(int capacity, IEqualityComparer<K> comparer, Generator<K, V> func) : base(capacity, comparer) {
-      Generator = func;
+    public GeneratorDictionary(int capacity, IEqualityComparer<K> comparer, Generator<K, V> gen) : base(capacity, comparer) {
+      Generator = gen;
     }
 
     public new V this[K key] {
