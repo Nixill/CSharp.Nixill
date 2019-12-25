@@ -3,11 +3,11 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <PackageId>NixLib-CS</PackageId>
+    <PackageId>CS-NixLib</PackageId>
     <Version>$(RELEASE_VERSION)</Version>
     <Authors>Nixill</Authors>
     <PackageDescription>Some niche but neat things Nix oft needs.</PackageDescription>
-    <RepositoryUrl>https://github.com/ShadowFoxNixill/C--NixLib</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ShadowFoxNixill/CS-NixLib</RepositoryUrl>
     <RootNamespace>Nixill</RootNamespace>
   </PropertyGroup>
 
