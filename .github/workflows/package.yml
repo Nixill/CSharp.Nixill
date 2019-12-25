@@ -19,13 +19,13 @@ jobs:
       - name: Test the package
         run: dotnet test
         env:
-          RELEASE_VERSION: ${{ github.ref }}
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
       - name: Pack the thing up
         run: |
           cd CS-NixLib/
           dotnet pack -o out
         env:
-          RELEASE_VERSION: ${{ github.ref }}
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
       - name: Push to github release
         uses: actions/upload-release-asset@v1.0.1
         env:
