@@ -26,18 +26,16 @@ jobs:
           dotnet pack -o out
         env:
           RELEASE_VERSION: ${{ github.event.release.tag_name }}
-      - name: Log current working directory
-        run: ls -R
-      # - name: Push to github release
-      #   uses: actions/upload-release-asset@v1.0.1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ github.event.release.upload_url }}
-      #     asset_path: ./out/CS-NixLib.${{ github.event.release.tag_name }}.nupkg
-      #     asset_name: CS-NixLib.${{ github.event.release.tag_name }}.nupkg
-      #     asset_content_type: application/zip
-      # - name: Push to github packages
-      #   run: dotnet nuget push ./out/CS-NixLib.${{ github.event.release.tag_name }}.nupkg -s GitHub
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push to github release
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./out/CS-NixLib/*.nupkg
+          asset_name: CS-NixLib.${{ github.event.release.tag_name }}.nupkg
+          asset_content_type: application/zip
+      - name: Push to github packages
+        run: dotnet nuget push ./out/CS-NixLib/*.nupkg -s GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
