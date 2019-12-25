@@ -36,6 +36,8 @@ jobs:
           asset_name: CS-NixLib.${{ github.event.release.tag_name }}.nupkg
           asset_content_type: application/zip
       - name: Push to github packages
-        run: dotnet nuget push ./CS-NixLib/out/*.nupkg -s GitHub
+        run: |
+          cd CS-NixLib/
+          dotnet nuget push ./out/*.nupkg -s GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
