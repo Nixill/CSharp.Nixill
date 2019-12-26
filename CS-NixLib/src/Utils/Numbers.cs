@@ -1,64 +1,72 @@
 using System;
 
 namespace Nixill.Utils {
+  /// <summary>
+  /// Provides utilities for working with numbers, including conversion.
+  /// </summary>
   public class Numbers {
-    public static int IntFromString(string str, int bs) {
-      if (bs < 2 || bs > 36) {
-        throw new ArgumentOutOfRangeException("intFromString only accepts bases 2 to 36.");
-      }
+    /// <summary>
+    /// Converts a string in an arbitrary base to an int.
+    /// </summary>
+    /// <param name="str">The string which should be converted.</param>
+    /// <param name="bs">The base from which to convert the number - 2 to
+    /// 36.</param>
+    public static int StringToInt(string str, int bs) {
+      if (bs < 2 || bs > 36) throw new ArgumentOutOfRangeException("intFromString only accepts bases 2 to 36.");
 
       int ret = 0;
-      int neg = 1;
+      int sgn = 1;
       if (str.StartsWith("-")) {
         str = str.Substring(1);
-        neg = -1;
+        sgn = -1;
       }
 
       foreach (char chr in str) {
         ret *= bs;
-        int add = IntFromChar(chr);
-        if (add >= bs) {
-          throw new ArgumentOutOfRangeException($"{chr} is not a valid base {bs} digit.");
-        }
+        int add = CharToInt(chr);
+        if (add >= bs) throw new ArgumentOutOfRangeException($"{chr} is not a valid base {bs} digit.");
         ret += add;
       }
 
-      return neg * ret;
+      return sgn * ret;
     }
 
-    public static int IntFromChar(char chr) {
+    /// <summary>
+    /// Converts a character, which is a digit in any base of greater
+    /// value than that digit, to its base 10 int value.
+    ///
+    /// This method doesn't take a <c>base</c> parameter because the base
+    /// doesn't alter the value of the digit, e.g. <c>c</c> has value 12,
+    /// whether expressed in base 13 or base 33.
+    /// </summary>
+    /// <param name="chr">The character to convert.</param>
+    public static int CharToInt(char chr) {
       int i = (int)chr;
       // Characters preceding '0'
-      if (i < 48) {
-        throw new ArgumentException("intFromString only accepts alphanumeric characters.");
-      }
+      if (i < 48) throw new ArgumentException("intFromString only accepts alphanumeric characters.");
       i -= 48;
       // Characters '0' through '9'
-      if (i < 10) {
-        return i;
-      }
+      if (i < 10) return i;
       // Characters preceding 'A'
-      else if (i < 17) {
-        throw new ArgumentException("intFromString only accepts alphanumeric characters.");
-      }
+      else if (i < 17) throw new ArgumentException("intFromString only accepts alphanumeric characters.");
       i -= 7;
       // Characters 'A' through 'Z'
-      if (i < 36) {
-        return i;
-      }
+      if (i < 36) return i;
       // Characters preceding 'a'
-      else if (i < 42) {
-        throw new ArgumentException("intFromString only accepts alphanumeric characters.");
-      }
+      else if (i < 42) throw new ArgumentException("intFromString only accepts alphanumeric characters.");
       i -= 32;
       // Characters 'a' through 'z'
-      if (i < 36) {
-        return i;
-      }
+      if (i < 36) return i;
       // Characters after 'z'
       throw new ArgumentException("intFromString only accepts alphanumeric characters.");
     }
 
+    /// <summary>
+    /// Converts an int to a string in an arbitrary base.
+    /// </summary>
+    /// <param name="input">The integer which should be converted.</param>
+    /// <param name="bs">The base to which to convert the number - 2 to
+    /// 36.</param>
     public static string IntToString(int input, int bs) {
       string ret = "";
       bool add1 = false;
@@ -108,10 +116,17 @@ namespace Nixill.Utils {
       return neg + ret;
     }
 
+    /// <summary>
+    /// Converts an integer to a character representing a digit of the
+    /// given value in any higher base.
+    ///
+    /// This method doesn't take a <c>base</c> parameter because the base
+    /// doesn't alter the value of the digit, e.g. value 12 is <c>c</c>,
+    /// whether expressed in base 13 or base 33.
+    /// </summary>
+    /// <param name="chr">The character to convert.</param>
     public static char IntToChar(int i) {
-      if (i < 0 || i > 35) {
-        throw new ArgumentOutOfRangeException("Only digits 0 to 35 can be converted to chars.");
-      }
+      if (i < 0 || i > 35) throw new ArgumentOutOfRangeException("Only digits 0 to 35 can be converted to chars.");
 
       // digits 0 through 9
       if (i < 10) return (char)(i + 48);
