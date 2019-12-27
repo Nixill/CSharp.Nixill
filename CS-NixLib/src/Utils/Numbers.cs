@@ -158,10 +158,21 @@ namespace Nixill.Utils {
       else return (src & trg) != 0;
     }
 
+    /// <string>
+    /// Converts a number given in Leading Zero format to an int.
+    ///
+    /// Leading Zero format is a sequence in which numbers which start
+    /// with zero are distinct from numbers which do not. For example,
+    /// base 10 would count as follows: <c>0, 1, 2, ..., 9, 00, 01, ...,
+    /// 09, 10, 11, ..., 99, 000, 001, ...</c>
+    ///
+    /// With Leading Zero format, base 1 is a valid base (<c>0, 00, 000,
+    /// ...</c>). The highest valid base is 36.
+    /// </string>
     public static int LeadingZeroStringToInt(string input, int bs) {
       int root = 0;
       int neg = 1;
-      
+
       if (input.StartsWith('-')) {
         neg = -1;
         input = input.Substring(1);
@@ -179,17 +190,25 @@ namespace Nixill.Utils {
       return neg * (root + StringToInt(input, bs));
     }
 
+    /// <summary>
+    /// Converts an integer to a textual number in Leading Zero format.
+    ///
+    /// See
+    /// <a cref="Numbers.LeadingZeroStringToInt(string, int)">LeadingZeroStringToInt()</a>
+    /// for more details on what Leading Zero format is.
+    /// </summary>
     public static string IntToLeadingZeroString(int input, int bs) {
-      int root = 0;
-      int lroot = -1;
+      long root = 0;
+      long lroot = -1;
       int len = 0;
       string neg = "";
       uint abs;
 
       if (input < 0) {
-        abs = (uint) (-input);
+        abs = (uint)(-input);
         neg = "-";
-      } else abs = (uint) input;
+      }
+      else abs = (uint)input;
 
       while (root > lroot && root < abs) {
         lroot = root;
@@ -201,7 +220,11 @@ namespace Nixill.Utils {
 
       abs -= (uint)root;
 
-      
+      string ret = IntToString((int)abs, bs);
+      len -= ret.Length;
+      ret = neg + new string('0', len) + ret;
+
+      return ret;
     }
   }
 }
