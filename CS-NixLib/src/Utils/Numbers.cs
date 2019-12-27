@@ -157,5 +157,51 @@ namespace Nixill.Utils {
       if (trg == 0) return src != 0;
       else return (src & trg) != 0;
     }
+
+    public static int LeadingZeroStringToInt(string input, int bs) {
+      int root = 0;
+      int neg = 1;
+      
+      if (input.StartsWith('-')) {
+        neg = -1;
+        input = input.Substring(1);
+      }
+
+      for (int i = 1; i < input.Length; i++) {
+        root *= bs;
+        root += bs;
+      }
+
+      while (input.StartsWith('0')) {
+        input = input.Substring(1);
+      }
+
+      return neg * (root + StringToInt(input, bs));
+    }
+
+    public static string IntToLeadingZeroString(int input, int bs) {
+      int root = 0;
+      int lroot = -1;
+      int len = 0;
+      string neg = "";
+      uint abs;
+
+      if (input < 0) {
+        abs = (uint) (-input);
+        neg = "-";
+      } else abs = (uint) input;
+
+      while (root > lroot && root < abs) {
+        lroot = root;
+        len += 1;
+
+        root *= bs;
+        root += bs;
+      }
+
+      abs -= (uint)root;
+
+      
+    }
   }
 }
