@@ -133,5 +133,29 @@ namespace Nixill.Utils {
       // letters A through Z
       else return (char)(i + 55);
     }
+
+    /// <summary>
+    /// Returns true iff the source number has all of the target bits.
+    ///
+    /// Specifically, returns <c>src &amp; trg == trg</c>.
+    ///
+    /// Special case: If <c>trg</c> is 0, returns <c>src == 0</c>.
+    /// </summary>
+    public static bool HasAllBits(int src, int trg) {
+      if (trg == 0) return src == 0;
+      else return (src & trg) == trg;
+    }
+
+    /// <summary>
+    /// Returns true iff the source number has any of the target bits.
+    ///
+    /// Specifically, returns <c>src &amp; trg != 0</c>.
+    ///
+    /// Special case: If <c>trg</c> is 0, returns <c>src != 0</c>.
+    /// </summary>
+    public static bool HasAnyBits(int src, int trg) {
+      if (trg == 0) return src != 0;
+      else return (src & trg) != 0;
+    }
   }
 }
