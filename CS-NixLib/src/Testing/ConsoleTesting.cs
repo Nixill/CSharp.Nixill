@@ -1,15 +1,31 @@
-using System.ComponentModel;
 using System;
 using System.Collections.Generic;
+
 namespace Nixill.Testing {
+  /// <summary>
+  /// A helper class to create console-app tests for various applications.
+  /// </summary>
   public class ConsoleTestRunner {
     Dictionary<string, Action<ConsoleTestRunner>> Tests = new Dictionary<string, Action<ConsoleTestRunner>>();
     bool Cancelled = false;
 
+    /// <summary>
+    /// Adds a new test method to the runner's list.
+    ///
+    /// If the new test shares a name with an existing test, the existing
+    /// test is overwritten.
+    /// </summary>
+    /// <param name="keyword">The name / keyword to use to begin the
+    /// test.</param>
+    /// <param name="test">The method which comprises the test.</param>
     public void AddTest(string keyword, Action<ConsoleTestRunner> test) {
       Tests[keyword] = test;
     }
 
+    /// <summary>
+    /// Runs the tests. This should be the end of the <c>Main</c> method
+    /// in the testing class, unless cleanup is needed afterwards.
+    /// </summary>
     public void RunTests() {
       Console.WriteLine("NixLib ConsoleTestRunner v0.1.0");
       Console.WriteLine();
@@ -73,6 +89,14 @@ namespace Nixill.Testing {
       throw new ConsoleCancelException();
     }
 
+    /// <summary>
+    /// Use this method within tests to get string values.
+    ///
+    /// This method should be used over <c>Console.ReadLine()</c> because
+    /// it checks for cancels (ctrl-c followed by enter), and can end the
+    /// test when the cancel key combination is pressed.
+    /// </summary>
+    /// <param name="name">The name of the value to get.</param>
     public string GetStringValue(string name) {
       Console.Write("Enter value for string " + name + ": ");
       string ret = Console.ReadLine();
@@ -80,6 +104,16 @@ namespace Nixill.Testing {
       return ret;
     }
 
+    /// <summary>
+    /// Use this method within tests to get long values.
+    ///
+    /// This method should be used over <c>Console.ReadLine()</c> because
+    /// it checks for cancels (ctrl-c followed by enter), and can end the
+    /// test when the cancel key combination is pressed. It also makes
+    /// sure a parseable number is entered, looping until a valid value is
+    /// entered or the cancel combination is pressed.
+    /// </summary>
+    /// <param name="name">The name of the value to get.</param>
     public long GetLongValue(string name) {
       Console.Write("Enter value for long " + name + ": ");
       string val;
@@ -94,6 +128,16 @@ namespace Nixill.Testing {
       return ret;
     }
 
+    /// <summary>
+    /// Use this method within tests to get double values.
+    ///
+    /// This method should be used over <c>Console.ReadLine()</c> because
+    /// it checks for cancels (ctrl-c followed by enter), and can end the
+    /// test when the cancel key combination is pressed. It also makes
+    /// sure a parseable number is entered, looping until a valid value is
+    /// entered or the cancel combination is pressed.
+    /// </summary>
+    /// <param name="name">The name of the value to get.</param>
     public double GetDoubleValue(string name) {
       Console.Write("Enter value for double " + name + ": ");
       string val;
@@ -109,6 +153,6 @@ namespace Nixill.Testing {
     }
   }
 
-  public class ConsoleCancelException : Exception {
+  internal class ConsoleCancelException : Exception {
   }
 }
