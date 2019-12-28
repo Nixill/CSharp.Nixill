@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using Nixill.Utils;
 
-namespace Nixill.Testing {
+namespace Nixill.Test {
   public class NixLibTests {
     [Test]
     public void Test1() {
