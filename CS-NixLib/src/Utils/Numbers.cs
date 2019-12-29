@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System;
 
 namespace Nixill.Utils {
@@ -12,7 +13,7 @@ namespace Nixill.Utils {
     /// <param name="bs">The base from which to convert the number - 2 to
     /// 36.</param>
     public static int StringToInt(string str, int bs) {
-      if (bs < 2 || bs > 36) throw new ArgumentOutOfRangeException("intFromString only accepts bases 2 to 36.");
+      if (bs < 2 || bs > 36) throw new ArgumentOutOfRangeException("StringToInt only accepts bases 2 to 36.");
 
       int ret = 0;
       int sgn = 1;
@@ -43,22 +44,22 @@ namespace Nixill.Utils {
     public static int CharToInt(char chr) {
       int i = (int)chr;
       // Characters preceding '0'
-      if (i < 48) throw new ArgumentException("intFromString only accepts alphanumeric characters.");
+      if (i < 48) throw new ArgumentException("CharToInt only accepts alphanumeric characters.");
       i -= 48;
       // Characters '0' through '9'
       if (i < 10) return i;
       // Characters preceding 'A'
-      else if (i < 17) throw new ArgumentException("intFromString only accepts alphanumeric characters.");
+      else if (i < 17) throw new ArgumentException("CharToInt only accepts alphanumeric characters.");
       i -= 7;
       // Characters 'A' through 'Z'
       if (i < 36) return i;
       // Characters preceding 'a'
-      else if (i < 42) throw new ArgumentException("intFromString only accepts alphanumeric characters.");
+      else if (i < 42) throw new ArgumentException("CharToInt only accepts alphanumeric characters.");
       i -= 32;
       // Characters 'a' through 'z'
       if (i < 36) return i;
       // Characters after 'z'
-      throw new ArgumentException("intFromString only accepts alphanumeric characters.");
+      throw new ArgumentException("CharToInt only accepts alphanumeric characters.");
     }
 
     /// <summary>
@@ -68,6 +69,8 @@ namespace Nixill.Utils {
     /// <param name="bs">The base to which to convert the number - 2 to
     /// 36.</param>
     public static string IntToString(int input, int bs) {
+      if (bs < 2 || bs > 36) throw new ArgumentOutOfRangeException("IntToString only accepts bases 2 to 36.");
+
       string ret = "";
       bool add1 = false;
       string neg = "";
@@ -170,6 +173,14 @@ namespace Nixill.Utils {
     /// ...</c>). The highest valid base is 36.
     /// </string>
     public static int LeadingZeroStringToInt(string input, int bs) {
+      if (bs < 1 || bs > 36) throw new ArgumentOutOfRangeException("LeadingZeroStringToInt only accepts bases 1 to 36.");
+
+      if (bs == 1) {
+        if (!Regex.IsMatch(input, "-?0+")) throw new ArgumentException("Not a valid base 1 input");
+        if (input.StartsWith('-')) return -(input.Length - 2);
+        else return input.Length - 1;
+      }
+
       int root = 0;
       int neg = 1;
 
@@ -199,10 +210,15 @@ namespace Nixill.Utils {
     /// </summary>
     public static string IntToLeadingZeroString(int input, int bs) {
       long root = 0;
-      long lroot = -1;
+      long lroot = 0;
       int len = 0;
       string neg = "";
       uint abs;
+
+      if (bs == 1) {
+        if (input < 0) return "-" + new String('0', -input + 1);
+        else return new String('0', input + 1);
+      }
 
       if (input < 0) {
         abs = (uint)(-input);
@@ -210,15 +226,15 @@ namespace Nixill.Utils {
       }
       else abs = (uint)input;
 
-      while (root > lroot && root < abs) {
+      do {
         lroot = root;
         len += 1;
 
         root *= bs;
         root += bs;
-      }
+      } while (root > lroot && root <= abs);
 
-      abs -= (uint)root;
+      abs -= (uint)lroot;
 
       string ret = IntToString((int)abs, bs);
       len -= ret.Length;

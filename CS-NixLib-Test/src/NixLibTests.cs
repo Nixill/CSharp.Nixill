@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Nixill.Utils;
 
@@ -21,6 +22,26 @@ namespace Nixill.Test {
       Cipher stringMask = new Cipher("xx", "hs");
       Assert.AreEqual(stringMask.Apply("ax txe wind blows"), "as the wind blows");
       Assert.False(stringMask.Reversible);
+    }
+
+    [Test]
+    public void LZSTest() {
+      Assert.AreEqual(26, Numbers.LeadingZeroStringToInt("00", 26));
+      Assert.AreEqual("00", Numbers.IntToLeadingZeroString(26, 26));
+
+      Assert.AreEqual(27, Numbers.LeadingZeroStringToInt("01", 26));
+      Assert.AreEqual("01", Numbers.IntToLeadingZeroString(27, 26));
+
+      Assert.AreEqual(0, Numbers.LeadingZeroStringToInt("0", 26));
+      Assert.AreEqual("0", Numbers.IntToLeadingZeroString(0, 26));
+
+      Assert.AreEqual(10, Numbers.LeadingZeroStringToInt("00", 10));
+      Assert.AreEqual("00", Numbers.IntToLeadingZeroString(10, 10));
+
+      Assert.AreEqual(20, Numbers.LeadingZeroStringToInt("10", 10));
+      Assert.AreEqual("10", Numbers.IntToLeadingZeroString(20, 10));
+
+      Assert.Throws(typeof(ArgumentOutOfRangeException), () => { Numbers.LeadingZeroStringToInt("0", 40); });
     }
   }
 }
