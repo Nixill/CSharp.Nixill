@@ -136,5 +136,12 @@ namespace Nixill.Grid {
 
     public static implicit operator string(GridReference input) => input.ToString();
     public static implicit operator Tuple<int, int>(GridReference input) => new Tuple<int, int>(input.Row, input.Column);
+
+    public static bool operator ==(GridReference left, GridReference right) => left.Equals(right);
+    public static bool operator !=(GridReference left, GridReference right) => !left.Equals(right);
+    public static bool operator <(GridReference left, GridReference right) => left.CompareTo(right) < 0;
+    public static bool operator >(GridReference left, GridReference right) => left.CompareTo(right) > 0;
+    public static bool operator <=(GridReference left, GridReference right) => left.CompareTo(right) <= 0;
+    public static bool operator >=(GridReference left, GridReference right) => left.CompareTo(right) >= 0;
   }
 }
