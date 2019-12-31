@@ -1,8 +1,9 @@
+using System;
 using System.Text.RegularExpressions;
 using Nixill.Utils;
 
 namespace Nixill.Grid {
-  public class GridReference {
+  public class GridReference : IComparable<GridReference> {
     static Regex A1Form = new Regex("^([A-Za-z]+)(\\d+)$");
     static Regex R1C1Form = new Regex("^R(\\d+)C(\\d+)$");
 
@@ -16,11 +17,19 @@ namespace Nixill.Grid {
     public int Row { get; }
 
     /// <summary>
+    /// This GridReference, transposed (Row and column swapped).
+    /// </summary>
+    public GridReference Transposed { get => new GridReference(Column, Row); }
+
+    /// <summary>
     /// Constructs a new GridReference given its individual coordinates.
     /// </summary>
     /// <param name="column">The column to use.</param>
     /// <param name="row">The row to use.</param>
     public GridReference(int col, int row) {
+      if (col < 0) throw new ArgumentOutOfRangeException("col", "Cannot be negative.");
+      if (row < 0) throw new ArgumentOutOfRangeException("row", "Cannot be negative.");
+
       Column = col;
       Row = row;
     }
@@ -39,13 +48,93 @@ namespace Nixill.Grid {
       int row;
       int column;
       if (regMatch.Success) {
-
+        column = ColumnNameToNumber(regMatch.Groups[1].Value);
+        row = int.Parse(regMatch.Groups[2].Value) - 1;
       }
+      else {
+        regMatch = R1C1Form.Match(input);
+        if (regMatch.Success) {
+          row = int.Parse(regMatch.Groups[1].Value) - 1;
+          column = int.Parse(regMatch.Groups[2].Value) - 1;
+        }
+        else throw new ArgumentException("GridReferences from strings must be in A1 format or R1C1 format.");
+      }
+
+      if (column < 0) throw new ArgumentOutOfRangeException("col", "Cannot be negative.");
+      if (row < 0) throw new ArgumentOutOfRangeException("row", "Cannot be negative.");
+
+      Row = row;
+      Column = column;
     }
 
-    public static ColumnNameToNumber(string name) {
-      name = ColNameToNum.Apply(name);
-      return Numbers.
+    /// <summary>
+    /// Compares this GridReference to another, returning a negative
+    /// integer, zero, or a positive integer if this GridReference is less
+    /// than, equal to, or greater than the supplied GridReference
+    /// respectively.
+    ///
+    /// It compares rows first, before columns; a GridReference is "less
+    /// than" another GridReference lower and to the left.
+    /// </summary>
+    public int CompareTo(GridReference other) {
+      return CompareUtils.FirstNonZero(
+        Row - other.Row,
+        Column - other.Column
+      );
     }
+
+    /// <summary>
+    /// Returns a string representation of this GridReference in A1
+    /// notation.
+    /// </summary>
+    public string ToA1String() {
+      return ColumnNumberToName(Column) + (Row + 1);
+    }
+
+    /// <summary>
+    /// Returns a string representation of this GridReference in R1C1
+    /// notation.
+    /// </summary>
+    public string ToR1C1String() {
+      return "R" + (Row + 1) + "C" + (Column + 1);
+    }
+
+    public override string ToString() => ToA1String();
+
+    public override bool Equals(object obj) {
+      if (obj is GridReference other) {
+        return other.Row == Row && other.Column == Column;
+      }
+      else return false;
+    }
+
+    public override int GetHashCode() {
+      return (Row & 0xFFFF) << 16
+      + (Column & 0xFFFF);
+    }
+
+    /// <summary>
+    /// Changes a column name, as seen in several popular spreadsheet
+    /// software, to a number. A becomes 0, B becomes 1, etc.
+    /// </summary>
+    public static int ColumnNameToNumber(string name) {
+      name = ColNameToNum.Apply(name);
+      return Numbers.LeadingZeroStringToInt(name, 26);
+    }
+
+    /// <summary>
+    /// Changes a column number to a name as seen in several popular
+    /// spreadsheet software. 0 becomes A, 1 becomes B, etc.
+    /// </summary>
+    public static string ColumnNumberToName(int num) {
+      string name = Numbers.IntToLeadingZeroString(num, 26);
+      return ColNumToName.Apply(name);
+    }
+
+    public static implicit operator GridReference(string input) => new GridReference(input);
+    public static implicit operator GridReference(Tuple<int, int> input) => new GridReference(input.Item1, input.Item2);
+
+    public static implicit operator string(GridReference input) => input.ToString();
+    public static implicit operator Tuple<int, int>(GridReference input) => new Tuple<int, int>(input.Row, input.Column);
   }
 }
