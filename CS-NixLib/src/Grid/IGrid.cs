@@ -37,7 +37,7 @@ namespace Nixill.Grid {
 
     /// <summary>Checks whether the grid contains a given item.</summary>
     /// <param name="item">The item to check for presence.</param>
-    void Contains(T item);
+    bool Contains(T item);
 
     /// <summary>
     /// Returns an enumator through the table, returning elements from
