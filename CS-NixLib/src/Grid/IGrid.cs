@@ -61,7 +61,7 @@ namespace Nixill.Grid {
     /// <summary>
     /// Returns a single column as a subclass of IList.
     /// </summary>
-    IList<T> GetColumn();
+    IList<T> GetColumn(int which);
 
     /// <summary>
     /// Returns an enumerator through the columns of a grid.
@@ -76,7 +76,7 @@ namespace Nixill.Grid {
     /// <summary>
     /// Returns a single column as a subclass of IList.
     /// </summary>
-    IList<T> GetRow();
+    IList<T> GetRow(int which);
 
     /// <summary>
     /// Returns the first index of a particular item.

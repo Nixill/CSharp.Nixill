@@ -36,11 +36,20 @@ namespace Nixill.Grid {
 
     public void AddColumn<U>(IList<U> column) where U : T {
       if (Height == 0 && Width == 0) {
+        IntWidth += 1;
         foreach (U item in column) {
-
+          List<T> innerList = new List<T>();
+          innerList.Add(item);
+          BackingList.Add(innerList);
         }
       }
-      if (column.Count != Height) throw new ArgumentException("column height must match table height exactly");
+      else {
+        if (column.Count != Height) throw new ArgumentException("Column height must match grid height exactly, or grid must be empty.");
+        IntWidth += 1;
+        for (int i = 0; i < Height; i++) {
+          BackingList[i].Add(column[i]);
+        }
+      }
     }
 
     public void AddRow() {
@@ -51,7 +60,12 @@ namespace Nixill.Grid {
     }
 
     public void AddRow<U>(IList<U> row) where U : T {
-      throw new System.NotImplementedException();
+      if (Height == 0 && Width == 0) {
+        IntWidth = row.Count;
+      }
+      else {
+        if (row.Count != Width) throw new ArgumentException("Row width must match grid width exactly, or grid must be empty.");
+      }
     }
 
     public void Clear() {
@@ -66,28 +80,24 @@ namespace Nixill.Grid {
       return false;
     }
 
-    public IList<T> GetColumn() {
-      throw new System.NotImplementedException();
+    public IList<T> GetColumn(int index) {
+      return new GridLine<T>(this, true, index);
     }
 
-    public IEnumerator<U> GetColumnEnumerator<U>() where U : IList<T> {
-      throw new System.NotImplementedException();
-    }
-
-    public IEnumerator<T> GetEnumerator() {
-      foreach (List<T> innerList in BackingList) {
-        foreach (T item in innerList) {
-          yield return item;
-        }
+    public IEnumerator<IList<T>> GetColumnEnumerator<U>() {
+      for (int i = 0; i < Width; i++) {
+        yield return GetColumn(i);
       }
     }
 
-    public IEnumerator<U> GetEnumerator<U>() where U : IList<T> {
-      throw new System.NotImplementedException();
+    public IEnumerator<IList<T>> GetEnumerator() {
+      for (int i = 0; i < Height; i++) {
+        yield return GetRow(i);
+      }
     }
 
-    public IList<T> GetRow() {
-      throw new System.NotImplementedException();
+    public IList<T> GetRow(int index) {
+      return new GridLine<T>(this, false, index);
     }
 
     public GridReference IndexOf(T item) {
@@ -118,7 +128,10 @@ namespace Nixill.Grid {
     }
 
     public void InsertColumn<U>(int before, IList<U> column) where U : T {
-      throw new System.NotImplementedException();
+      if (Height != column.Count) throw new ArgumentException("Column height must match grid height exactly.");
+      for (int i = 0; i < Height; i++) {
+        BackingList[i].Insert(before, column[i]);
+      }
     }
 
     public void InsertRow(int before) {
@@ -130,7 +143,9 @@ namespace Nixill.Grid {
     }
 
     public void InsertRow<U>(int before, IList<U> row) where U : T {
-      throw new System.NotImplementedException();
+      if (Width != row.Count) throw new ArgumentException("Row width must match grid width exactly.");
+      List<T> innerList = new List<T>((ICollection<T>)row);
+      BackingList.Insert(before, innerList);
     }
   }
 
@@ -153,6 +168,14 @@ namespace Nixill.Grid {
     public int Count => IsColumn ? ParentGrid.Height : ParentGrid.Width;
 
     public bool IsReadOnly => false;
+
+    public GridLine(IGrid<T> parent, bool isColumn, int index) {
+      if (index < 0) throw new ArgumentOutOfRangeException("index", "Must be at least 0.");
+
+      ParentGrid = parent;
+      IsColumn = isColumn;
+      Index = index;
+    }
 
     public void Add(T item) {
       throw new System.NotSupportedException();
