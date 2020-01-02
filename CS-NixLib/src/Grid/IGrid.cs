@@ -66,12 +66,12 @@ namespace Nixill.Grid {
     /// <summary>
     /// Returns an enumerator through the columns of a grid.
     /// </summary>
-    IEnumerator<U> GetColumnEnumerator<U>() where U : IList<T>;
+    IEnumerator<IList<T>> GetColumnEnumerator();
 
     /// <summary>
     /// Returns an enumerator through the rows of a grid.
     /// </summary>
-    IEnumerator<U> GetEnumerator<U>() where U : IList<T>;
+    IEnumerator<IList<T>> GetEnumerator();
 
     /// <summary>
     /// Returns a single column as a subclass of IList.

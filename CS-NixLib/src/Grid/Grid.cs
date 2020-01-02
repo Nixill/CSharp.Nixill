@@ -84,7 +84,7 @@ namespace Nixill.Grid {
       return new GridLine<T>(this, true, index);
     }
 
-    public IEnumerator<IList<T>> GetColumnEnumerator<U>() {
+    public IEnumerator<IList<T>> GetColumnEnumerator() {
       for (int i = 0; i < Width; i++) {
         yield return GetColumn(i);
       }
@@ -149,6 +149,21 @@ namespace Nixill.Grid {
     }
   }
 
+  /// <summary>
+  /// One line - either a whole row or column - of a grid.
+  ///
+  /// The constructed GridLine is a window to a static point. GridLines to
+  /// invalid rows or columns (higher) can be constructed, but attempts to
+  /// retrieve data from them will cause exceptions. A GridLine won't move
+  /// with the actual line it initially references, i.e. a GridLine for
+  /// column 2 will always point to whatever happens to be the column in
+  /// that position. However, the size of the line will change with the
+  /// size of that axis of the grid.
+  ///
+  /// A GridLine's structure cannot be modified from the GridLine class,
+  /// but will reflect any changes made from the Grid class. Individual
+  /// elements are likewise synced but can be changed from either class.
+  /// </summary>
   public class GridLine<T> : IList<T> {
     public IGrid<T> ParentGrid { get; internal set; }
     public bool IsColumn { get; internal set; }
