@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -33,11 +34,24 @@ namespace Nixill.Grid {
       }
     }
 
+    public void AddColumn<U>(IList<U> column) where U : T {
+      if (Height == 0 && Width == 0) {
+        foreach (U item in column) {
+
+        }
+      }
+      if (column.Count != Height) throw new ArgumentException("column height must match table height exactly");
+    }
+
     public void AddRow() {
       List<T> innerList = new List<T>();
       while (innerList.Count < IntWidth) {
         innerList.Add(default(T));
       }
+    }
+
+    public void AddRow<U>(IList<U> row) where U : T {
+      throw new System.NotImplementedException();
     }
 
     public void Clear() {
@@ -52,12 +66,28 @@ namespace Nixill.Grid {
       return false;
     }
 
+    public IList<T> GetColumn() {
+      throw new System.NotImplementedException();
+    }
+
+    public IEnumerator<U> GetColumnEnumerator<U>() where U : IList<T> {
+      throw new System.NotImplementedException();
+    }
+
     public IEnumerator<T> GetEnumerator() {
       foreach (List<T> innerList in BackingList) {
         foreach (T item in innerList) {
           yield return item;
         }
       }
+    }
+
+    public IEnumerator<U> GetEnumerator<U>() where U : IList<T> {
+      throw new System.NotImplementedException();
+    }
+
+    public IList<T> GetRow() {
+      throw new System.NotImplementedException();
     }
 
     public GridReference IndexOf(T item) {
@@ -87,12 +117,20 @@ namespace Nixill.Grid {
       }
     }
 
+    public void InsertColumn<U>(int before, IList<U> column) where U : T {
+      throw new System.NotImplementedException();
+    }
+
     public void InsertRow(int before) {
       List<T> innerList = new List<T>();
       for (int i = 0; i < IntWidth; i++) {
         innerList.Add(default(T));
       }
       BackingList.Insert(before, innerList);
+    }
+
+    public void InsertRow<U>(int before, IList<U> row) where U : T {
+      throw new System.NotImplementedException();
     }
   }
 
@@ -125,15 +163,8 @@ namespace Nixill.Grid {
     }
 
     public bool Contains(T item) {
-      if (item == null) {
-        foreach (T itm in this) {
-          if (itm == null) return true;
-        }
-      }
-      else {
-        foreach (T itm in this) {
-          if (itm.Equals(item)) return true;
-        }
+      foreach (T itm in this) {
+        if (object.Equals(itm, item)) return true;
       }
       return false;
     }
@@ -152,8 +183,9 @@ namespace Nixill.Grid {
     public int IndexOf(T item) {
       int len = Count;
       for (int i = 0; i < len; i++) {
-
+        if (object.Equals(item, this[i])) return i;
       }
+      return -1;
     }
 
     public void Insert(int index, T item) {
@@ -169,7 +201,10 @@ namespace Nixill.Grid {
     }
 
     IEnumerator IEnumerable.GetEnumerator() {
-      throw new System.NotSupportedException();
+      int len = Count;
+      for (int i = 0; i < len; i++) {
+        yield return this[i];
+      }
     }
 
     public static explicit operator List<T>(GridLine<T> input) => new List<T>(input);
