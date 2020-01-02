@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Nixill.Grid {
@@ -26,11 +27,29 @@ namespace Nixill.Grid {
     /// <param name="gr">The cell for which to get a value.</param>
     T this[GridReference gr] { get; set; }
 
-    /// <summary>Adds a row to the bottom of the grid.</summary>
+    /// <summary>Adds an empty column to the right of the grid.</summary>
+    void AddColumn();
+
+    /// <summary>
+    /// Adds a column to the right of the grid.
+    ///
+    /// The height of the grid must match the size of the list, or the
+    /// grid must be empty.
+    /// </summary>
+    /// <param name="column">The row to add.</param>
+    void AddColumn<U>(IList<U> column) where U : T;
+
+    /// <summary>Adds an empty row to the bottom of the grid.</summary>
     void AddRow();
 
-    /// <summary>Adds a column to the right of the grid.</summary>
-    void AddColumn();
+    /// <summary>
+    /// Adds a row to the bottom of the grid.
+    ///
+    /// The width of the grid must match the size of the list, or the
+    /// grid must be empty.
+    /// </summary>
+    /// <param name="row">The row to add.</param>
+    void AddRow<U>(IList<U> row) where U : T;
 
     /// <summary>Clears all values of the grid.</summary>
     void Clear();
@@ -40,10 +59,24 @@ namespace Nixill.Grid {
     bool Contains(T item);
 
     /// <summary>
-    /// Returns an enumator through the table, returning elements from
-    /// left to right in each row, top to bottom.
+    /// Returns a single column as a subclass of IList.
     /// </summary>
-    IEnumerator<T> GetEnumerator();
+    IList<T> GetColumn();
+
+    /// <summary>
+    /// Returns an enumerator through the columns of a grid.
+    /// </summary>
+    IEnumerator<U> GetColumnEnumerator<U>() where U : IList<T>;
+
+    /// <summary>
+    /// Returns an enumerator through the rows of a grid.
+    /// </summary>
+    IEnumerator<U> GetEnumerator<U>() where U : IList<T>;
+
+    /// <summary>
+    /// Returns a single column as a subclass of IList.
+    /// </summary>
+    IList<T> GetRow();
 
     /// <summary>
     /// Returns the first index of a particular item.
@@ -63,14 +96,36 @@ namespace Nixill.Grid {
     /// <param name="item">The item to check for location.</param>
     GridReference IndexOfTransposed(T item);
 
-    /// <summary>Inserts a row in the middle of the grid.</summary>
+    /// <summary>
+    /// Inserts an empty column in the middle of the grid.
+    /// </summary>
+    /// <param name="before">The existing column to the left of which the
+    /// new column should be placed.</param>
+    void InsertColumn(int before);
+
+    /// <summary>
+    /// Inserts a column in the middle of the grid.
+    ///
+    /// The height of the grid must match the size of the list.
+    /// </summary>
+    /// <param name="before">The existing column to the left of which the
+    /// new column should be placed.</param>
+    /// <param name="column">The column to add.</param>
+    void InsertColumn<U>(int before, IList<U> column) where U : T;
+
+    /// <summary>Inserts an empty row in the middle of the grid.</summary>
     /// <param name="before">The existing row above which the new row
     /// should be placed.</param>
     void InsertRow(int before);
 
-    /// <summary>Inserts a column in the middle of the grid.</summary>
-    /// <param name="before">The existing column to the left of which the
-    /// new column should be placed.</param>
-    void InsertColumn(int before);
+    /// <summary>
+    /// Inserts a row in the middle of the grid.
+    ///
+    /// The width of the grid must match the size of the list.
+    /// </summary>
+    /// <param name="before">The existing row above which the new row
+    /// should be placed.</param>
+    /// <param name="row">The row to add.</param>
+    void InsertRow<U>(int before, IList<U> row) where U : T;
   }
 }

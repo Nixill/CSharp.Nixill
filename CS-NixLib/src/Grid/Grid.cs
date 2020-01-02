@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Nixill.Grid {
@@ -93,5 +94,84 @@ namespace Nixill.Grid {
       }
       BackingList.Insert(before, innerList);
     }
+  }
+
+  public class GridLine<T> : IList<T> {
+    public IGrid<T> ParentGrid { get; internal set; }
+    public bool IsColumn { get; internal set; }
+    public int Index { get; internal set; }
+
+    public T this[int index] {
+      get {
+        if (IsColumn) return ParentGrid[index, Index];
+        else return ParentGrid[Index, index];
+      }
+      set {
+        if (IsColumn) ParentGrid[index, Index] = value;
+        else ParentGrid[Index, index] = value;
+      }
+    }
+
+    public int Count => IsColumn ? ParentGrid.Height : ParentGrid.Width;
+
+    public bool IsReadOnly => false;
+
+    public void Add(T item) {
+      throw new System.NotSupportedException();
+    }
+
+    public void Clear() {
+      throw new System.NotSupportedException();
+    }
+
+    public bool Contains(T item) {
+      if (item == null) {
+        foreach (T itm in this) {
+          if (itm == null) return true;
+        }
+      }
+      else {
+        foreach (T itm in this) {
+          if (itm.Equals(item)) return true;
+        }
+      }
+      return false;
+    }
+
+    public void CopyTo(T[] array, int arrayIndex) {
+      ((List<T>)this).CopyTo(array, arrayIndex);
+    }
+
+    public IEnumerator<T> GetEnumerator() {
+      int len = Count;
+      for (int i = 0; i < len; i++) {
+        yield return this[i];
+      }
+    }
+
+    public int IndexOf(T item) {
+      int len = Count;
+      for (int i = 0; i < len; i++) {
+
+      }
+    }
+
+    public void Insert(int index, T item) {
+      throw new System.NotSupportedException();
+    }
+
+    public bool Remove(T item) {
+      throw new System.NotSupportedException();
+    }
+
+    public void RemoveAt(int index) {
+      throw new System.NotSupportedException();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() {
+      throw new System.NotSupportedException();
+    }
+
+    public static explicit operator List<T>(GridLine<T> input) => new List<T>(input);
   }
 }
