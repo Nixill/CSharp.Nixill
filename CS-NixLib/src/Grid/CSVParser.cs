@@ -12,7 +12,7 @@ namespace Nixill.Grid.CSV {
     }
 
     public static Grid<string> EnumerableToGrid(IEnumerable<char> input, bool emptyStrings = true) {
-      List<List<string>> backingList = new List<List<string>>();
+      IList<IList<string>> backingList = new List<IList<string>>();
       List<string> innerList = new List<string>();
       StringBuilder val = new StringBuilder();
       bool isEmptyLine = true;
@@ -49,9 +49,36 @@ namespace Nixill.Grid.CSV {
           isEmptyLine = false;
         }
         else if (chr == '\r') {
-
+          innerList.Add(val.ToString());
+          backingList.Add(innerList);
+          val.Clear();
+          innerList = new List<string>();
+          lastIsCR = true;
+          isEmptyLine = true;
+        }
+        else if (chr == '\n') {
+          if (lastIsCR) {
+            lastIsCR = false;
+          }
+          else {
+            innerList.Add(val.ToString());
+            backingList.Add(innerList);
+            val.Clear();
+            innerList = new List<string>();
+            isEmptyLine = true;
+          }
+        }
+        else {
+          val.Append(chr);
         }
       }
+
+      if (!isEmptyLine) {
+        innerList.Add(val.ToString());
+        backingList.Add(innerList);
+      }
+
+      return new Grid<string>(backingList);
     }
   }
 }
