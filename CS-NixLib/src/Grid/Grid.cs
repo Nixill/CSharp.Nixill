@@ -7,6 +7,22 @@ namespace Nixill.Grid {
     List<List<T>> BackingList = new List<List<T>>();
     int IntWidth = 0;
 
+    public Grid() { }
+
+    public Grid(IList<IList<T>> list) {
+      int widest = 0;
+      foreach (IList<T> innerList in list) {
+        if (innerList.Count > widest) widest = innerList.Count;
+        BackingList.Add(new List<T>(innerList));
+      }
+
+      foreach (IList<T> innerList in BackingList) {
+        for (int i = innerList.Count; i < widest; i++) {
+          innerList.Add(default(T));
+        }
+      }
+    }
+
     public T this[GridReference gr] {
       get => BackingList[gr.Row][gr.Column];
       set {
