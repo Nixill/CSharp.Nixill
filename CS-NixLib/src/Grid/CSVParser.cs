@@ -1,14 +1,23 @@
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Nixill.Grid.CSV {
   public class CSVParser {
-    public static Grid<string> FileToGrid(File input, bool emptyStrings = true) {
-      // get iterator of strings
+    public static Grid<string> FileToGrid(string path, bool emptyStrings = true) {
+      return EnumerableToGrid(FileCharEnumerator(path), emptyStrings);
+    }
+
+    public static IEnumerable<char> FileCharEnumerator(string path) {
+      StreamReader reader = new StreamReader(path);
+      int lastChar = -1;
+      while ((lastChar = reader.Read()) >= 0) {
+        yield return (char)lastChar;
+      }
     }
 
     public static Grid<string> StringToGrid(string input, bool emptyStrings = true) {
-      // iterate through lines of string
+      return EnumerableToGrid(input, emptyStrings);
     }
 
     public static Grid<string> EnumerableToGrid(IEnumerable<char> input, bool emptyStrings = true) {
@@ -104,5 +113,9 @@ namespace Nixill.Grid.CSV {
 
       return new Grid<string>(backingList);
     }
+  }
+
+  public IEnumerable<string> GridToStringEnumerable<T>(IGrid<T> input) {
+
   }
 }
