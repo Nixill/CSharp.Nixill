@@ -15,33 +15,49 @@ namespace Nixill.Grid.CSV {
       IList<IList<string>> backingList = new List<IList<string>>();
       List<string> innerList = new List<string>();
       StringBuilder val = new StringBuilder();
+
+      // Whether the current line is *completely* empty, devoid of all
+      // chars at all - if this is true at the end of the input, don't add
+      // what would be an empty row
       bool isEmptyLine = true;
+
+      // Whether the current value is in quotes - when true, newlines and
+      // commas should be taken literally.
       bool inQuotes = false;
+
+      // Whether the previous character was a carriage return, outside of
+      // quotes - when true, a linefeed should be ignored
       bool lastIsCR = false;
+
+      // Whether the previous character was a double quote mark - when
+      // true, another double quote mark should literally insert one into
+      // the record.
       bool lastIsDQ = false;
 
       foreach (char chr in input) {
         if (chr == '"') {
-          if (inQuotes) {
-            inQuotes = false;
-            lastIsDQ = true;
+          // Quotes always change "in quotes" state, and two in a row add 
+          // a " char to the value.
+          if (lastIsDQ) {
+            lastIsDQ = false;
+            val.Append('"');
           }
           else {
-            if (lastIsDQ) {
-              val.Append('"');
-              lastIsDQ = false;
-            }
-            inQuotes = true;
+            lastIsDQ = true;
           }
+          inQuotes = !inQuotes;
           lastIsCR = false;
           isEmptyLine = false;
         }
         else if (inQuotes) {
+          // Aside from quotes, all characters within quotes are treated
+          // literally.
           val.Append(chr);
           lastIsDQ = false;
           lastIsCR = false;
         }
         else if (chr == ',') {
+          // Outside quotes, commas add new values to the current row.
           innerList.Add(val.ToString());
           val.Clear();
           lastIsDQ = false;
@@ -49,6 +65,7 @@ namespace Nixill.Grid.CSV {
           isEmptyLine = false;
         }
         else if (chr == '\r') {
+          // Outside quotes, \r characters create new rows.
           innerList.Add(val.ToString());
           backingList.Add(innerList);
           val.Clear();
@@ -57,6 +74,9 @@ namespace Nixill.Grid.CSV {
           isEmptyLine = true;
         }
         else if (chr == '\n') {
+          // Outside quotes, \n characters create new rows - except for \n
+          // characters that immediately follow \r characters, in which
+          // cases the row was already created by the \r character.
           if (lastIsCR) {
             lastIsCR = false;
           }
@@ -69,7 +89,11 @@ namespace Nixill.Grid.CSV {
           }
         }
         else {
+          // Everything else is literal in a CSV.
           val.Append(chr);
+          lastIsCR = false;
+          lastIsDQ = false;
+          isEmptyLine = false;
         }
       }
 
