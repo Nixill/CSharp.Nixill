@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nixill.Utils {
+namespace Nixill.Collections {
   /// <summary>
   /// A class that extends <a cref="Dictionary">Dictionary</a>, adding
   /// automatic generation of values from keys.

@@ -5,7 +5,7 @@ namespace Nixill.Utils {
   /// <summary>
   /// Provides utilities for working with numbers, including conversion.
   /// </summary>
-  public class Numbers {
+  public class NumberUtils {
     /// <summary>
     /// Converts a string in an arbitrary base to an int.
     /// </summary>

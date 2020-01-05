@@ -1,6 +1,7 @@
 using System;
+using Nixill.Collections;
 
-namespace Nixill.Utils {
+namespace Nixill.Objects {
   /// <summary>
   /// Represents a simple one-way substitution cipher.
   /// 

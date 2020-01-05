@@ -1,7 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
+using Nixill.Utils;
 
-namespace Nixill.Utils {
+namespace Nixill.Objects {
   /// <summary>
   /// Represents a https://semver.org/ 2.0.0 compatible Semantic Version.
   /// </summary>
