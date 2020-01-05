@@ -4,6 +4,8 @@ using System.Text;
 
 namespace Nixill.Grid.CSV {
   public class CSVParser {
+    /// <summary>
+    /// 
     public static Grid<string> FileToGrid(string path, bool emptyStrings = true) {
       return EnumerableToGrid(FileCharEnumerator(path), emptyStrings);
     }
@@ -113,9 +115,40 @@ namespace Nixill.Grid.CSV {
 
       return new Grid<string>(backingList);
     }
-  }
 
-  public IEnumerable<string> GridToStringEnumerable<T>(IGrid<T> input) {
+    public IEnumerable<string> GridToStringEnumerable<T>(IGrid<T> input) {
+      foreach (GridLine<T> line in input) {
+        StringBuilder ret = new StringBuilder();
+        foreach (T obj in line) {
+          ret.Append("," + CSVEscape(obj.ToString()));
+        }
+        ret.Remove(0, 1);
+        yield return ret.ToString();
+      }
+    }
 
+    public string CSVEscape(string input) {
+      if (input.Contains('\"') || input.Contains(',') || input.Contains('\n') || input.Contains('\r')) {
+        input = '"' + input.Replace("\"", "\"\"") + '"';
+      }
+      return input;
+    }
+
+    public string GridToString<T>(IGrid<T> input) {
+      StringBuilder ret = new StringBuilder();
+      foreach (string line in GridToStringEnumerable(input)) {
+        ret.Append('\n' + line);
+      }
+      ret.Remove(0, 1);
+      return ret.ToString();
+    }
+
+    public void GridToFile<T>(IGrid<T> input, string file) {
+      using (StreamWriter writer = new StreamWriter(file)) {
+        foreach (string line in GridToStringEnumerable(input)) {
+          writer.WriteLine(input);
+        }
+      }
+    }
   }
 }
