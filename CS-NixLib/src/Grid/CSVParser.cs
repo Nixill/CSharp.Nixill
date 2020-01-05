@@ -1,28 +1,53 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using Nixill.Utils;
 
 namespace Nixill.Grid.CSV {
+  /// <summary>
+  /// This class contains static methods to convert between Grids of
+  /// strings and comma separated value format files and text.
+  ///
+  /// The parser follows the specifications laid out in
+  /// <a href="https://tools.ietf.org/html/rfc4180">RFC 4180</a>, with the
+  /// following exceptions:
+  ///
+  /// <list type="bullet">
+  /// <item><description>
+  /// Input records may be separated by CRLF, CR, or LF (but not LFCR).
+  /// </description></item>
+  /// <item><description>
+  /// Output records are separated by LF, not CRLF.
+  /// </description></item>
+  /// <item><description>
+  /// In input, two consecutive double quotes always produces a double
+  /// quote character, even when not enclosed in quotes.
+  /// </description></item>
+  /// </list>
+  /// </summary>
   public class CSVParser {
     /// <summary>
-    /// 
-    public static Grid<string> FileToGrid(string path, bool emptyStrings = true) {
-      return EnumerableToGrid(FileCharEnumerator(path), emptyStrings);
+    /// Reads a CSV file into a Grid of strings.
+    /// </summary>
+    /// <param name="path">The path of the file to read.</param>
+    public static Grid<string> FileToGrid(string path) {
+      return EnumerableToGrid(FileUtils.FileCharEnumerator(path));
     }
 
-    public static IEnumerable<char> FileCharEnumerator(string path) {
-      StreamReader reader = new StreamReader(path);
-      int lastChar = -1;
-      while ((lastChar = reader.Read()) >= 0) {
-        yield return (char)lastChar;
-      }
+    /// <summary>
+    /// Reads a CSV string into a Grid of strings.
+    /// </summary>
+    /// <param name="input">The input to read.</param>
+    public static Grid<string> StringToGrid(string input) {
+      return EnumerableToGrid(input);
     }
 
-    public static Grid<string> StringToGrid(string input, bool emptyStrings = true) {
-      return EnumerableToGrid(input, emptyStrings);
-    }
-
-    public static Grid<string> EnumerableToGrid(IEnumerable<char> input, bool emptyStrings = true) {
+    /// <summary>
+    /// Reads a char enumerator and converts the streamed chars into a
+    /// Grid of strings.
+    /// </summary>
+    /// <param name="input">The input stream to read.</param>
+    public static Grid<string> EnumerableToGrid(IEnumerable<char> input) {
       IList<IList<string>> backingList = new List<IList<string>>();
       List<string> innerList = new List<string>();
       StringBuilder val = new StringBuilder();
@@ -116,6 +141,10 @@ namespace Nixill.Grid.CSV {
       return new Grid<string>(backingList);
     }
 
+    /// <summary>
+    /// Returns an enumeraor over each row of a grid as strings.
+    /// </summary>
+    /// <param name="input">The grid to output.</param>
     public IEnumerable<string> GridToStringEnumerable<T>(IGrid<T> input) {
       foreach (GridLine<T> line in input) {
         StringBuilder ret = new StringBuilder();
@@ -127,13 +156,10 @@ namespace Nixill.Grid.CSV {
       }
     }
 
-    public string CSVEscape(string input) {
-      if (input.Contains('\"') || input.Contains(',') || input.Contains('\n') || input.Contains('\r')) {
-        input = '"' + input.Replace("\"", "\"\"") + '"';
-      }
-      return input;
-    }
-
+    /// <summary>
+    /// Converts a grid to a csv string.
+    /// </summary>
+    /// <param name="input">The grid to convert.</param>
     public string GridToString<T>(IGrid<T> input) {
       StringBuilder ret = new StringBuilder();
       foreach (string line in GridToStringEnumerable(input)) {
@@ -143,12 +169,33 @@ namespace Nixill.Grid.CSV {
       return ret.ToString();
     }
 
+    /// <summary>
+    /// Converts a grid to a csv string and writes it to a file.
+    /// </summary>
+    /// <param name="input">The grid to output.</param>
+    /// <param name="file">The file to write to.</param>
     public void GridToFile<T>(IGrid<T> input, string file) {
       using (StreamWriter writer = new StreamWriter(file)) {
         foreach (string line in GridToStringEnumerable(input)) {
           writer.WriteLine(input);
         }
       }
+    }
+
+    /// <summary>
+    /// Returns a single string, escaped to be one CSV value.
+    ///
+    /// If the input string contains any quotes (<c>"</c>), carriage
+    /// returns (<c>\r</c>), linefeeds (<c>\n</c>), or commas (<c>,</c>),
+    /// all quotes within the string are doubled and the string gets
+    /// wrapped in quotes. Otherwise, the input string is returned
+    /// unaltered.
+    /// </summary>
+    public string CSVEscape(string input) {
+      if (input.Contains('\"') || input.Contains(',') || input.Contains('\n') || input.Contains('\r')) {
+        input = '"' + input.Replace("\"", "\"\"") + '"';
+      }
+      return input;
     }
   }
 }
