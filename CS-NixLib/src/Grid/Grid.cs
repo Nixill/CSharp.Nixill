@@ -1,14 +1,24 @@
+using System.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Nixill.Grid {
+namespace Nixill.Collections.Grid {
   public class Grid<T> : IGrid<T> {
     List<List<T>> BackingList = new List<List<T>>();
     int IntWidth = 0;
 
+    /// <summary>
+    /// Creates a new 0x0 grid.
+    /// </summary>
     public Grid() { }
 
+    /// <summary>
+    /// Creates a new grid from an existing list of lists.
+    ///
+    /// The outer list is taken as rows, and the inner list as columns
+    /// within the row.
+    /// </summary>
     public Grid(IList<IList<T>> list) {
       int widest = 0;
       foreach (IList<T> innerList in list) {
@@ -20,6 +30,22 @@ namespace Nixill.Grid {
         for (int i = innerList.Count; i < widest; i++) {
           innerList.Add(default(T));
         }
+      }
+    }
+
+    /// <summary>
+    /// Creates a new grid of a specified size.
+    ///
+    /// All cells of the grid will be iniated to the default value for T.
+    /// </summary>
+    public Grid(int width, int height) {
+      IntWidth = width;
+      foreach (int r in Enumerable.Range(0, height - 1)) {
+        List<T> innerList = new List<T>();
+        foreach (int c in Enumerable.Range(0, width - 1)) {
+          innerList.Add(default(T));
+        }
+        BackingList.Add(innerList);
       }
     }
 
@@ -73,6 +99,7 @@ namespace Nixill.Grid {
       while (innerList.Count < IntWidth) {
         innerList.Add(default(T));
       }
+      BackingList.Add(innerList);
     }
 
     public void AddRow<U>(IList<U> row) where U : T {

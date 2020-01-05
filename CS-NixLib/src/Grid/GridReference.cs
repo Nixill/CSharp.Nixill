@@ -1,8 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
 using Nixill.Utils;
+using Nixill.Objects;
 
-namespace Nixill.Grid {
+namespace Nixill.Collections.Grid {
   public class GridReference : IComparable<GridReference> {
     static Regex A1Form = new Regex("^([A-Za-z]+)(\\d+)$");
     static Regex R1C1Form = new Regex("^R(\\d+)C(\\d+)$");
@@ -119,7 +120,7 @@ namespace Nixill.Grid {
     /// </summary>
     public static int ColumnNameToNumber(string name) {
       name = ColNameToNum.Apply(name);
-      return Numbers.LeadingZeroStringToInt(name, 26);
+      return NumberUtils.LeadingZeroStringToInt(name, 26);
     }
 
     /// <summary>
@@ -127,7 +128,7 @@ namespace Nixill.Grid {
     /// spreadsheet software. 0 becomes A, 1 becomes B, etc.
     /// </summary>
     public static string ColumnNumberToName(int num) {
-      string name = Numbers.IntToLeadingZeroString(num, 26);
+      string name = NumberUtils.IntToLeadingZeroString(num, 26);
       return ColNumToName.Apply(name);
     }
 

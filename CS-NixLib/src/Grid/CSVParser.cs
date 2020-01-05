@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Nixill.Utils;
 
-namespace Nixill.Grid.CSV {
+namespace Nixill.Collections.Grid.CSV {
   /// <summary>
   /// This class contains static methods to convert between Grids of
   /// strings and comma separated value format files and text.

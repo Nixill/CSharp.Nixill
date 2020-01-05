@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 
-namespace Nixill.Grid {
+namespace Nixill.Collections.Grid {
   /// <summary>
   /// Represents a two-dimensional ordered collection of objects.
   /// </summary>
