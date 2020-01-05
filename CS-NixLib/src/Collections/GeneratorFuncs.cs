@@ -1,5 +1,5 @@
 using System;
-namespace Nixill.Utils {
+namespace Nixill.Collections {
   /// <summary>
   /// A Generator that always returns the same value (supplied at
   /// construction).

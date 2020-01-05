@@ -1,12 +1,13 @@
 using System;
 using NUnit.Framework;
 using Nixill.Utils;
+using Nixill.Objects;
 
 namespace Nixill.Test {
   public class NixLibTests {
     [Test]
     public void Test1() {
-      Assert.AreEqual(Numbers.IntToString(5, 2), "101");
+      Assert.AreEqual(NumberUtils.IntToString(5, 2), "101");
     }
 
     [Test]
@@ -26,22 +27,22 @@ namespace Nixill.Test {
 
     [Test]
     public void LZSTest() {
-      Assert.AreEqual(26, Numbers.LeadingZeroStringToInt("00", 26));
-      Assert.AreEqual("00", Numbers.IntToLeadingZeroString(26, 26));
+      Assert.AreEqual(26, NumberUtils.LeadingZeroStringToInt("00", 26));
+      Assert.AreEqual("00", NumberUtils.IntToLeadingZeroString(26, 26));
 
-      Assert.AreEqual(27, Numbers.LeadingZeroStringToInt("01", 26));
-      Assert.AreEqual("01", Numbers.IntToLeadingZeroString(27, 26));
+      Assert.AreEqual(27, NumberUtils.LeadingZeroStringToInt("01", 26));
+      Assert.AreEqual("01", NumberUtils.IntToLeadingZeroString(27, 26));
 
-      Assert.AreEqual(0, Numbers.LeadingZeroStringToInt("0", 26));
-      Assert.AreEqual("0", Numbers.IntToLeadingZeroString(0, 26));
+      Assert.AreEqual(0, NumberUtils.LeadingZeroStringToInt("0", 26));
+      Assert.AreEqual("0", NumberUtils.IntToLeadingZeroString(0, 26));
 
-      Assert.AreEqual(10, Numbers.LeadingZeroStringToInt("00", 10));
-      Assert.AreEqual("00", Numbers.IntToLeadingZeroString(10, 10));
+      Assert.AreEqual(10, NumberUtils.LeadingZeroStringToInt("00", 10));
+      Assert.AreEqual("00", NumberUtils.IntToLeadingZeroString(10, 10));
 
-      Assert.AreEqual(20, Numbers.LeadingZeroStringToInt("10", 10));
-      Assert.AreEqual("10", Numbers.IntToLeadingZeroString(20, 10));
+      Assert.AreEqual(20, NumberUtils.LeadingZeroStringToInt("10", 10));
+      Assert.AreEqual("10", NumberUtils.IntToLeadingZeroString(20, 10));
 
-      Assert.Throws(typeof(ArgumentOutOfRangeException), () => { Numbers.LeadingZeroStringToInt("0", 40); });
+      Assert.Throws(typeof(ArgumentOutOfRangeException), () => { NumberUtils.LeadingZeroStringToInt("0", 40); });
     }
   }
 }
