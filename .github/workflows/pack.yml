@@ -41,11 +41,9 @@ jobs:
           asset_content_type: application/zip
       - name: Add github packages source
         run: |
-          cd CS-NixLib/
           nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/shadowfoxnixill/index.json -Username ShadowFoxNixill -Password ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Push to github packages
         run: |
-          cd CS-NixLib/
-          dotnet nuget push ./out/*.nupkg -s GPR
+          dotnet nuget push CS-NixLib/out/*.nupkg -s GPR
