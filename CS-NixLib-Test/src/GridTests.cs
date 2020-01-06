@@ -36,7 +36,7 @@ namespace Nixill.Test {
 
       string toCSV = CSVParser.GridToString(testingGrid);
 
-      Assert.AreEqual(toCSV, "hello,there,beautiful\nworld,lovely,day");
+      Assert.AreEqual("hello,there,beautiful\nworld,lovely,day", toCSV);
 
       Grid<string> toGrid = CSVParser.StringToGrid(toCSV);
       string toCSVAgain = CSVParser.GridToString(toGrid);

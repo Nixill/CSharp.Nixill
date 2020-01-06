@@ -151,7 +151,7 @@ namespace Nixill.Collections.Grid.CSV {
         foreach (T obj in line) {
           ret.Append("," + CSVEscape(obj.ToString()));
         }
-        ret.Remove(0, 1);
+        if (ret.Length > 0) ret.Remove(0, 1);
         yield return ret.ToString();
       }
     }
@@ -165,7 +165,7 @@ namespace Nixill.Collections.Grid.CSV {
       foreach (string line in GridToStringEnumerable(input)) {
         ret.Append('\n' + line);
       }
-      ret.Remove(0, 1);
+      if (ret.Length > 0) ret.Remove(0, 1);
       return ret.ToString();
     }
 

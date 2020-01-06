@@ -31,6 +31,8 @@ namespace Nixill.Collections.Grid {
           innerList.Add(default(T));
         }
       }
+
+      IntWidth = widest;
     }
 
     /// <summary>
