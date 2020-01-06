@@ -20,7 +20,7 @@ namespace Nixill.Collections.Grid {
     /// <summary>
     /// This GridReference, transposed (Row and column swapped).
     /// </summary>
-    public GridReference Transposed { get => new GridReference(Column, Row); }
+    public GridReference Transposed { get => new GridReference(Row, Column); }
 
     /// <summary>
     /// Constructs a new GridReference given its individual coordinates.
@@ -136,7 +136,7 @@ namespace Nixill.Collections.Grid {
     public static explicit operator GridReference(Tuple<int, int> input) => new GridReference(input.Item1, input.Item2);
 
     public static implicit operator string(GridReference input) => input.ToString();
-    public static implicit operator Tuple<int, int>(GridReference input) => new Tuple<int, int>(input.Row, input.Column);
+    public static implicit operator Tuple<int, int>(GridReference input) => new Tuple<int, int>(input.Column, input.Row);
 
     public static bool operator ==(GridReference left, GridReference right) => left.Equals(right);
     public static bool operator !=(GridReference left, GridReference right) => !left.Equals(right);

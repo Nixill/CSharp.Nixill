@@ -29,7 +29,7 @@ namespace Nixill.Test {
       testingGrid["B1"] = "there";
       testingGrid["c1"] = "beautiful";
       testingGrid[1, 1] = "lovely";
-      testingGrid[1, 2] = "day";
+      testingGrid[2, 1] = "day";
 
       Assert.AreEqual(testingGrid[(GridReference)new Tuple<int, int>(1, 0)], "world");
 

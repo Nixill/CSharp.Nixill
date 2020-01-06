@@ -56,7 +56,7 @@ namespace Nixill.Collections.Grid {
       }
     }
 
-    public T this[int r, int c] {
+    public T this[int c, int r] {
       get => BackingList[r][c];
       set {
         BackingList[r][c] = value;

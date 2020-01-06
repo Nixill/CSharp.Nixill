@@ -16,11 +16,11 @@ namespace Nixill.Collections.Grid {
     int Size { get; }
 
     /// <summary>The value of a single cell in the grid.</summary>
-    /// <param name="r">The row of the cell for which to get a
-    /// value.</param>
     /// <param name="c">The column of the cell for which to get a
     /// value.</param>
-    T this[int r, int c] { get; set; }
+    /// <param name="r">The row of the cell for which to get a
+    /// value.</param>
+    T this[int c, int r] { get; set; }
 
     /// <summary>The value of a single cell in the grid.</summary>
     /// <param name="gr">The cell for which to get a value.</param>
