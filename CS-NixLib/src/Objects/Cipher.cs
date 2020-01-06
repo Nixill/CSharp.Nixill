@@ -38,6 +38,21 @@ namespace Nixill.Objects {
     public bool Reversible { get; }
 
     /// <summary>
+    /// The reverse of this Cipher, which is the same as this Cipher
+    /// except the Source and Target strings are swapped.
+    /// </summary>
+    public Cipher Reverse {
+      get {
+        if (_Reverse == null) {
+          _Reverse = new Cipher(Target, Source);
+          _Reverse._Reverse = this;
+        }
+        return _Reverse;
+      }
+    }
+    Cipher _Reverse = null;
+
+    /// <summary>
     /// Creates a new Cipher.
     /// </summary>
     public Cipher(string src, string trg) {
