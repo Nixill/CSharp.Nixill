@@ -26,6 +26,10 @@ namespace Nixill.Collections.Grid {
     /// <param name="gr">The cell for which to get a value.</param>
     T this[GridReference gr] { get; set; }
 
+    /// <summary>The value of a single cell in the grid.</summary>
+    /// <param name="gr">The cell for which to get a value.</param>
+    T this[string gr] { get; set; }
+
     /// <summary>Adds an empty column to the right of the grid.</summary>
     void AddColumn();
 

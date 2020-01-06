@@ -6,7 +6,7 @@ using Nixill.Objects;
 namespace Nixill.Collections.Grid {
   public class GridReference : IComparable<GridReference> {
     static Regex A1Form = new Regex("^([A-Za-z]+)(\\d+)$");
-    static Regex R1C1Form = new Regex("^R(\\d+)C(\\d+)$");
+    static Regex R1C1Form = new Regex("^[Rr](\\d+)[Cc](\\d+)$");
 
     static Cipher ColNameToNum = new Cipher("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789ABCDEFGHIJKLMNOP");
     static Cipher ColNumToName = ColNameToNum.Reverse;
@@ -119,7 +119,7 @@ namespace Nixill.Collections.Grid {
     /// software, to a number. A becomes 0, B becomes 1, etc.
     /// </summary>
     public static int ColumnNameToNumber(string name) {
-      name = ColNameToNum.Apply(name);
+      name = ColNameToNum.Apply(name.ToUpper());
       return NumberUtils.LeadingZeroStringToInt(name, 26);
     }
 
@@ -132,8 +132,8 @@ namespace Nixill.Collections.Grid {
       return ColNumToName.Apply(name);
     }
 
-    public static implicit operator GridReference(string input) => new GridReference(input);
-    public static implicit operator GridReference(Tuple<int, int> input) => new GridReference(input.Item1, input.Item2);
+    public static explicit operator GridReference(string input) => new GridReference(input);
+    public static explicit operator GridReference(Tuple<int, int> input) => new GridReference(input.Item1, input.Item2);
 
     public static implicit operator string(GridReference input) => input.ToString();
     public static implicit operator Tuple<int, int>(GridReference input) => new Tuple<int, int>(input.Row, input.Column);

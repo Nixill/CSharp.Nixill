@@ -63,6 +63,11 @@ namespace Nixill.Collections.Grid {
       }
     }
 
+    public T this[string gr] {
+      get => this[(GridReference)gr];
+      set => this[(GridReference)gr] = value;
+    }
+
     public int Height => BackingList.Count;
 
     public int Width => IntWidth;
