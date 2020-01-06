@@ -39,11 +39,14 @@ jobs:
           asset_path: ./CS-NixLib/out/CS-NixLib.${{ github.event.release.tag_name }}.nupkg
           asset_name: CS-NixLib.${{ github.event.release.tag_name }}.nupkg
           asset_content_type: application/zip
-      - name: Add github packages source
-        run: |
-          nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/shadowfoxnixill/index.json -Username ShadowFoxNixill -Password ${{ secrets.GITHUB_TOKEN }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Add github packages source
+      #   run: |
+      #     nuget sources add -name "GPR" -Source https://nuget.pkg.github.com/shadowfoxnixill/index.json -Username ShadowFoxNixill -Password ${{ secrets.GITHUB_TOKEN }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Push to github packages
         run: |
-          dotnet nuget push CS-NixLib/out/*.nupkg -s GPR
+          cd CS-NixLib
+          dotnet nuget push ./out/*.nupkg -s github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
