@@ -201,12 +201,12 @@ namespace Nixill.Collections.Grid {
   /// One line - either a whole row or column - of a grid.
   ///
   /// The constructed GridLine is a window to a static point. GridLines to
-  /// invalid rows or columns (higher) can be constructed, but attempts to
-  /// retrieve data from them will cause exceptions. A GridLine won't move
-  /// with the actual line it initially references, i.e. a GridLine for
-  /// column 2 will always point to whatever happens to be the column in
-  /// that position. However, the size of the line will change with the
-  /// size of that axis of the grid.
+  /// invalid rows or columns (higher than the range) can be constructed,
+  /// but attempts to retrieve data from them will cause exceptions. A
+  /// GridLine won't move with the actual line it initially references,
+  /// i.e. a GridLine for column 2 will always point to whatever happens
+  /// to be the column in that position. However, the size of the line
+  /// will change with the size of that axis of the grid.
   ///
   /// A GridLine's structure cannot be modified from the GridLine class,
   /// but will reflect any changes made from the Grid class. Individual
@@ -219,12 +219,12 @@ namespace Nixill.Collections.Grid {
 
     public T this[int index] {
       get {
-        if (IsColumn) return ParentGrid[index, Index];
-        else return ParentGrid[Index, index];
+        if (IsColumn) return ParentGrid[Index, index];
+        else return ParentGrid[index, Index];
       }
       set {
-        if (IsColumn) ParentGrid[index, Index] = value;
-        else ParentGrid[Index, index] = value;
+        if (IsColumn) ParentGrid[Index, index] = value;
+        else ParentGrid[index, Index] = value;
       }
     }
 

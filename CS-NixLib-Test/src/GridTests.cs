@@ -24,14 +24,15 @@ namespace Nixill.Test {
       Assert.AreEqual(2, testingGrid.Height);
       Assert.AreEqual(3, testingGrid.Width);
 
+      // please don't actually do this it makes me cry ;-;
       testingGrid["A1"] = "hello";
       testingGrid["r2c1"] = "world";
-      testingGrid["B1"] = "there";
+      testingGrid[new GridReference(1, 0)] = "there";
       testingGrid["c1"] = "beautiful";
       testingGrid[1, 1] = "lovely";
-      testingGrid[2, 1] = "day";
+      testingGrid[(GridReference)new Tuple<int, int>(2, 1)] = "day";
 
-      Assert.AreEqual(testingGrid[(GridReference)new Tuple<int, int>(1, 0)], "world");
+      Assert.AreEqual(testingGrid[new GridReference("R2C1")], "world");
 
       string toCSV = CSVParser.GridToString(testingGrid);
 
