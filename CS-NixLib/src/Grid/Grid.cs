@@ -116,6 +116,7 @@ namespace Nixill.Collections.Grid {
       else {
         if (row.Count != Width) throw new ArgumentException("Row width must match grid width exactly, or grid must be empty.");
       }
+      BackingList.Add(new List<T>((IList<T>)row));
     }
 
     public void Clear() {
@@ -178,6 +179,7 @@ namespace Nixill.Collections.Grid {
     }
 
     public void InsertColumn<U>(int before, IList<U> column) where U : T {
+      IntWidth += 1;
       if (Height != column.Count) throw new ArgumentException("Column height must match grid height exactly.");
       for (int i = 0; i < Height; i++) {
         BackingList[i].Insert(before, column[i]);

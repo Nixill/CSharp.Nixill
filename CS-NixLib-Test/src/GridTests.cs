@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using Nixill.Collections.Grid;
 using Nixill.Collections.Grid.CSV;
+using System.Collections.Generic;
 
 namespace Nixill.Test {
   public class GridTests {
@@ -40,6 +41,18 @@ namespace Nixill.Test {
 
       Grid<string> toGrid = CSVParser.StringToGrid(toCSV);
       string toCSVAgain = CSVParser.GridToString(toGrid);
+
+      Assert.AreEqual(toCSV, toCSVAgain);
+
+      testingGrid.AddRow(new List<string> { "add", "some", "values" });
+      testingGrid.InsertColumn(2, new List<string> { "commas,", "\"quotes\"", "new\nlines" });
+
+      toCSV = CSVParser.GridToString(testingGrid);
+
+      Assert.AreEqual("hello,there,\"commas,\",beautiful\nworld,lovely,\"\"\"quotes\"\"\",day\nadd,some,\"new\nlines\",values", toCSV);
+
+      toGrid = CSVParser.StringToGrid(toCSV);
+      toCSVAgain = CSVParser.GridToString(toGrid);
 
       Assert.AreEqual(toCSV, toCSVAgain);
     }
