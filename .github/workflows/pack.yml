@@ -42,6 +42,9 @@ jobs:
       - name: Push to github packages
         run: |
           cd CS-NixLib
-          dotnet nuget push ./out/*.nupkg -s github
+          for f in ./out/*.nupkg
+          do
+            curl -vX PUT -u "ShadowFoxNixill:${{ secrets.GITHUB_TOKEN }}" -F package=@$f https://nuget.pkg.github.com/ShadowFoxNixill
+          done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
