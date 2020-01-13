@@ -177,7 +177,7 @@ namespace Nixill.Collections.Grid.CSV {
     public static void GridToFile<T>(IGrid<T> input, string file) {
       using (StreamWriter writer = new StreamWriter(file)) {
         foreach (string line in GridToStringEnumerable(input)) {
-          writer.WriteLine(input);
+          writer.WriteLine(line);
         }
       }
     }

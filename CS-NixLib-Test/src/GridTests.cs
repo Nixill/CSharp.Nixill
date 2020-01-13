@@ -1,3 +1,4 @@
+using System.IO;
 using System;
 using NUnit.Framework;
 using Nixill.Collections.Grid;
@@ -52,6 +53,16 @@ namespace Nixill.Test {
       Assert.AreEqual("hello,there,\"commas,\",beautiful\nworld,lovely,\"\"\"quotes\"\"\",day\nadd,some,\"new\nlines\",values", toCSV);
 
       toGrid = CSVParser.StringToGrid(toCSV);
+      toCSVAgain = CSVParser.GridToString(toGrid);
+
+      Assert.AreEqual(toCSV, toCSVAgain);
+
+      // Now test files
+      string tmp = Path.GetTempPath();
+      string file = tmp + "test.csv";
+
+      CSVParser.GridToFile(testingGrid, file);
+      toGrid = CSVParser.FileToGrid(file);
       toCSVAgain = CSVParser.GridToString(toGrid);
 
       Assert.AreEqual(toCSV, toCSVAgain);
