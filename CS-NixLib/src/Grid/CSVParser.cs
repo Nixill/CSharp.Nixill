@@ -149,7 +149,7 @@ namespace Nixill.Collections.Grid.CSV {
       foreach (GridLine<T> line in input) {
         StringBuilder ret = new StringBuilder();
         foreach (T obj in line) {
-          ret.Append("," + CSVEscape(obj.ToString()));
+          ret.Append("," + CSVEscape(obj?.ToString() ?? ""));
         }
         if (ret.Length > 0) ret.Remove(0, 1);
         yield return ret.ToString();
