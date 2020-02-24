@@ -38,7 +38,60 @@ namespace Nixill.Objects {
     }
 
     public long ToLong(string roman) {
+      bool neg = false;
+      roman = roman.ToUpper();
 
+      if (roman.StartsWith('-')) {
+        neg = true;
+        roman = roman.Substring(1);
+      }
+
+      string[] romanParts = roman.Split("_");
+      long ret = 0;
+
+      foreach (string input in romanParts) {
+        ret *= 1000;
+        ret += GetRomanPart(input, 'M');
+      }
+
+      if (neg) return -ret;
+      else return ret;
+    }
+
+    private int GetRomanPart(string input, char which) {
+      if (input == "O" || input == "") return 0;
+
+      string[] pieces = input.Split(which);
+      int lastPiece = 0;
+      int subPieces = 0;
+
+      foreach (string piece in pieces) {
+        subPieces += lastPiece;
+
+        if (piece.Length > 0) {
+          lastPiece = which switch
+          {
+            'M' => GetRomanPart(piece, 'D'),
+            'D' => GetRomanPart(piece, 'C'),
+            'C' => GetRomanPart(piece, 'L'),
+            'L' => GetRomanPart(piece, 'X'),
+            'X' => GetRomanPart(piece, 'V'),
+            'V' => piece.Length,
+            _ => throw new RomanParsingException("Roman numerals can only consist of MDCLXVI_, with a possible - at the beginning, or O for 0.")
+          };
+        }
+      }
+
+      return lastPiece - subPieces + (pieces.Length - 1) * which switch
+      {
+        'M' => 1000,
+        'D' => 500,
+        'C' => 100,
+        'L' => 50,
+        'X' => 10,
+        'V' => 5,
+        _ => throw new RomanParsingException("Roman numerals can only consist of MDCLXVI_, with a possible - at the beginning, or O for 0.")
+      };
     }
   }
 
@@ -94,5 +147,9 @@ namespace Nixill.Objects {
       // this should never be reached but the compiler doesn't know that
       return new Tuple<int, string>(0, "");
     }
+  }
+
+  public class RomanParsingException : ArgumentException {
+    public RomanParsingException(string message) : base(message) { }
   }
 }

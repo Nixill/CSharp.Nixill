@@ -32,6 +32,28 @@ namespace Nixill.Test {
       Assert.AreEqual("VIII__DCCLXXXIIII", rnpNone.ToRoman(8000784));
       Assert.AreEqual("-CCXXXVII", rnpNone.ToRoman(-237));
       Assert.AreEqual("-VIIII_CCXXIII_CCCLXXII_XXXVI_DCCCLIIII_DCCLXXV_DCCCVIII", rnpNone.ToRoman(Int64.MinValue));
+      Assert.AreEqual("DCCXXXI", rnpNone.ToRoman(731));
+
+      RomanNumeralParser rnpMinimal = new RomanNumeralParser(new RomanNumeralRules(new Dictionary<int, string> {
+        [4] = "IV",
+        [9] = "IX",
+        [40] = "XL",
+        [45] = "VL",
+        [49] = "IL",
+        [90] = "XC",
+        [95] = "VC",
+        [99] = "IC",
+        [400] = "CD",
+        [450] = "LD",
+        [490] = "XD",
+        [495] = "VD",
+        [499] = "ID",
+        [900] = "CM",
+        [950] = "LM",
+        [990] = "XM",
+        [995] = "VM",
+        [999] = "IM",
+      }));
     }
   }
 }
