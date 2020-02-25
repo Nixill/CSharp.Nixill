@@ -37,61 +37,48 @@ namespace Nixill.Objects {
       return ret;
     }
 
-    public long ToLong(string roman) {
+    public static long ToLong(string input) {
       bool neg = false;
-      roman = roman.ToUpper();
-
-      if (roman.StartsWith('-')) {
-        neg = true;
-        roman = roman.Substring(1);
-      }
-
-      string[] romanParts = roman.Split("_");
       long ret = 0;
+      int[] vals = { 0, 0, 0, 0, 0, 0, 0 };
 
-      foreach (string input in romanParts) {
-        ret *= 1000;
-        ret += GetRomanPart(input, 'M');
+      input = input.ToUpper();
+
+      foreach (char c in input) {
+        if (c == '-') neg = true;
+        else if (c == '_') {
+          foreach (int val in vals) {
+            ret += val;
+          }
+          ret *= 1000;
+          vals = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+        }
+        else if (c == 'M') SetVals(vals, 0, 1000);
+        else if (c == 'D') SetVals(vals, 1, 500);
+        else if (c == 'C') SetVals(vals, 2, 100);
+        else if (c == 'L') SetVals(vals, 3, 50);
+        else if (c == 'X') SetVals(vals, 4, 10);
+        else if (c == 'V') SetVals(vals, 5, 5);
+        else if (c == 'I') vals[6] += 1;
+        else if (c == 'O') { }
+        else throw new RomanParsingException("Only characters -=MDCLXVIO are valid in Roman numerals.");
       }
 
-      if (neg) return -ret;
-      else return ret;
+      foreach (int val in vals) {
+        ret += val;
+      }
+
+      if (neg) ret = -ret;
+
+      return ret;
     }
 
-    private int GetRomanPart(string input, char which) {
-      if (input == "O" || input == "") return 0;
-
-      string[] pieces = input.Split(which);
-      int lastPiece = 0;
-      int subPieces = 0;
-
-      foreach (string piece in pieces) {
-        subPieces += lastPiece;
-
-        if (piece.Length > 0) {
-          lastPiece = which switch
-          {
-            'M' => GetRomanPart(piece, 'D'),
-            'D' => GetRomanPart(piece, 'C'),
-            'C' => GetRomanPart(piece, 'L'),
-            'L' => GetRomanPart(piece, 'X'),
-            'X' => GetRomanPart(piece, 'V'),
-            'V' => piece.Length,
-            _ => throw new RomanParsingException("Roman numerals can only consist of MDCLXVI_, with a possible - at the beginning, or O for 0.")
-          };
-        }
+    static void SetVals(int[] vals, int pos, int val) {
+      vals[pos] += val;
+      for (int i = pos + 1; i < 7; i++) {
+        vals[pos] -= vals[i];
+        vals[i] = 0;
       }
-
-      return lastPiece - subPieces + (pieces.Length - 1) * which switch
-      {
-        'M' => 1000,
-        'D' => 500,
-        'C' => 100,
-        'L' => 50,
-        'X' => 10,
-        'V' => 5,
-        _ => throw new RomanParsingException("Roman numerals can only consist of MDCLXVI_, with a possible - at the beginning, or O for 0.")
-      };
     }
   }
 
