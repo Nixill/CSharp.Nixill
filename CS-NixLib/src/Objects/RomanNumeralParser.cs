@@ -3,13 +3,27 @@ using System;
 using System.Collections.Generic;
 
 namespace Nixill.Objects {
+  /// <summary>
+  /// A class that provides parsing methods for roman numeral strings.
+  ///
+  /// The parser only works for integers and uses the symbols
+  /// <c>-_MDCLXVI</c>. <c>_</c> is used as a thousands separator to allow
+  /// for any long integer to be parsed.
+  /// </summary>
   public class RomanNumeralParser {
     private RomanNumeralRules RuleSet;
 
+    /// <summary>
+    /// Creates a new RomanNumeralParser with the given long-to-roman
+    /// ruleset.
+    /// </summary>
     public RomanNumeralParser(RomanNumeralRules rules) {
       RuleSet = rules;
     }
 
+    /// <summary>
+    /// Converts a number to Roman numerals using the provided rules.
+    /// </summary>
     public string ToRoman(long input) {
       string ret = "";
 
@@ -37,6 +51,11 @@ namespace Nixill.Objects {
       return ret;
     }
 
+    /// <summary>
+    /// Converts Roman numerals to a number. This is a static method
+    /// because it doesn't matter what the subtraction rules for the other
+    /// conversion are.
+    /// </summary>
     public static long ToLong(string input) {
       bool neg = false;
       long ret = 0;
@@ -82,8 +101,21 @@ namespace Nixill.Objects {
     }
   }
 
+  /// <summary>
+  /// A set of rules for converting integers to roman numerals. These
+  /// rules govern how subtraction is used instead of always using
+  /// addition.
+  /// </summary>
   public class RomanNumeralRules {
+    /// <summary>
+    /// The empty rule set, causing no subtraction to be used whatsoever.
+    /// </summary>
     public static readonly RomanNumeralRules NONE = new RomanNumeralRules(new Dictionary<int, string>());
+
+    /// <summary>
+    /// The common rule set, using <c>IV</c>, <c>IX</c>, <c>XL</c>,
+    /// <c>XC</c>, <c>CD</c>, and <c>CM</c> as applicable.
+    /// </summary>
     public static readonly RomanNumeralRules COMMON = new RomanNumeralRules(new Dictionary<int, string> {
       [4] = "IV",
       [9] = "IX",
@@ -116,10 +148,17 @@ namespace Nixill.Objects {
 
     private static readonly int[] _Divisors = new int[] { 1, 5, 10, 50, 100, 500 };
 
+    /// <summary>
+    /// Creates a new ruleset from the given value-pair mappings.
+    /// </summary>
     public RomanNumeralRules(IDictionary<int, string> rules) {
       Rules = new Dictionary<int, string>(rules);
     }
 
+    /// <summary>
+    /// Matches the number to a given single rule. Returns both the
+    /// matched rule and its numeric value.
+    /// </summary>
     public Tuple<int, string> RuleFor(int val) {
       if (val > 999 || val < 0) throw new ArgumentOutOfRangeException("RuleFor", "RuleFor only accepts values 0 to 999.");
 
@@ -136,6 +175,9 @@ namespace Nixill.Objects {
     }
   }
 
+  /// <summary>
+  /// Thrown when a RomanNumeralParser encounters an error.
+  /// </summary>
   public class RomanParsingException : ArgumentException {
     public RomanParsingException(string message) : base(message) { }
   }
