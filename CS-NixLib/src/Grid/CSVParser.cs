@@ -35,6 +35,14 @@ namespace Nixill.Collections.Grid.CSV {
     }
 
     /// <summary>
+    /// Reads a CSV stream into a Grid of strings.
+    /// </summary>
+    /// <param name="reader">The StreamReader to read from.</param>
+    public static Grid<string> StreamToGrid(StreamReader reader) {
+      return EnumerableToGrid(FileUtils.StreamCharEnumerator(reader));
+    }
+
+    /// <summary>
     /// Reads a CSV string into a Grid of strings.
     /// </summary>
     /// <param name="input">The input to read.</param>
