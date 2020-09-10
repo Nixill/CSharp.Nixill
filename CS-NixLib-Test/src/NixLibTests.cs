@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using Nixill.Utils;
 using Nixill.Objects;
+using System.Text.RegularExpressions;
 
 namespace Nixill.Test {
   public class NixLibTests {
@@ -43,6 +44,20 @@ namespace Nixill.Test {
       Assert.AreEqual("10", NumberUtils.IntToLeadingZeroString(20, 10));
 
       Assert.Throws(typeof(ArgumentOutOfRangeException), () => { NumberUtils.LeadingZeroStringToInt("0", 40); });
+    }
+
+    [Test]
+    public void RegexTest() {
+      Match mtc = null;
+      Regex rgx = new Regex(@"(...).*\1");
+
+      Assert.True(rgx.TryMatch("allochirally", out mtc));
+      Assert.AreEqual("all", mtc.Groups[1].Value);
+
+      Assert.True(rgx.TryMatch("mathematic", out mtc));
+      Assert.AreEqual("mat", mtc.Groups[1].Value);
+
+      Assert.False(rgx.TryMatch("nonimitative", out mtc));
     }
   }
 }
