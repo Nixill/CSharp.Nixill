@@ -42,9 +42,9 @@ namespace Nixill.Collections.Grid {
     /// </summary>
     public Grid(int width, int height) {
       IntWidth = width;
-      foreach (int r in Enumerable.Range(0, height - 1)) {
+      foreach (int r in Enumerable.Range(0, height)) {
         List<T> innerList = new List<T>();
-        foreach (int c in Enumerable.Range(0, width - 1)) {
+        foreach (int c in Enumerable.Range(0, width)) {
           innerList.Add(default(T));
         }
         BackingList.Add(innerList);
