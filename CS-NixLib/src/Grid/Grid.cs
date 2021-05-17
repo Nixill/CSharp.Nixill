@@ -9,7 +9,7 @@ namespace Nixill.Collections.Grid {
     int IntWidth = 0;
 
     /// <summary>
-    /// Creates a new 0x0 grid.
+    /// Creates a new 0×0 grid.
     /// </summary>
     public Grid() { }
 

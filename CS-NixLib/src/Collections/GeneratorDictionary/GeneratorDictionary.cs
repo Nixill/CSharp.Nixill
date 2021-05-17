@@ -6,12 +6,17 @@ namespace Nixill.Collections {
   /// A class that extends <a cref="Dictionary">Dictionary</a>, adding
   /// automatic generation of values from keys.
   /// </summary>
+  /// <remarks>
+  /// This class is obsolete; use the <see cref="DictionaryGenerator" />
+  /// class instead.
+  /// </remarks>
   /// <typeparam name="K">
   /// The type of the keys used in the dictionary.
   /// </typeparam>
   /// <typeparam name="V">
   /// The type of the values used in the dictionary.
   /// </typeparam>
+  [Obsolete]
   public class GeneratorDictionary<K, V> : Dictionary<K, V> {
     /// <summary>
     /// The <a cref="Generator">Generator</a> used by this
