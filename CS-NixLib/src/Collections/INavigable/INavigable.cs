@@ -189,7 +189,7 @@ namespace Nixill.Collections {
   ///   <c>LowerKey</c>, <c>FloorKey</c>, <c>CeilingKey</c>, and
   ///   <c>HigherKey</c>.
   /// </summary>
-  public interface INavigableDictionary<T> : ISet<T> {
+  public interface INavigableDictionary<K, V> : IDictionary<K, V> {
     /// <summary>
     ///   Gets the highest key less than a given value.
     /// </summary>
@@ -202,7 +202,7 @@ namespace Nixill.Collections {
     /// <exception cref="InvalidOperationException">
     ///   The dictionary contains no elements.
     /// </exception>
-    public T LowerKey(T from);
+    public K LowerKey(K from);
 
     /// <summary>
     ///   Returns whether or not a key exists that is less than a given value.
@@ -210,7 +210,7 @@ namespace Nixill.Collections {
     /// <exception cref="ArgumentNullException">
     ///   The given value is null.
     /// </exception>
-    public bool ContainsLowerKey(T from);
+    public bool ContainsLower(K from);
 
     /// <summary>
     ///   Gets the highest key less than a given value.
@@ -226,7 +226,7 @@ namespace Nixill.Collections {
     /// <exception cref="ArgumentNullException">
     ///   The given value is null.
     /// </exception>
-    public bool TryGetLowerKey(T from, out T value);
+    public bool TryGetLowerKey(K from, out K value);
 
     /// <summary>
     ///   Gets the highest key less than or equal to a given value.
@@ -240,7 +240,7 @@ namespace Nixill.Collections {
     /// <exception cref="InvalidOperationException">
     ///   The dictionary contains no elements.
     /// </exception>
-    public T FloorKey(T from);
+    public K FloorKey(K from);
 
     /// <summary>
     ///   Returns whether or not an key exists that is less than or equal
@@ -249,7 +249,7 @@ namespace Nixill.Collections {
     /// <exception cref="ArgumentNullException">
     ///   The given value is null.
     /// </exception>
-    public bool ContainsFloorKey(T from);
+    public bool ContainsFloor(K from);
 
     /// <summary>
     ///   Gets the highest key less than or equal to a given value.
@@ -265,7 +265,7 @@ namespace Nixill.Collections {
     /// <exception cref="ArgumentNullException">
     ///   The given value is null.
     /// </exception>
-    public bool TryGetFloorKey(T from, out T value);
+    public bool TryGetFloorKey(K from, out K value);
 
     /// <summary>
     ///   Gets the lowest key greater than or equal to a given value.
@@ -279,7 +279,7 @@ namespace Nixill.Collections {
     /// <exception cref="InvalidOperationException">
     ///   The dictionary contains no elements.
     /// </exception>
-    public T CeilingKey(T from);
+    public K CeilingKey(K from);
 
     /// <summary>
     ///   Returns whether or not a key exists that is greater than or
@@ -288,7 +288,7 @@ namespace Nixill.Collections {
     /// <exception cref="ArgumentNullException">
     ///   The given value is null.
     /// </exception>
-    public bool ContainsCeilingKey(T from);
+    public bool ContainsCeiling(K from);
 
     /// <summary>
     ///   Gets the lowest key greater than or equal to a given value.
@@ -304,7 +304,7 @@ namespace Nixill.Collections {
     /// <exception cref="ArgumentNullException">
     ///   The given value is null.
     /// </exception>
-    public bool TryGetCeilingKey(T from, out T value);
+    public bool TryGetCeilingKey(K from, out K value);
 
     /// <summary>
     ///   Gets the lowest key greater than a given value.
@@ -318,7 +318,7 @@ namespace Nixill.Collections {
     /// <exception cref="InvalidOperationException">
     ///   The dictionary contains no elements.
     /// </exception>
-    public T HigherKey(T from);
+    public K HigherKey(K from);
 
     /// <summary>
     ///   Returns whether or not a key exists that is greater than a given
@@ -327,7 +327,7 @@ namespace Nixill.Collections {
     /// <exception cref="ArgumentNullException">
     ///   The given value is null.
     /// </exception>
-    public bool ContainsHigherKey(T from);
+    public bool ContainsHigher(K from);
 
     /// <summary>
     ///   Gets the lowest key greater than a given value.
@@ -342,7 +342,7 @@ namespace Nixill.Collections {
     /// <exception cref="ArgumentNullException">
     ///   The given value is null.
     /// </exception>
-    public bool TryGetHigherKey(T from, out T value);
+    public bool TryGetHigherKey(K from, out K value);
 
     /// <summary>
     ///   Gets the lowest key.
@@ -350,7 +350,7 @@ namespace Nixill.Collections {
     /// <exception cref="InvalidOperationException">
     ///   The dictionary contains no elements.
     /// </exception>
-    public T LowestKey();
+    public K LowestKey();
 
     /// <summary>
     ///   Gets the highest key.
@@ -358,6 +358,146 @@ namespace Nixill.Collections {
     /// <exception cref="InvalidOperationException">
     ///   The dictionary contains no elements.
     /// </exception>
-    public T HighestKey();
+    public K HighestKey();
+
+    /// <summary>
+    ///   Gets the entry with the highest key less than a given value.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///   No lower key exists.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    ///   The given value is null.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///   The dictionary contains no elements.
+    /// </exception>
+    public KeyValuePair<K, V> LowerEntry(K from);
+
+    /// <summary>
+    ///   Gets the entry with the highest key less than a given value.
+    /// </summary>
+    /// <returns>
+    ///   Whether or not such a key exists.
+    /// </returns>
+    /// <param name="value">
+    ///   When this method exits, this contains the entry with the lower
+    ///   key, if such a key exists. Otherwise, this contains an entry
+    ///   with the default values for the types.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///   The given value is null.
+    /// </exception>
+    public bool TryGetLowerEntry(K from, out KeyValuePair<K, V> value);
+
+    /// <summary>
+    ///   Gets the entry with the highest key less than or equal to a
+    ///   given value.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///   No lesser or equal key exists.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    ///   The given value is null.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///   The dictionary contains no elements.
+    /// </exception>
+    public KeyValuePair<K, V> FloorEntry(K from);
+
+    /// <summary>
+    ///   Gets the highest entry with a key less than or equal to a given
+    ///   value.
+    /// </summary>
+    /// <returns>
+    ///   Whether or not such a key exists.
+    /// </returns>
+    /// <param name="value">
+    ///   When this method exits, this contains the lesser or equal key,
+    ///   if such a key exists. Otherwise, this contains an entry with the
+    ///   default values for the types.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///   The given value is null.
+    /// </exception>
+    public bool TryGetFloorEntry(K from, out KeyValuePair<K, V> value);
+
+    /// <summary>
+    ///   Gets the entry with the lowest key greater than or equal to a
+    ///   given value.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///   No greater or equal key exists.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    ///   The given value is null.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///   The dictionary contains no elements.
+    /// </exception>
+    public KeyValuePair<K, V> CeilingEntry(K from);
+
+    /// <summary>
+    ///   Gets the entry with the lowest key greater than or equal to a
+    ///   given value.
+    /// </summary>
+    /// <returns>
+    ///   Whether or not such a key exists.
+    /// </returns>
+    /// <param name="value">
+    ///   When this method exits, this contains the entry with the greater
+    ///   or equal key, if such a key exists. Otherwise, this contains an
+    ///   entry with the default values for the types.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///   The given value is null.
+    /// </exception>
+    public bool TryGetCeilingEntry(K from, out KeyValuePair<K, V> value);
+
+    /// <summary>
+    ///   Gets the entry with the lowest key greater than a given value.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///   No greater key exists.
+    /// </exception>
+    /// <exception cref="ArgumentNullException">
+    ///   The given value is null.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    ///   The dictionary contains no elements.
+    /// </exception>
+    public KeyValuePair<K, V> HigherEntry(K from);
+
+    /// <summary>
+    ///   Gets the entry with the lowest key greater than a given value.
+    /// </summary>
+    /// <returns>
+    ///   Whether or not such a key exists.
+    /// </returns>
+    /// <param name="value">
+    ///   When this method exits, this contains the entry with the greater
+    ///   key, if such a key exists. Otherwise, this contains an entry
+    ///   with the default values for the types.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    ///   The given value is null.
+    /// </exception>
+    public bool TryGetHigherEntry(K from, out KeyValuePair<K, V> value);
+
+    /// <summary>
+    ///   Gets the entry with the lowest key.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    ///   The dictionary contains no elements.
+    /// </exception>
+    public KeyValuePair<K, V> LowestEntry();
+
+    /// <summary>
+    ///   Gets the entry with the highest key.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    ///   The dictionary contains no elements.
+    /// </exception>
+    public KeyValuePair<K, V> HighestEntry();
   }
 }

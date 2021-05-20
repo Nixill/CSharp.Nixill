@@ -7,8 +7,8 @@ using System.Linq;
 
 namespace Nixill.Collections {
   /// <summary>
-  ///   This is an implementation of <see cref="ISet<T>" /> based on AVL
-  ///   trees.
+  ///   This is an implementation of <see cref="ISet<T>" /> backed by an
+  ///   AVL tree.
   /// </summary>
   /// <remarks>
   ///   <para>
@@ -41,8 +41,9 @@ namespace Nixill.Collections {
     #region Ctor
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AVLTree&lt;T&gt;"/>
-    ///   class, using the type's default <see cref="Comparer&lt;T&gt;"/>.
+    ///   Initializes a new instance of the
+    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using the type's
+    ///   default <see cref="Comparer&lt;T&gt;"/>.
     /// </summary>
     /// <exception cref="InvalidOperationException">
     ///   The type isn't naturally comparable.
@@ -50,8 +51,9 @@ namespace Nixill.Collections {
     public AVLTreeSet() : this(null, GetComparer()) { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AVLTree&lt;T&gt;"/>
-    ///   class, using a specified <see cref="IComparer&lt;T&gt;"/>.
+    ///   Initializes a new instance of the
+    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using a specified
+    ///   <see cref="IComparer&lt;T&gt;"/>.
     /// </summary>
     /// <param name="comparer">
     ///   The comparer that compares the elements of the set.
@@ -59,8 +61,9 @@ namespace Nixill.Collections {
     public AVLTreeSet(IComparer<T> comparer) : this(null, comparer.Compare) { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AVLTree&lt;T&gt;"/>
-    ///   class, using a specified comparison function.
+    ///   Initializes a new instance of the
+    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using a specified
+    ///   comparison function.
     /// </summary>
     /// <param name="comparer">
     ///   The function that compares the elements of the set.
@@ -68,9 +71,10 @@ namespace Nixill.Collections {
     public AVLTreeSet(Comparison<T> comparer) : this(null, comparer) { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AVLTree&lt;T&gt;"/>
-    ///   class, using the type's default <see cref="Comparer&lt;T&gt;"/>
-    ///   and a pre-existing set of elements.
+    ///   Initializes a new instance of the
+    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using the type's
+    ///   default <see cref="Comparer&lt;T&gt;"/> and a pre-existing set
+    ///   of elements.
     /// </summary>
     /// <param name="elems">
     ///   The elements with which to pre-populate the set.
@@ -81,9 +85,9 @@ namespace Nixill.Collections {
     public AVLTreeSet(IEnumerable<T> elems) : this(elems, GetComparer()) { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AVLTree&lt;T&gt;"/>
-    ///   class, using a specified <see cref="IComparer&lt;T&gt;"/> and a
-    ///   pre-existing set of elements.
+    ///   Initializes a new instance of the
+    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using a specified
+    ///   <see cref="IComparer&lt;T&gt;"/> and a pre-existing set of elements.
     /// </summary>
     /// <param name="elems">
     ///   The elements with which to pre-populate the set.
@@ -94,8 +98,9 @@ namespace Nixill.Collections {
     public AVLTreeSet(IEnumerable<T> elems, IComparer<T> comparer) : this(elems, comparer.Compare) { }
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="AVLTree&lt;T&gt;"/>
-    ///   class, using a specified comparison function.
+    ///   Initializes a new instance of the
+    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using a specified
+    ///   comparison function and a pre-existing set of elements.
     /// </summary>
     /// <param name="elems">
     ///   The elements with which to pre-populate the set.
@@ -292,6 +297,24 @@ namespace Nixill.Collections {
     /// </summary>
     public NodeTriplet SearchAround(T value) {
       return new NodeTriplet(SearchBounded(value));
+    }
+
+    /// <summary>
+    /// Replaces a single element without rebalancing the tree.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// The <c>newValue</c> doesn't fall between the same surrounding
+    /// elements as the <c>oldValue</c>.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// The <c>oldValue</c> is not present within the set.
+    /// </exception>
+    public void ReplaceValue(T oldValue, T newValue) {
+      var nodes = SearchBounded(oldValue);
+      if (nodes.Exact == null) throw new InvalidOperationException("The oldValue was not found in the set.");
+      if (nodes.Higher != null && Comparer(newValue, nodes.Higher.Data) >= 0) throw new ArgumentOutOfRangeException("newValue", "Higher than or equal to the next node.");
+      if (nodes.Lower != null && Comparer(nodes.Lower.Data, newValue) >= 0) throw new ArgumentOutOfRangeException("newValue", "Lower than or equal to the previous node.");
+      nodes.Exact.Data = newValue;
     }
 
     #endregion
