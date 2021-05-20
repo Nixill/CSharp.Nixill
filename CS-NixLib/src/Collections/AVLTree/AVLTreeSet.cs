@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -27,6 +28,13 @@ namespace Nixill.Collections {
 
     private Node<T> Root;
     private Comparison<T> Comparer;
+
+    #endregion
+
+    #region Properties
+
+    public int Count { get; private set; }
+    public bool IsReadOnly => false;
 
     #endregion
 
@@ -115,7 +123,7 @@ namespace Nixill.Collections {
     /// <typeparam name="TNode">The type of the node.</typeparam>
     /// <param name="node">The node.</param>
     /// <param name="level">The level.</param>
-    private delegate void VisitNodeHandler<TNode>(TNode node, int level);
+    internal delegate void VisitNodeHandler<TNode>(TNode node, int level);
 
     #endregion
 
@@ -142,6 +150,8 @@ namespace Nixill.Collections {
 
       this.Root = this.Add(this.Root, arg, ref wasAdded, ref wasSuccessful);
 
+      if (wasSuccessful) Count++;
+
       return wasSuccessful;
     }
 
@@ -157,6 +167,8 @@ namespace Nixill.Collections {
         bool wasDeleted = false;
         this.Root = this.Delete(this.Root, arg, ref wasDeleted, ref wasSuccessful);
       }
+
+      if (wasSuccessful) Count--;
 
       return wasSuccessful;
     }
@@ -256,6 +268,7 @@ namespace Nixill.Collections {
     /// </summary>
     public void Clear() {
       this.Root = null;
+      Count = 0;
     }
 
     /// <summary>
@@ -266,6 +279,19 @@ namespace Nixill.Collections {
         Console.Write(new string(' ', 2 * level));
         Console.WriteLine("{0, 6}", node.Data);
       });
+    }
+
+    /// <summary>
+    /// Returns whether or not this AVLTreeSet is empty in O(1) time.
+    /// </summary>
+    public bool IsEmpty() => Root == null;
+
+    /// <summary>
+    /// Returns the value requested if the collection contains it, as well
+    /// as the next higher and lower values.
+    /// </summary>
+    public NodeTriplet SearchAround(T value) {
+      return new NodeTriplet(SearchBounded(value));
     }
 
     #endregion
@@ -289,11 +315,132 @@ namespace Nixill.Collections {
     public bool ContainsLower(T from) => TryGetLower(from, out T placeholder);
 
     public T Lower(T from) {
+      if (IsEmpty()) throw new InvalidOperationException("Cannot have lower values in an empty AVLTreeSet.");
       if (TryGetLower(from, out T value)) {
         return value;
       }
-      else throw new
+      else throw new ArgumentOutOfRangeException("from", "There is no lower value in the AVLTreeSet.");
     }
+
+    public bool TryGetFloor(T from, out T value) {
+      var nodes = SearchBounded(from);
+      var node = nodes.Exact ?? nodes.Lower;
+
+      if (node != null) {
+        value = node.Data;
+        return true;
+      }
+      else {
+        value = default(T);
+        return false;
+      }
+    }
+
+    public bool ContainsFloor(T from) => TryGetFloor(from, out T placeholder);
+
+    public T Floor(T from) {
+      if (IsEmpty()) throw new InvalidOperationException("Cannot have floor values in an empty AVLTreeSet.");
+      if (TryGetFloor(from, out T value)) {
+        return value;
+      }
+      else throw new ArgumentOutOfRangeException("from", "There is no floor value in the AVLTreeSet.");
+    }
+
+    public bool TryGetCeiling(T from, out T value) {
+      var nodes = SearchBounded(from);
+      var node = nodes.Exact ?? nodes.Higher;
+
+      if (node != null) {
+        value = node.Data;
+        return true;
+      }
+      else {
+        value = default(T);
+        return false;
+      }
+    }
+
+    public bool ContainsCeiling(T from) => TryGetCeiling(from, out T placeholder);
+
+    public T Ceiling(T from) {
+      if (IsEmpty()) throw new InvalidOperationException("Cannot have ceiling values in an empty AVLTreeSet.");
+      if (TryGetCeiling(from, out T value)) {
+        return value;
+      }
+      else throw new ArgumentOutOfRangeException("from", "There is no ceiling value in the AVLTreeSet.");
+    }
+
+    public bool TryGetHigher(T from, out T value) {
+      var nodes = SearchBounded(from);
+      var node = nodes.Higher;
+
+      if (node != null) {
+        value = node.Data;
+        return true;
+      }
+      else {
+        value = default(T);
+        return false;
+      }
+    }
+
+    public bool ContainsHigher(T from) => TryGetHigher(from, out T placeholder);
+
+    public T Higher(T from) {
+      if (IsEmpty()) throw new InvalidOperationException("Cannot have higher values in an empty AVLTreeSet.");
+      if (TryGetHigher(from, out T value)) {
+        return value;
+      }
+      else throw new ArgumentOutOfRangeException("from", "There is no higher value in the AVLTreeSet.");
+    }
+
+    public T LowestValue() {
+      if (IsEmpty()) throw new InvalidOperationException("Cannot get the lowest value of an empty AVLTreeSet.");
+      GetMin(out T val);
+      return val;
+    }
+
+    public T HighestValue() {
+      if (IsEmpty()) throw new InvalidOperationException("Cannot get the highest value of an empty AVLTreeSet.");
+      GetMax(out T val);
+      return val;
+    }
+
+    public void ExceptWith(IEnumerable<T> elems) {
+      Root = new AVLTreeSet<T>(this.Except(elems), Comparer).Root;
+    }
+
+    public void IntersectWith(IEnumerable<T> elems) {
+      Root = new AVLTreeSet<T>(this.Intersect(elems), Comparer).Root;
+    }
+
+    public void SymmetricExceptWith(IEnumerable<T> elems) {
+      Root = new AVLTreeSet<T>(this.Except(elems).Union(elems.Except(this)), Comparer).Root;
+    }
+
+    public void UnionWith(IEnumerable<T> elems) {
+      Root = new AVLTreeSet<T>(this.Union(elems), Comparer).Root;
+    }
+
+    public bool IsProperSubsetOf(IEnumerable<T> elems) => elems.Except(this).Any();
+    public bool IsProperSupersetOf(IEnumerable<T> elems) => this.Except(elems).Any();
+    public bool IsSubsetOf(IEnumerable<T> elems) => !this.Except(elems).Any();
+    public bool IsSupersetOf(IEnumerable<T> elems) => !elems.Except(this).Any();
+    public bool Overlaps(IEnumerable<T> elems) => elems.Intersect(this).Any();
+    public bool SetEquals(IEnumerable<T> elems) => IsSubsetOf(elems) && IsSupersetOf(elems);
+
+    void ICollection<T>.Add(T item) { Add(item); }
+
+    public void CopyTo(T[] array, int index) {
+      foreach (T item in this) {
+        array[index++] = item;
+      }
+    }
+
+    public bool Remove(T item) => Delete(item);
+
+    public IEnumerator<T> GetEnumerator() => RecursiveEnumerate(Root).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
 
@@ -310,6 +457,12 @@ namespace Nixill.Collections {
     #endregion
 
     #region Private Methods
+
+    private IEnumerable<T> RecursiveEnumerate(Node<T> node) {
+      foreach (T item in RecursiveEnumerate(node.Left)) yield return item;
+      yield return node.Data;
+      foreach (T item in RecursiveEnumerate(node.Right)) yield return item;
+    }
 
     private static Comparison<T> GetComparer() {
       if (typeof(IComparable<T>).IsAssignableFrom(typeof(T)) || typeof(System.IComparable).IsAssignableFrom(typeof(T))) {
@@ -855,7 +1008,7 @@ namespace Nixill.Collections {
     /// node class
     /// </summary>
     /// <typeparam name="TElem">The type of the elem.</typeparam>
-    private class Node<TElem> {
+    internal class Node<TElem> {
       #region Properties
 
       public Node<TElem> Left { get; set; }
@@ -892,6 +1045,51 @@ namespace Nixill.Collections {
       }
 
       #endregion
+    }
+
+
+    public class NodeTriplet {
+      private readonly NodeValue Lesser;
+      private readonly NodeValue Equal;
+      private readonly NodeValue Greater;
+
+      public bool HasLesserValue => Lesser != null;
+      public bool HasEqualValue => Equal != null;
+      public bool HasGreaterValue => Greater != null;
+
+      public T LesserValue {
+        get {
+          if (HasLesserValue) return Lesser.Value;
+          else throw new InvalidOperationException("No lesser value exists.");
+        }
+      }
+
+      public T EqualValue {
+        get {
+          if (HasEqualValue) return Equal.Value;
+          else throw new InvalidOperationException("No equal value exists.");
+        }
+      }
+
+      public T GreaterValue {
+        get {
+          if (HasGreaterValue) return Greater.Value;
+          else throw new InvalidOperationException("No greater value exists.");
+        }
+      }
+
+      internal NodeTriplet((AVLTreeSet<T>.Node<T> L, AVLTreeSet<T>.Node<T> E, AVLTreeSet<T>.Node<T> G) nodes) {
+        if (nodes.L != null) Lesser = new NodeValue(nodes.L.Data);
+        if (nodes.E != null) Equal = new NodeValue(nodes.E.Data);
+        if (nodes.G != null) Greater = new NodeValue(nodes.G.Data);
+      }
+
+      private class NodeValue {
+        public readonly T Value;
+        public NodeValue(T val) {
+          Value = val;
+        }
+      }
     }
 
     #endregion

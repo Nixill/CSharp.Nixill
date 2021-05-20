@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nixill.Collections;
 
 namespace Nixill.Objects {
@@ -20,7 +21,7 @@ namespace Nixill.Objects {
   /// </list>
   /// </summary>
   public class Cipher {
-    GeneratorDictionary<char, string> CharMap = new GeneratorDictionary<char, string>(new SingleValueGenerator<char, string>(""));
+    DictionaryGenerator<char, string> CharMap = new DictionaryGenerator<char, string>(new Dictionary<char, string>(), new SingleValueGenerator<char, string>(""));
 
     /// <summary>
     /// The string representing the characters being substituted.
@@ -69,7 +70,7 @@ namespace Nixill.Objects {
 
       int reverseScore = 0;
 
-      GeneratorDictionary<char, int> metaMap = new GeneratorDictionary<char, int>(new SingleValueGenerator<char, int>(0));
+      DictionaryGenerator<char, int> metaMap = new DictionaryGenerator<char, int>(new Dictionary<char, int>(), new SingleValueGenerator<char, int>(0));
 
       for (int i = 0; i < src.Length; i++) {
         char srcChar = src[i];
