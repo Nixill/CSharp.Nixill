@@ -136,9 +136,9 @@ namespace Nixill.Collections {
       ValCheckFunc = valCheck;
     }
 
-    public override V Generate(K key) => GeneratingFunc.Invoke(key);
-    public new bool? CanGenerateFrom(K key) => KeyCheckFunc.Invoke(key);
-    public new bool? CanGenerate(V val) => ValCheckFunc.Invoke(val);
+    public override V Generate(K key) => GeneratingFunc(key);
+    public new bool? CanGenerateFrom(K key) => KeyCheckFunc(key);
+    public new bool? CanGenerate(V val) => ValCheckFunc(val);
   }
 
   /// <summary>
@@ -155,10 +155,31 @@ namespace Nixill.Collections {
   /// <summary>
   /// A Generator that generates values which are the string
   /// representations of the keys used to generate them.
+  /// </summary>
   public class ToStringGenerator<K> : Generator<K, string> {
     /// <summary>
     /// Returns the string representation of the key.
     /// </summary>
     public override string Generate(K key) => key.ToString();
+  }
+
+  /// <summary>
+  /// A Generator that generates default values for a type.
+  /// </summary>
+  public class DefaultGenerator<K, V> : Generator<K, V> {
+    /// <summary>
+    /// Returns the default value for the type <c>V</c>.
+    /// </summary>
+    public override V Generate(K key) => default(V);
+  }
+
+  /// <summary>
+  /// A Generator that uses the empty constructor to create values.
+  /// </summary>
+  public class EmptyConstructorGenerator<K, V> : Generator<K, V> where V : new() {
+    /// <summary>
+    /// Returns the value type initialized with a default constructor.
+    /// </summary>
+    public override V Generate(K key) => new V();
   }
 }

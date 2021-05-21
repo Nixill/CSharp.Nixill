@@ -482,6 +482,8 @@ namespace Nixill.Collections {
     #region Private Methods
 
     private IEnumerable<T> RecursiveEnumerate(Node<T> node) {
+      if (node == null) yield break;
+
       foreach (T item in RecursiveEnumerate(node.Left)) yield return item;
       yield return node.Data;
       foreach (T item in RecursiveEnumerate(node.Right)) yield return item;
