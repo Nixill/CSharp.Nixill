@@ -41,12 +41,10 @@ jobs:
           asset_path: ./CS-NixLib/out/CS-NixLib.${{ github.event.release.tag_name }}.nupkg
           asset_name: CS-NixLib.${{ github.event.release.tag_name }}.nupkg
           asset_content_type: application/zip
-      - name: Push to github packages
+      - name: Push to nuget.org
         run: |
           cd CS-NixLib
           for f in ./out/*.nupkg
           do
-            curl -vX PUT -u "ShadowFoxNixill:${{ secrets.GITHUB_TOKEN }}" -F package=@$f https://nuget.pkg.github.com/ShadowFoxNixill
+            dotnet nuget push AppLogger.1.0.0.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
           done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
