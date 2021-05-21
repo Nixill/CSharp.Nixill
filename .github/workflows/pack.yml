@@ -46,5 +46,5 @@ jobs:
           cd CS-NixLib
           for f in ./out/*.nupkg
           do
-            dotnet nuget push AppLogger.1.0.0.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
+            dotnet nuget push $f --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
           done
