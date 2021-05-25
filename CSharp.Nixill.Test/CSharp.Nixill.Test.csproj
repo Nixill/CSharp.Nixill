@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CS-NixLib\C#-Nixlib.csproj" />
+    <ProjectReference Include="..\CSharp.Nixill\CSharp.Nixill.csproj" />
   </ItemGroup>
 
 </Project>
