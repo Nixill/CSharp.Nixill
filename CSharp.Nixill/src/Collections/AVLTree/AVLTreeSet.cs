@@ -295,8 +295,8 @@ namespace Nixill.Collections {
     /// Returns the value requested if the collection contains it, as well
     /// as the next higher and lower values.
     /// </summary>
-    public NodeTriplet SearchAround(T value) {
-      return new NodeTriplet(SearchBounded(value));
+    public NodeTriplet<T> SearchAround(T value) {
+      return new NodeTriplet<T>(SearchBounded(value));
     }
 
     /// <summary>
@@ -1072,51 +1072,50 @@ namespace Nixill.Collections {
       #endregion
     }
 
+    #endregion
+  }
 
-    public class NodeTriplet {
-      private readonly NodeValue Lesser;
-      private readonly NodeValue Equal;
-      private readonly NodeValue Greater;
+  public class NodeTriplet<T> {
+    internal readonly NodeValue Lesser;
+    internal readonly NodeValue Equal;
+    internal readonly NodeValue Greater;
 
-      public bool HasLesserValue => Lesser != null;
-      public bool HasEqualValue => Equal != null;
-      public bool HasGreaterValue => Greater != null;
+    public bool HasLesserValue => Lesser != null;
+    public bool HasEqualValue => Equal != null;
+    public bool HasGreaterValue => Greater != null;
 
-      public T LesserValue {
-        get {
-          if (HasLesserValue) return Lesser.Value;
-          else throw new InvalidOperationException("No lesser value exists.");
-        }
-      }
-
-      public T EqualValue {
-        get {
-          if (HasEqualValue) return Equal.Value;
-          else throw new InvalidOperationException("No equal value exists.");
-        }
-      }
-
-      public T GreaterValue {
-        get {
-          if (HasGreaterValue) return Greater.Value;
-          else throw new InvalidOperationException("No greater value exists.");
-        }
-      }
-
-      internal NodeTriplet((AVLTreeSet<T>.Node<T> L, AVLTreeSet<T>.Node<T> E, AVLTreeSet<T>.Node<T> G) nodes) {
-        if (nodes.L != null) Lesser = new NodeValue(nodes.L.Data);
-        if (nodes.E != null) Equal = new NodeValue(nodes.E.Data);
-        if (nodes.G != null) Greater = new NodeValue(nodes.G.Data);
-      }
-
-      private class NodeValue {
-        public readonly T Value;
-        public NodeValue(T val) {
-          Value = val;
-        }
+    public T LesserValue {
+      get {
+        if (HasLesserValue) return Lesser.Value;
+        else throw new InvalidOperationException("No lesser value exists.");
       }
     }
 
-    #endregion
+    public T EqualValue {
+      get {
+        if (HasEqualValue) return Equal.Value;
+        else throw new InvalidOperationException("No equal value exists.");
+      }
+    }
+
+    public T GreaterValue {
+      get {
+        if (HasGreaterValue) return Greater.Value;
+        else throw new InvalidOperationException("No greater value exists.");
+      }
+    }
+
+    internal NodeTriplet((AVLTreeSet<T>.Node<T> L, AVLTreeSet<T>.Node<T> E, AVLTreeSet<T>.Node<T> G) nodes) {
+      if (nodes.L != null) Lesser = new NodeValue(nodes.L.Data);
+      if (nodes.E != null) Equal = new NodeValue(nodes.E.Data);
+      if (nodes.G != null) Greater = new NodeValue(nodes.G.Data);
+    }
+
+    internal class NodeValue {
+      public readonly T Value;
+      public NodeValue(T val) {
+        Value = val;
+      }
+    }
   }
 }

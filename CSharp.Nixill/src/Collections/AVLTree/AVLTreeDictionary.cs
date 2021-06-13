@@ -17,7 +17,7 @@ namespace Nixill.Collections {
     #region Implementing IDictionary<K, V>
     public V this[K key] {
       get {
-        AVLTreeSet<KeyValuePair<K, V>>.NodeTriplet nodes = BackingSet.SearchAround(new KeyValuePair<K, V>(key, DefaultValue));
+        NodeTriplet<KeyValuePair<K, V>> nodes = BackingSet.SearchAround(new KeyValuePair<K, V>(key, DefaultValue));
         if (nodes.HasEqualValue) {
           return nodes.EqualValue.Value;
         }
@@ -80,6 +80,16 @@ namespace Nixill.Collections {
     #region Public Methods
     /// Documented in GitHub.
     public bool IsEmpty() => BackingSet.IsEmpty();
+
+    public NodeTriplet<KeyValuePair<K, V>> EntriesAround(K from) => BackingSet.SearchAround(new KeyValuePair<K, V>(from, default(V)));
+
+    public NodeTriplet<K> KeysAround(K from) {
+      var entries = EntriesAround(from);
+      var lesser = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
+      var equal = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
+      var greater = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
+      return new NodeTriplet<K>((lesser, equal, greater));
+    }
     #endregion
 
     #region Interface Implementations
@@ -239,7 +249,7 @@ namespace Nixill.Collections {
 
     // Documented in GitHub.
     public bool TryGetValue(K key, out V value) {
-      AVLTreeSet<KeyValuePair<K, V>>.NodeTriplet nodes = BackingSet.SearchAround(new KeyValuePair<K, V>(key, DefaultValue));
+      NodeTriplet<KeyValuePair<K, V>> nodes = BackingSet.SearchAround(new KeyValuePair<K, V>(key, DefaultValue));
       if (nodes.HasEqualValue) {
         value = nodes.EqualValue.Value;
         return true;
