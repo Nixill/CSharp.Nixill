@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Nixill.Utils;
 using Nixill.Objects;
 using System.Text.RegularExpressions;
+using Nixill.Collections;
 
 namespace Nixill.Test {
   public class NixLibTests {
@@ -58,6 +59,21 @@ namespace Nixill.Test {
       Assert.AreEqual("mat", mtc.Groups[1].Value);
 
       Assert.False(rgx.TryMatch("nonimitative", out mtc));
+    }
+
+    [Test]
+    public void AVLSearchAroundTest() {
+      var set = new AVLTreeSet<int> { 16, 2, 18, 4, 20, 6, 22, 8, 24, 10, 26, 12, 28, 14, 30 };
+
+      var nodes = set.SearchAround(5);
+
+      Assert.True(nodes.HasLesserValue);
+      Assert.True(nodes.HasEqualValue);
+      Assert.True(nodes.HasGreaterValue);
+    }
+
+    public void TestValues(NodeTriplet<int> ints, int? lower, int? equal, int? higher) {
+
     }
   }
 }
