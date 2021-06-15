@@ -1002,8 +1002,14 @@ namespace Nixill.Collections {
         int comp = Comparer(value, current.Data);
 
         if (comp == 0) {
-          if (current.Left != null) lower = current.Left;
-          if (current.Right != null) higher = current.Right;
+          if (current.Left != null) {
+            lower = current.Left;
+            while (lower.Right != null) lower = lower.Right;
+          }
+          if (current.Right != null) {
+            higher = current.Right;
+            while (higher.Left != null) higher = higher.Left;
+          }
           return (lower, current, higher);
         }
 
