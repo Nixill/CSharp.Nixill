@@ -53,10 +53,13 @@ namespace Nixill.Test {
       Regex rgx = new Regex(@"(...).*\1");
 
       Assert.True(rgx.TryMatch("allochirally", out mtc));
-      Assert.AreEqual("all", mtc.Groups[1].Value);
+      Assert.True(mtc.TryGroup(1, out string val));
+      Assert.AreEqual("all", val);
 
       Assert.True(rgx.TryMatch("mathematic", out mtc));
-      Assert.AreEqual("mat", mtc.Groups[1].Value);
+      Assert.True(mtc.TryGroup(1, out val));
+      Assert.AreEqual("mat", val);
+      Assert.False(mtc.TryGroup(2, out val));
 
       Assert.False(rgx.TryMatch("nonimitative", out mtc));
     }

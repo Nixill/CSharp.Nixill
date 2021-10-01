@@ -1,9 +1,6 @@
 using System.Linq;
-using System.IO;
 using System;
 using NUnit.Framework;
-using Nixill.Collections.Grid;
-using Nixill.Collections.Grid.CSV;
 using Nixill.Objects;
 using System.Collections.Generic;
 
