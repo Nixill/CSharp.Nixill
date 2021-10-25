@@ -11,5 +11,14 @@ namespace Nixill.Utils {
       match = regex.Match(input);
       return match.Success;
     }
+
+    public static bool TryGroup(this Match match, int group, out string value) {
+      bool ret = match.Groups[group].Success;
+
+      if (ret) value = match.Groups[group].Value;
+      else value = null;
+
+      return ret;
+    }
   }
 }
