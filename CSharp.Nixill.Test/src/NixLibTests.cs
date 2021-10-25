@@ -53,10 +53,13 @@ namespace Nixill.Test {
       Regex rgx = new Regex(@"(...).*\1");
 
       Assert.True(rgx.TryMatch("allochirally", out mtc));
-      Assert.AreEqual("all", mtc.Groups[1].Value);
+      Assert.True(mtc.TryGroup(1, out string val));
+      Assert.AreEqual("all", val);
 
       Assert.True(rgx.TryMatch("mathematic", out mtc));
-      Assert.AreEqual("mat", mtc.Groups[1].Value);
+      Assert.True(mtc.TryGroup(1, out val));
+      Assert.AreEqual("mat", val);
+      Assert.False(mtc.TryGroup(2, out val));
 
       Assert.False(rgx.TryMatch("nonimitative", out mtc));
     }
@@ -65,15 +68,37 @@ namespace Nixill.Test {
     public void AVLSearchAroundTest() {
       var set = new AVLTreeSet<int> { 16, 2, 18, 4, 20, 6, 22, 8, 24, 10, 26, 12, 28, 14, 30 };
 
-      var nodes = set.SearchAround(5);
-
-      Assert.True(nodes.HasLesserValue);
-      Assert.True(nodes.HasEqualValue);
-      Assert.True(nodes.HasGreaterValue);
+      TestValues(set.SearchAround(5), 4, null, 6);
+      TestValues(set.SearchAround(1), null, null, 2);
+      TestValues(set.SearchAround(10), 8, 10, 12);
+      TestValues(set.SearchAround(30), 28, 30, null);
+      TestValues(set.SearchAround(16), 14, 16, 18);
     }
 
     public void TestValues(NodeTriplet<int> ints, int? lower, int? equal, int? higher) {
+      if (lower.HasValue) {
+        Assert.True(ints.HasLesserValue);
+        Assert.AreEqual(ints.LesserValue, lower.Value);
+      }
+      else {
+        Assert.False(ints.HasLesserValue);
+      }
 
+      if (equal.HasValue) {
+        Assert.True(ints.HasEqualValue);
+        Assert.AreEqual(ints.EqualValue, equal.Value);
+      }
+      else {
+        Assert.False(ints.HasEqualValue);
+      }
+
+      if (higher.HasValue) {
+        Assert.True(ints.HasGreaterValue);
+        Assert.AreEqual(ints.GreaterValue, higher.Value);
+      }
+      else {
+        Assert.False(ints.HasGreaterValue);
+      }
     }
   }
 }

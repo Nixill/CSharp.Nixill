@@ -12,13 +12,14 @@ namespace Nixill.Utils {
       return match.Success;
     }
 
-    public static bool TryGroup(this Match match, int group, out string value) {
-      bool ret = match.Groups[group].Success;
+    public static bool TryGroup(this Match match, int number, out string value) {
+      value = match.Groups[number].Value;
+      return match.Groups[number].Success;
+    }
 
-      if (ret) value = match.Groups[group].Value;
-      else value = null;
-
-      return ret;
+    public static bool TryGroup(this Match match, string name, out string value) {
+      value = match.Groups[name].Value;
+      return match.Groups[name].Success;
     }
   }
 }
