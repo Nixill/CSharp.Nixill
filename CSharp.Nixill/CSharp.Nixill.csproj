@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <PackageId>Nixill</PackageId>
     <Version>$(RELEASE_VERSION)</Version>
     <Authors>Nixill</Authors>
@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NodaTime" Version="2.4.7" />
+    <PackageReference Include="NodaTime" Version="3.0.9" />
   </ItemGroup>
 
 </Project>
