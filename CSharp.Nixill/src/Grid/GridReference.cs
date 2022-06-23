@@ -28,9 +28,6 @@ namespace Nixill.Collections.Grid {
     /// <param name="column">The column to use.</param>
     /// <param name="row">The row to use.</param>
     public GridReference(int col, int row) {
-      if (col < 0) throw new ArgumentOutOfRangeException("col", "Cannot be negative.");
-      if (row < 0) throw new ArgumentOutOfRangeException("row", "Cannot be negative.");
-
       Column = col;
       Row = row;
     }

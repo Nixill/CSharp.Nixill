@@ -19,10 +19,11 @@ namespace Nixill.Collections.Grid {
     /// The outer list is taken as rows, and the inner list as columns
     /// within the row.
     /// </summary>
-    public Grid(IList<IList<T>> list) {
+    public Grid(IEnumerable<IEnumerable<T>> list) {
       int widest = 0;
-      foreach (IList<T> innerList in list) {
-        if (innerList.Count > widest) widest = innerList.Count;
+      foreach (IEnumerable<T> innerList in list) {
+        var newList = new List<T>(innerList);
+        if (newList.Count > widest) widest = newList.Count;
         BackingList.Add(new List<T>(innerList));
       }
 
@@ -266,8 +267,6 @@ namespace Nixill.Collections.Grid {
     public bool IsReadOnly => false;
 
     public GridLine(IGrid<T> parent, bool isColumn, int index) {
-      if (index < 0) throw new ArgumentOutOfRangeException("index", "Must be at least 0.");
-
       ParentGrid = parent;
       IsColumn = isColumn;
       Index = index;

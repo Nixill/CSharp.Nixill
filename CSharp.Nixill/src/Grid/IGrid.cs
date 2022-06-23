@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Nixill.Collections.Grid {
@@ -39,8 +40,43 @@ namespace Nixill.Collections.Grid {
     /// The height of the grid must match the size of the list, or the
     /// grid must be empty.
     /// </summary>
-    /// <param name="column">The row to add.</param>
+    /// <param name="column">The column to add.</param>
     void AddColumn<U>(IList<U> column) where U : T;
+
+    /// <summary>
+    /// Adds a column to the right of a grid.
+    ///
+    /// The item specified is added to every space in the new column.
+    /// </summary>
+    /// <param name="columnItem">
+    /// The item to add to every cell in the column.
+    /// </param>
+    void AddColumn(T columnItem);
+
+    /// <summary>
+    /// Adds a column to the right of a grid.
+    ///
+    /// The function specified is called for every space in the new
+    /// column, and its return value is added.
+    /// </summary>
+    /// <param name="rowItemFunc">
+    /// The function specifying the item to add to every cell in the
+    /// column.
+    /// </param>
+    void AddColumn(Func<T> columnItemFunc);
+
+    /// <summary>
+    /// Adds a column to the right of a grid.
+    ///
+    /// The function specified is called for every space in the new
+    /// column, with a row parameter passed into it, and its return value
+    /// is added.
+    /// </summary>
+    /// <param name="rowItemFunc">
+    /// The function converting a row number into the item to add to every
+    /// cell in the column.
+    /// </param>
+    void AddColumn(Func<int, T> columnItemFunc);
 
     /// <summary>Adds an empty row to the bottom of the grid.</summary>
     void AddRow();
@@ -53,6 +89,40 @@ namespace Nixill.Collections.Grid {
     /// </summary>
     /// <param name="row">The row to add.</param>
     void AddRow<U>(IList<U> row) where U : T;
+
+    /// <summary>
+    /// Adds a row to the bottom of a grid.
+    ///
+    /// The item specified is added to every space in the new row.
+    /// </summary>
+    /// <param name="rowItem">
+    /// The item to add to every cell in the row.
+    /// </param>
+    void AddRow(T rowItem);
+
+    /// <summary>
+    /// Adds a row to the bottom of a grid.
+    ///
+    /// The function specified is called for every space in the new row,
+    /// and its return value is added.
+    /// </summary>
+    /// <param name="rowItemFunc">
+    /// The function specifying the item to add to every cell in the row.
+    /// </param>
+    void AddRow(Func<T> rowItemFunc);
+
+    /// <summary>
+    /// Adds a row to the bottom of a grid.
+    ///
+    /// The function specified is called for every space in the new row,
+    /// with a column parameter passed into it, and its return value is
+    /// added.
+    /// </summary>
+    /// <param name="rowItemFunc">
+    /// The function converting a column number into the item to add to
+    /// every cell in the row.
+    /// </param>
+    void AddRow(Func<int, T> rowItemFunc);
 
     /// <summary>Clears all values of the grid.</summary>
     void Clear();
@@ -102,8 +172,10 @@ namespace Nixill.Collections.Grid {
     /// <summary>
     /// Inserts an empty column in the middle of the grid.
     /// </summary>
-    /// <param name="before">The existing column to the left of which the
-    /// new column should be placed.</param>
+    /// <param name="before">
+    /// The existing column to the left of which the new column should be
+    /// placed.
+    /// </param>
     void InsertColumn(int before);
 
     /// <summary>
@@ -111,14 +183,64 @@ namespace Nixill.Collections.Grid {
     ///
     /// The height of the grid must match the size of the list.
     /// </summary>
-    /// <param name="before">The existing column to the left of which the
-    /// new column should be placed.</param>
+    /// <param name="before">
+    /// The existing column to the left of which the new column should be
+    /// placed.
+    /// </param>
     /// <param name="column">The column to add.</param>
     void InsertColumn<U>(int before, IList<U> column) where U : T;
 
+    /// <summary>
+    /// Inserts a column in the middle of the grid.
+    ///
+    /// The item specified is added to every space in the new column.
+    /// </summary>
+    /// <param name="before">
+    /// The existing column to the left of which the new column should be
+    /// placed.
+    /// </param>
+    /// <param name="columnItem">
+    /// The item to add to every cell in the column.
+    /// </param>
+    void InsertColumn(int before, T columnItem);
+
+    /// <summary>
+    /// Inserts a column in the middle of the grid.
+    ///
+    /// The function specified is called for every space in the new
+    /// column, and its return value is added.
+    /// </summary>
+    /// <param name="before">
+    /// The existing column to the left of which the new column should be
+    /// placed.
+    /// </param>
+    /// <param name="columnItemFunc">
+    /// The function specifying the item to add to every cell in the
+    /// column.
+    /// </param>
+    void InsertColumn(int before, Func<T> columnItemFunc);
+
+    /// <summary>
+    /// Inserts a column in the middle of the grid.
+    ///
+    /// The function specified is called for every space in the new
+    /// column, with a row parameter passed into it, and its return value
+    /// is added.
+    /// </summary>
+    /// <param name="before">
+    /// The existing column to the left of which the new column should be
+    /// placed.
+    /// </param>
+    /// <param name="columnItemFunc">
+    /// The function converting a row number into the item to add to every
+    /// cell in the column.
+    /// </param>
+    void InsertColumn(int before, Func<int, T> columnItemFunc);
+
     /// <summary>Inserts an empty row in the middle of the grid.</summary>
-    /// <param name="before">The existing row above which the new row
-    /// should be placed.</param>
+    /// <param name="before">
+    /// The existing row above which the new row should be placed.
+    /// </param>
     void InsertRow(int before);
 
     /// <summary>
@@ -126,9 +248,53 @@ namespace Nixill.Collections.Grid {
     ///
     /// The width of the grid must match the size of the list.
     /// </summary>
-    /// <param name="before">The existing row above which the new row
-    /// should be placed.</param>
+    /// <param name="before">
+    /// The existing row above which the new row should be placed.
+    /// </param>
     /// <param name="row">The row to add.</param>
     void InsertRow<U>(int before, IList<U> row) where U : T;
+
+    /// <summary>
+    /// Inserts a row in the middle of the grid.
+    ///
+    /// The item specified is added to every space in the new row.
+    /// </summary>
+    /// <param name="before">
+    /// The existing row above which the new row should be placed.
+    /// </param>
+    /// <param name="rowItem">
+    /// The item to add to every cell in the row.
+    /// </param>
+    void InsertRow(int before, T rowItem);
+
+    /// <summary>
+    /// Inserts a row in the middle of the grid.
+    ///
+    /// The function specified is called for every space in the new row,
+    /// and its return value is added.
+    /// </summary>
+    /// <param name="before">
+    /// The existing row above which the new row should be placed.
+    /// </param>
+    /// <param name="rowItemFunc">
+    /// The function specifying the item to add to every cell in the row.
+    /// </param>
+    void InsertRow(int before, Func<T> rowItemFunc);
+
+    /// <summary>
+    /// Inserts a row in the middle of the grid.
+    ///
+    /// The function specified is called for every space in the new row,
+    /// with a column parameter passed into it, and its return value is
+    /// added.
+    /// </summary>
+    /// <param name="before">
+    /// The existing row above which the new row should be placed.
+    /// </param>
+    /// <param name="rowItemFunc">
+    /// The function converting a column number into the item to add to
+    /// every cell in the row.
+    /// </param>
+    void InsertRow(int before, Func<int, T> rowItemFunc);
   }
 }
