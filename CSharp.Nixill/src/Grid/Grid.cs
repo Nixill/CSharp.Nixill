@@ -101,6 +101,10 @@ namespace Nixill.Collections.Grid {
       }
     }
 
+    public void AddColumn(T columnItem) => AddColumn(Enumerable.Repeat(columnItem, Height).ToList());
+    public void AddColumn(Func<T> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(x => columnItemFunc()).ToList());
+    public void AddColumn(Func<int, T> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(columnItemFunc).ToList());
+
     public void AddRow() {
       List<T> innerList = new List<T>();
       while (innerList.Count < IntWidth) {
@@ -118,6 +122,10 @@ namespace Nixill.Collections.Grid {
       }
       BackingList.Add(new List<T>((IList<T>)row));
     }
+
+    public void AddRow(T rowItem) => AddColumn(Enumerable.Repeat(rowItem, Width).ToList());
+    public void AddRow(Func<T> rowItemFunc) => AddColumn(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
+    public void AddRow(Func<int, T> rowItemFunc) => AddColumn(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
 
     public void Clear() {
       BackingList.Clear();
@@ -186,6 +194,10 @@ namespace Nixill.Collections.Grid {
       }
     }
 
+    public void InsertColumn(int before, T columnItem) => InsertColumn(before, Enumerable.Repeat(columnItem, Height).ToList());
+    public void InsertColumn(int before, Func<T> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(x => columnItemFunc()).ToList());
+    public void InsertColumn(int before, Func<int, T> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(columnItemFunc).ToList());
+
     public void InsertRow(int before) {
       List<T> innerList = new List<T>();
       for (int i = 0; i < IntWidth; i++) {
@@ -198,6 +210,23 @@ namespace Nixill.Collections.Grid {
       if (Width != row.Count) throw new ArgumentException("Row width must match grid width exactly.");
       List<T> innerList = new List<T>((ICollection<T>)row);
       BackingList.Insert(before, innerList);
+    }
+
+    public void InsertRow(int before, T rowItem) => InsertRow(before, Enumerable.Repeat(rowItem, Width).ToList());
+    public void InsertRow(int before, Func<T> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
+    public void InsertRow(int before, Func<int, T> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
+
+    public void RemoveColumnAt(int col) {
+      if (col < 0 || col >= Width) throw new ArgumentOutOfRangeException("Can only remove existing columns.");
+      IntWidth -= 1;
+      foreach (var list in BackingList) {
+        list.RemoveAt(col);
+      }
+    }
+
+    public void RemoveRowAt(int row) {
+      if (row < 0 || row >= Height) throw new ArgumentOutOfRangeException("Can only remove existing rows.");
+      BackingList.RemoveAt(row);
     }
   }
 
