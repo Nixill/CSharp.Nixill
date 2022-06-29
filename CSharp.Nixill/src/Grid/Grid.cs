@@ -124,9 +124,9 @@ namespace Nixill.Collections.Grid {
       BackingList.Add(new List<T>((IList<T>)row));
     }
 
-    public void AddRow(T rowItem) => AddColumn(Enumerable.Repeat(rowItem, Width).ToList());
-    public void AddRow(Func<T> rowItemFunc) => AddColumn(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
-    public void AddRow(Func<int, T> rowItemFunc) => AddColumn(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
+    public void AddRow(T rowItem) => AddRow(Enumerable.Repeat(rowItem, Width).ToList());
+    public void AddRow(Func<T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
+    public void AddRow(Func<int, T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
 
     public void Clear() {
       BackingList.Clear();

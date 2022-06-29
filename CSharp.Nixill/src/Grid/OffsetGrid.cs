@@ -9,6 +9,18 @@ namespace Nixill.Collections.Grid {
     int RowOffset = 0;
     int ColumnOffset = 0;
 
+    /// <value>The topmost row of the grid.</value>
+    public int Top => -RowOffset;
+
+    /// <value>The leftmost column of the grid.</value>
+    public int Left => -ColumnOffset;
+
+    /// <value>The row below the bottom of the grid.</value>
+    public int Bottom => Top + Height;
+
+    /// <value>The column beyond the right edge of the grid.</value>
+    public int Right => Left + Width;
+
     /// <summary>
     /// Creates a new 0×0 grid.
     /// </summary>
@@ -93,9 +105,9 @@ namespace Nixill.Collections.Grid {
 
     public void AddRow() => BackingGrid.AddRow();
     public void AddRow<U>(IList<U> row) where U : T => BackingGrid.AddRow(row);
-    public void AddRow(T rowItem) => AddColumn(Enumerable.Repeat(rowItem, Width).ToList());
-    public void AddRow(Func<T> rowItemFunc) => AddColumn(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
-    public void AddRow(Func<int, T> rowItemFunc) => AddColumn(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
+    public void AddRow(T rowItem) => AddRow(Enumerable.Repeat(rowItem, Width).ToList());
+    public void AddRow(Func<T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
+    public void AddRow(Func<int, T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
 
     public void AddRowTop() {
       BackingGrid.InsertRow(0);
@@ -209,17 +221,17 @@ namespace Nixill.Collections.Grid {
       RowOffset += 1;
     }
 
-    public void RemoveColumnAt(int col) => BackingGrid.RemoveColumnAt(col);
+    public void RemoveColumnAt(int col) => BackingGrid.RemoveColumnAt(col + ColumnOffset);
 
     public void RemoveColumnShiftRight(int col) {
-      BackingGrid.RemoveColumnAt(col);
+      BackingGrid.RemoveColumnAt(col + ColumnOffset);
       ColumnOffset -= 1;
     }
 
-    public void RemoveRowAt(int row) => BackingGrid.RemoveRowAt(row);
+    public void RemoveRowAt(int row) => BackingGrid.RemoveRowAt(row + RowOffset);
 
     public void RemoveRowShiftDown(int row) {
-      BackingGrid.RemoveRowAt(row);
+      BackingGrid.RemoveRowAt(row + RowOffset);
       RowOffset -= 1;
     }
   }

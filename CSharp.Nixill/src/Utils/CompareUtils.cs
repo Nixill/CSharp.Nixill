@@ -10,8 +10,8 @@ namespace Nixill.Utils {
     /// </summary>
     public static int FirstNonZero(params int[] ints) {
       foreach (int i in ints) {
-        if (ints[i] != 0) {
-          return ints[i];
+        if (i != 0) {
+          return i;
         }
       }
       return 0;
