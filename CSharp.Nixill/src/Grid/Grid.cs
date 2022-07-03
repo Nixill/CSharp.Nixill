@@ -59,7 +59,7 @@ namespace Nixill.Collections.Grid {
       }
     }
 
-    public T this[int c, int r] {
+    public T this[int r, int c] {
       get => BackingList[r][c];
       set {
         BackingList[r][c] = value;
@@ -253,11 +253,11 @@ namespace Nixill.Collections.Grid {
 
     public T this[int index] {
       get {
-        if (IsColumn) return ParentGrid[Index, index];
+        if (!IsColumn) return ParentGrid[Index, index];
         else return ParentGrid[index, Index];
       }
       set {
-        if (IsColumn) ParentGrid[Index, index] = value;
+        if (!IsColumn) ParentGrid[Index, index] = value;
         else ParentGrid[index, Index] = value;
       }
     }

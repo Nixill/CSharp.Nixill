@@ -56,7 +56,7 @@ namespace Nixill.Collections.Grid {
       set => this[gr.Row, gr.Column] = value;
     }
 
-    public T this[int c, int r] {
+    public T this[int r, int c] {
       get => BackingGrid[r + RowOffset, c + ColumnOffset];
       set => BackingGrid[r + RowOffset, c + ColumnOffset] = value;
     }
