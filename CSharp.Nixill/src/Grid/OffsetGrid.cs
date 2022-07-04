@@ -140,8 +140,9 @@ namespace Nixill.Collections.Grid {
 
     public bool Contains(T item) => BackingGrid.Contains(item);
     public IList<T> GetColumn(int index) => BackingGrid.GetColumn(index + ColumnOffset);
-    public IEnumerator<IList<T>> GetColumnEnumerator() => BackingGrid.GetColumnEnumerator();
-    public IEnumerator<IList<T>> GetEnumerator() => BackingGrid.GetEnumerator();
+    public IEnumerator<IEnumerable<T>> GetColumnEnumerator() => BackingGrid.GetColumnEnumerator();
+    public IEnumerator<IEnumerable<T>> GetEnumerator() => BackingGrid.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => BackingGrid.GetEnumerator();
     public IList<T> GetRow(int index) => BackingGrid.GetRow(index + RowOffset);
     public GridReference IndexOf(T item) {
       GridReference rfc = BackingGrid.IndexOf(item);

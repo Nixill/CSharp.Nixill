@@ -144,17 +144,19 @@ namespace Nixill.Collections.Grid {
       return new GridLine<T>(this, true, index);
     }
 
-    public IEnumerator<IList<T>> GetColumnEnumerator() {
+    public IEnumerator<IEnumerable<T>> GetColumnEnumerator() {
       for (int i = 0; i < Width; i++) {
         yield return GetColumn(i);
       }
     }
 
-    public IEnumerator<IList<T>> GetEnumerator() {
+    public IEnumerator<IEnumerable<T>> GetEnumerator() {
       for (int i = 0; i < Height; i++) {
         yield return GetRow(i);
       }
     }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public IList<T> GetRow(int index) {
       return new GridLine<T>(this, false, index);

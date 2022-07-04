@@ -4,9 +4,12 @@ using System.Collections.Generic;
 namespace Nixill.Collections.Grid {
   /// <summary>
   /// Represents a two-dimensional ordered collection of objects.
+  ///
+  /// The GetEnumerator() function must return an enumerator over rows of
+  /// the grid.
   /// </summary>
   /// <typeparam name="T">The type of elements on the grid.</typeparam>
-  public interface IGrid<T> {
+  public interface IGrid<T> : IEnumerable<IEnumerable<T>> {
     /// <summary>The height - number of rows - of the IGrid.</summary>
     int Height { get; }
 
@@ -139,12 +142,7 @@ namespace Nixill.Collections.Grid {
     /// <summary>
     /// Returns an enumerator through the columns of a grid.
     /// </summary>
-    IEnumerator<IList<T>> GetColumnEnumerator();
-
-    /// <summary>
-    /// Returns an enumerator through the rows of a grid.
-    /// </summary>
-    IEnumerator<IList<T>> GetEnumerator();
+    IEnumerator<IEnumerable<T>> GetColumnEnumerator();
 
     /// <summary>
     /// Returns a single column as a subclass of IList.
