@@ -44,7 +44,7 @@ namespace Nixill.Collections.Grid {
     /// grid must be empty.
     /// </summary>
     /// <param name="column">The column to add.</param>
-    void AddColumn<U>(IList<U> column) where U : T;
+    void AddColumn<U>(IEnumerable<U> column) where U : T;
 
     /// <summary>
     /// Adds a column to the right of a grid.
@@ -91,7 +91,7 @@ namespace Nixill.Collections.Grid {
     /// grid must be empty.
     /// </summary>
     /// <param name="row">The row to add.</param>
-    void AddRow<U>(IList<U> row) where U : T;
+    void AddRow<U>(IEnumerable<U> row) where U : T;
 
     /// <summary>
     /// Adds a row to the bottom of a grid.
@@ -186,7 +186,7 @@ namespace Nixill.Collections.Grid {
     /// placed.
     /// </param>
     /// <param name="column">The column to add.</param>
-    void InsertColumn<U>(int before, IList<U> column) where U : T;
+    void InsertColumn<U>(int before, IEnumerable<U> column) where U : T;
 
     /// <summary>
     /// Inserts a column in the middle of the grid.
@@ -250,7 +250,7 @@ namespace Nixill.Collections.Grid {
     /// The existing row above which the new row should be placed.
     /// </param>
     /// <param name="row">The row to add.</param>
-    void InsertRow<U>(int before, IList<U> row) where U : T;
+    void InsertRow<U>(int before, IEnumerable<U> row) where U : T;
 
     /// <summary>
     /// Inserts a row in the middle of the grid.

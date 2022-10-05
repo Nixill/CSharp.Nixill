@@ -84,7 +84,10 @@ namespace Nixill.Collections.Grid {
       }
     }
 
-    public void AddColumn<U>(IList<U> column) where U : T {
+    public void AddColumn<U>(IEnumerable<U> column) where U : T {
+      // For columns, this immediate conversion ensures single enumeration.
+      List<T> colList = column.Select(x => (T)x).ToList();
+
       if (Height == 0 && Width == 0) {
         IntWidth += 1;
         foreach (U item in column) {
@@ -94,10 +97,10 @@ namespace Nixill.Collections.Grid {
         }
       }
       else {
-        if (column.Count != Height) throw new ArgumentException("Column height must match grid height exactly, or grid must be empty.");
+        if (colList.Count != Height) throw new ArgumentException("Column height must match grid height exactly, or grid must be empty.");
         IntWidth += 1;
         for (int i = 0; i < Height; i++) {
-          BackingList[i].Add(column[i]);
+          BackingList[i].Add(colList[i]);
         }
       }
     }
@@ -114,14 +117,20 @@ namespace Nixill.Collections.Grid {
       BackingList.Add(innerList);
     }
 
-    public void AddRow<U>(IList<U> row) where U : T {
+    public void AddRow<U>(IEnumerable<U> row) where U : T {
+      // For rows, this immediate conversion both ensures single
+      // enumeration *and* creates the actual list that will be placed
+      // into the grid.
+      List<T> rowList = row.Select(x => (T)x).ToList();
+
       if (Height == 0 && Width == 0) {
-        IntWidth = row.Count;
+        IntWidth = rowList.Count;
       }
       else {
-        if (row.Count != Width) throw new ArgumentException("Row width must match grid width exactly, or grid must be empty.");
+        if (rowList.Count != Width) throw new ArgumentException("Row width must match grid width exactly, or grid must be empty.");
       }
-      BackingList.Add(new List<T>((IList<T>)row));
+
+      BackingList.Add(rowList);
     }
 
     public void AddRow(T rowItem) => AddRow(Enumerable.Repeat(rowItem, Width).ToList());
@@ -189,11 +198,12 @@ namespace Nixill.Collections.Grid {
       }
     }
 
-    public void InsertColumn<U>(int before, IList<U> column) where U : T {
+    public void InsertColumn<U>(int before, IEnumerable<U> column) where U : T {
       IntWidth += 1;
-      if (Height != column.Count) throw new ArgumentException("Column height must match grid height exactly.");
+      List<U> colList = column.ToList();
+      if (Height != colList.Count) throw new ArgumentException("Column height must match grid height exactly.");
       for (int i = 0; i < Height; i++) {
-        BackingList[i].Insert(before, column[i]);
+        BackingList[i].Insert(before, colList[i]);
       }
     }
 
@@ -209,10 +219,10 @@ namespace Nixill.Collections.Grid {
       BackingList.Insert(before, innerList);
     }
 
-    public void InsertRow<U>(int before, IList<U> row) where U : T {
-      if (Width != row.Count) throw new ArgumentException("Row width must match grid width exactly.");
-      List<T> innerList = new List<T>((ICollection<T>)row);
-      BackingList.Insert(before, innerList);
+    public void InsertRow<U>(int before, IEnumerable<U> row) where U : T {
+      List<T> rowList = row.Select(x => (T)x).ToList();
+      if (Width != rowList.Count) throw new ArgumentException("Row width must match grid width exactly.");
+      BackingList.Insert(before, rowList);
     }
 
     public void InsertRow(int before, T rowItem) => InsertRow(before, Enumerable.Repeat(rowItem, Width).ToList());

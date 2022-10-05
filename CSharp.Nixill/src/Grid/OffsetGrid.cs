@@ -73,7 +73,7 @@ namespace Nixill.Collections.Grid {
     public int Size => BackingGrid.Size;
 
     public void AddColumn() => BackingGrid.AddColumn();
-    public void AddColumn<U>(IList<U> column) where U : T => BackingGrid.AddColumn(column);
+    public void AddColumn<U>(IEnumerable<U> column) where U : T => BackingGrid.AddColumn(column);
     public void AddColumn(T columnItem) => BackingGrid.AddColumn(columnItem);
     public void AddColumn(Func<T> columnItemFunc) => BackingGrid.AddColumn(columnItemFunc);
     public void AddColumn(Func<int, T> columnItemFunc) => BackingGrid.AddColumn(columnItemFunc);
@@ -83,7 +83,7 @@ namespace Nixill.Collections.Grid {
       ColumnOffset += 1;
     }
 
-    public void AddColumnLeft<U>(IList<U> column) where U : T {
+    public void AddColumnLeft<U>(IEnumerable<U> column) where U : T {
       BackingGrid.InsertColumn(0, column);
       ColumnOffset += 1;
     }
@@ -104,7 +104,7 @@ namespace Nixill.Collections.Grid {
     }
 
     public void AddRow() => BackingGrid.AddRow();
-    public void AddRow<U>(IList<U> row) where U : T => BackingGrid.AddRow(row);
+    public void AddRow<U>(IEnumerable<U> row) where U : T => BackingGrid.AddRow(row);
     public void AddRow(T rowItem) => AddRow(Enumerable.Repeat(rowItem, Width).ToList());
     public void AddRow(Func<T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
     public void AddRow(Func<int, T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
@@ -114,7 +114,7 @@ namespace Nixill.Collections.Grid {
       RowOffset += 1;
     }
 
-    public void AddRowTop<U>(IList<U> row) where U : T {
+    public void AddRowTop<U>(IEnumerable<U> row) where U : T {
       BackingGrid.InsertRow(0, row);
       RowOffset += 1;
     }
@@ -161,7 +161,7 @@ namespace Nixill.Collections.Grid {
     }
 
     public void InsertColumn(int before) => BackingGrid.InsertColumn(before);
-    public void InsertColumn<U>(int before, IList<U> column) where U : T => BackingGrid.InsertColumn(before, column);
+    public void InsertColumn<U>(int before, IEnumerable<U> column) where U : T => BackingGrid.InsertColumn(before, column);
     public void InsertColumn(int before, T columnItem) => BackingGrid.InsertColumn(before, columnItem);
     public void InsertColumn(int before, Func<T> columnItemFunc) => BackingGrid.InsertColumn(before, columnItemFunc);
     public void InsertColumn(int before, Func<int, T> columnItemFunc) => BackingGrid.InsertColumn(before, columnItemFunc);
@@ -171,7 +171,7 @@ namespace Nixill.Collections.Grid {
       ColumnOffset += 1;
     }
 
-    public void InsertColumnShiftLeft<U>(int before, IList<U> column) where U : T {
+    public void InsertColumnShiftLeft<U>(int before, IEnumerable<U> column) where U : T {
       BackingGrid.InsertColumn(before, column);
       ColumnOffset += 1;
     }
@@ -192,7 +192,7 @@ namespace Nixill.Collections.Grid {
     }
 
     public void InsertRow(int before) => BackingGrid.InsertRow(before);
-    public void InsertRow<U>(int before, IList<U> row) where U : T => BackingGrid.InsertRow(before, row);
+    public void InsertRow<U>(int before, IEnumerable<U> row) where U : T => BackingGrid.InsertRow(before, row);
     public void InsertRow(int before, T rowItem) => BackingGrid.InsertRow(before, rowItem);
     public void InsertRow(int before, Func<T> rowItemFunc) => BackingGrid.InsertRow(before, rowItemFunc);
     public void InsertRow(int before, Func<int, T> rowItemFunc) => BackingGrid.InsertRow(before, rowItemFunc);
@@ -202,7 +202,7 @@ namespace Nixill.Collections.Grid {
       RowOffset += 1;
     }
 
-    public void InsertRowShiftUp<U>(int before, IList<U> row) where U : T {
+    public void InsertRowShiftUp<U>(int before, IEnumerable<U> row) where U : T {
       BackingGrid.InsertRow(before, row);
       RowOffset += 1;
     }
