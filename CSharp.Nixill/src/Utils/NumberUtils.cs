@@ -129,7 +129,7 @@ namespace Nixill.Utils {
     /// </summary>
     /// <param name="chr">The character to convert.</param>
     public static char IntToChar(int i) {
-      if (i < 0 || i > 35) throw new ArgumentOutOfRangeException("Only digits 0 to 35 can be converted to chars.");
+      if (i < 0 || i > 35) throw new ArgumentOutOfRangeException("Only digits 0 to 35 (z) can be converted to chars.");
 
       // digits 0 through 9
       if (i < 10) return (char)(i + 48);
@@ -161,7 +161,7 @@ namespace Nixill.Utils {
       else return (src & trg) != 0;
     }
 
-    /// <string>
+    /// <summary>
     /// Converts a number given in Leading Zero format to an int.
     ///
     /// Leading Zero format is a sequence in which numbers which start
@@ -171,7 +171,7 @@ namespace Nixill.Utils {
     ///
     /// With Leading Zero format, base 1 is a valid base (<c>0, 00, 000,
     /// ...</c>). The highest valid base is 36.
-    /// </string>
+    /// </summary>
     public static int LeadingZeroStringToInt(string input, int bs) {
       if (bs < 1 || bs > 36) throw new ArgumentOutOfRangeException("LeadingZeroStringToInt only accepts bases 1 to 36.");
 
