@@ -7,10 +7,10 @@ namespace Nixill.Utils;
 
 public static class EnumerableUtils {
   public static IEnumerable<TResult> Product<TLeft, TRight, TResult>(this IEnumerable<TLeft> left, IEnumerable<TRight> right, Func<TLeft, TRight, TResult> func) =>
-    left.SelectMany(l => right.Select(r => func(l, r)));
+    left.Join(right, x => 1, y => 1, func);
 
   public static IEnumerable<(TLeft, TRight)> Product<TLeft, TRight>(this IEnumerable<TLeft> left, IEnumerable<TRight> right) =>
-    left.SelectMany(l => right.Select(r => (l, r)));
+    left.Join(right, x => 1, y => 1, (left, right) => (left, right));
 
   public static IEnumerable<T> Repeat<T>(Func<T> func, int count) =>
     Enumerable.Repeat(0, count).Select(x => func());
