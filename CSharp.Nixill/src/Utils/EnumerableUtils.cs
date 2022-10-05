@@ -43,4 +43,169 @@ public static class EnumerableUtils {
   public static IEnumerable<T> Of<T>(T item) {
     yield return item;
   }
+
+  public static IEnumerable<T> MaxMany<T>(this IEnumerable<T> list) where T : IComparable<T> {
+    T baseline = default(T);
+    List<T> allItems = null;
+    bool assigned = false;
+
+    foreach (T item in list) {
+      if (!assigned || baseline.CompareTo(item) < 0) {
+        baseline = item;
+        allItems = new() { item };
+        assigned = true;
+      }
+      else if (baseline.CompareTo(item) == 0) {
+        allItems.Add(item);
+      }
+    }
+
+    return allItems;
+  }
+
+  public static IEnumerable<T> MaxMany<T>(this IEnumerable<T> list, IComparer<T> comp) {
+    T baseline = default(T);
+    List<T> allItems = null;
+    bool assigned = false;
+    Comparison<T> cFunc = comp.Compare;
+
+    foreach (T item in list) {
+      if (!assigned || cFunc(baseline, item) < 0) {
+        baseline = item;
+        allItems = new() { item };
+        assigned = true;
+      }
+      else if (cFunc(baseline, item) == 0) {
+        allItems.Add(item);
+      }
+    }
+
+    return allItems;
+  }
+
+  public static IEnumerable<TSource> MaxManyBy<TSource, TResult>(this IEnumerable<TSource> list,
+      Func<TSource, TResult> mutator) where TResult : IComparable<TResult> {
+    TResult baseline = default(TResult);
+    List<TSource> allItems = null;
+    bool assigned = false;
+
+    foreach (TSource item in list) {
+      TResult mutation = mutator(item);
+      if (!assigned || baseline.CompareTo(mutation) < 0) {
+        baseline = mutation;
+        allItems = new() { item };
+        assigned = true;
+      }
+      else if (baseline.CompareTo(mutation) == 0) {
+        allItems.Add(item);
+      }
+    }
+
+    return allItems;
+  }
+
+  public static IEnumerable<TSource> MaxManyBy<TSource, TResult>(this IEnumerable<TSource> list,
+      Func<TSource, TResult> mutator, IComparer<TResult> comp) {
+    TResult baseline = default(TResult);
+    List<TSource> allItems = null;
+    bool assigned = false;
+    Comparison<TResult> cFunc = comp.Compare;
+
+    foreach (TSource item in list) {
+      TResult mutation = mutator(item);
+      if (!assigned || cFunc(baseline, mutation) < 0) {
+        baseline = mutation;
+        allItems = new() { item };
+        assigned = true;
+      }
+      else if (cFunc(baseline, mutation) == 0) {
+        allItems.Add(item);
+      }
+    }
+
+    return allItems;
+  }
+
+  public static IEnumerable<T> MinMany<T>(this IEnumerable<T> list) where T : IComparable<T> {
+    T baseline = default(T);
+    List<T> allItems = null;
+    bool assigned = false;
+
+    foreach (T item in list) {
+      if (!assigned || baseline.CompareTo(item) > 0) {
+        baseline = item;
+        allItems = new() { item };
+        assigned = true;
+      }
+      else if (baseline.CompareTo(item) == 0) {
+        allItems.Add(item);
+      }
+    }
+
+    return allItems;
+  }
+
+  public static IEnumerable<T> MinMany<T>(this IEnumerable<T> list, IComparer<T> comp) {
+    T baseline = default(T);
+    List<T> allItems = null;
+    bool assigned = false;
+    Comparison<T> cFunc = comp.Compare;
+
+    foreach (T item in list) {
+      if (!assigned || cFunc(baseline, item) > 0) {
+        baseline = item;
+        allItems = new() { item };
+        assigned = true;
+      }
+      else if (cFunc(baseline, item) == 0) {
+        allItems.Add(item);
+      }
+    }
+
+    return allItems;
+  }
+
+  public static IEnumerable<TSource> MinManyBy<TSource, TResult>(this IEnumerable<TSource> list,
+      Func<TSource, TResult> mutator) where TResult : IComparable<TResult> {
+    TResult baseline = default(TResult);
+    List<TSource> allItems = null;
+    bool assigned = false;
+
+    foreach (TSource item in list) {
+      TResult mutation = mutator(item);
+      if (!assigned || baseline.CompareTo(mutation) > 0) {
+        baseline = mutation;
+        allItems = new() { item };
+        assigned = true;
+      }
+      else if (baseline.CompareTo(mutation) == 0) {
+        allItems.Add(item);
+      }
+    }
+
+    return allItems;
+  }
+
+  public static IEnumerable<TSource> MinManyBy<TSource, TResult>(this IEnumerable<TSource> list,
+      Func<TSource, TResult> mutator, IComparer<TResult> comp) {
+    TResult baseline = default(TResult);
+    List<TSource> allItems = null;
+    bool assigned = false;
+    Comparison<TResult> cFunc = comp.Compare;
+
+    foreach (TSource item in list) {
+      TResult mutation = mutator(item);
+      if (!assigned || cFunc(baseline, mutation) > 0) {
+        baseline = mutation;
+        allItems = new() { item };
+        assigned = true;
+      }
+      else if (cFunc(baseline, mutation) == 0) {
+        allItems.Add(item);
+      }
+    }
+
+    return allItems;
+  }
+
 }
