@@ -40,6 +40,10 @@ public static class EnumerableUtils {
     }
   }
 
+  public static IEnumerable<T> Of<T>(params T[] items) {
+    foreach (T item in items) yield return item;
+  }
+
   public static IEnumerable<T> Of<T>(T item) {
     yield return item;
   }
