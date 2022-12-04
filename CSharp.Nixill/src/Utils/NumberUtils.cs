@@ -242,5 +242,14 @@ namespace Nixill.Utils {
 
       return ret;
     }
+
+    /// <summary>
+    /// Returns the non-negative modulus of division of n by d.
+    /// </summary>
+    public static int NNMod(int n, int d) => ((n %= d) < 0) ? n+d : n;
+    public static long NNMod(long n, long d) => ((n %= d) < 0) ? n+d : n;
+    public static float NNMod(float n, float d) => ((n %= d) < 0) ? n+d : n;
+    public static double NNMod(double n, double d) => ((n %= d) < 0) ? n+d : n;
+    public static decimal NNMod(decimal n, decimal d) => ((n %= d) < 0) ? n+d : n;
   }
 }
