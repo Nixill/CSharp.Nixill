@@ -212,4 +212,26 @@ public static class EnumerableUtils {
     return allItems;
   }
 
+  public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
+      Func<TSource, bool> predicate) {
+    List<TSource> list = null;
+
+    foreach (TSource item in items) {
+      if (predicate(item)) {
+        if (list == null) list = new();
+        list.Add(item);
+      }
+      else {
+        if (list == null) yield return Enumerable.Empty<TSource>();
+        else {
+          yield return list;
+          list = null;
+        }
+      }
+    }
+
+    if (list != null) yield return list;
+  }
+
+  public static string FormString(this IEnumerable<char> chars) => new string(chars.ToArray());
 }

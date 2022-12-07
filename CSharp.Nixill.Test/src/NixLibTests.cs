@@ -4,6 +4,7 @@ using Nixill.Utils;
 using Nixill.Objects;
 using System.Text.RegularExpressions;
 using Nixill.Collections;
+using System.Linq;
 
 namespace Nixill.Test {
   public class NixLibTests {
@@ -73,6 +74,20 @@ namespace Nixill.Test {
       TestValues(set.SearchAround(10), 8, 10, 12);
       TestValues(set.SearchAround(30), 28, 30, null);
       TestValues(set.SearchAround(16), 14, 16, 18);
+    }
+
+    [Test]
+    public void ChunkWhileTest() {
+      string[] words = EnumerableUtils
+        .Of('a', 'b', 'c', ' ', 'd', 'e', ' ', 'f')
+        .ChunkWhile(chr => chr != ' ')
+        .Select(chunk => chunk.FormString())
+        .ToArray();
+
+      Assert.AreEqual(words.Length, 3);
+      Assert.AreEqual(words[0], "abc");
+      Assert.AreEqual(words[1], "de");
+      Assert.AreEqual(words[2], "f");
     }
 
     public void TestValues(NodeTriplet<int> ints, int? lower, int? equal, int? higher) {
