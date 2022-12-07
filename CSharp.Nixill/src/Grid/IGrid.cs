@@ -19,6 +19,15 @@ namespace Nixill.Collections.Grid {
     /// <summary>The size - width times height - of the IGrid.</summary>
     int Size { get; }
 
+    /// <summary>
+    /// The rows of the IGrid as an IEnumerable. (The IGrid itself should
+    /// satisfy this condition.)
+    /// </summary>
+    IEnumerable<IEnumerable<T>> Rows { get; }
+
+    /// <summary>The columns of the IGrid as an IEnumerable.</summary>
+    IEnumerable<IEnumerable<T>> Columns { get; }
+
     /// <summary>The value of a single cell in the grid.</summary>
     /// <param name="c">The column of the cell for which to get a
     /// value.</param>

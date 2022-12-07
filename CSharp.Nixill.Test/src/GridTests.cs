@@ -4,11 +4,15 @@ using NUnit.Framework;
 using Nixill.Collections.Grid;
 using Nixill.Collections.Grid.CSV;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Nixill.Test {
-  public class GridTests {
+namespace Nixill.Test
+{
+  public class GridTests
+  {
     [Test]
-    public void GridManipTest() {
+    public void GridManipTest()
+    {
       Grid<string> testingGrid = new Grid<string>();
 
       testingGrid.AddColumn();
@@ -66,6 +70,26 @@ namespace Nixill.Test {
       toCSVAgain = CSVParser.GridToString(toGrid);
 
       Assert.AreEqual(toCSV, toCSVAgain);
+    }
+
+    [Test]
+    public void GridColumnsTest()
+    {
+      // Let's test the Columns thing! :D
+      decimal[][] divisionArray = Enumerable.Range(1, 10).Select(x => (decimal)x).Select(
+        num => Enumerable.Range(1, 5).Select(x => (decimal)x).Select(den => num / den).ToArray()
+      ).ToArray();
+
+      Grid<decimal> divisionTable = new(divisionArray);
+      Grid<decimal> divisionTableTransposed = new(divisionTable.Columns);
+
+      foreach (int r in Enumerable.Range(0, 10))
+      {
+        foreach (int c in Enumerable.Range(0, 5))
+        {
+          Assert.AreEqual(divisionTable[r, c], divisionTableTransposed[c, r]);
+        }
+      }
     }
   }
 }

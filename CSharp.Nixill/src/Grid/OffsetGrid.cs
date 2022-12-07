@@ -67,10 +67,10 @@ namespace Nixill.Collections.Grid {
     }
 
     public int Height => BackingGrid.Height;
-
     public int Width => BackingGrid.Width;
-
     public int Size => BackingGrid.Size;
+    public IEnumerable<IEnumerable<T>> Rows => BackingGrid.Rows;
+    public IEnumerable<IEnumerable<T>> Columns => BackingGrid.Columns;
 
     public void AddColumn() => BackingGrid.AddColumn();
     public void AddColumn<U>(IEnumerable<U> column) where U : T => BackingGrid.AddColumn(column);

@@ -72,10 +72,36 @@ namespace Nixill.Collections.Grid {
     }
 
     public int Height => BackingList.Count;
-
     public int Width => IntWidth;
-
     public int Size => Height * IntWidth;
+
+    public IEnumerable<IEnumerable<T>> Rows {
+      get {
+        for (int i = 0; i < Height; i++) {
+          yield return GetRow(i);
+        }
+      }
+    }
+
+    IEnumerable<T> RowEnumerable(int index) {
+      for (int i = 0; i < Width; i++) {
+        yield return this[index, i];
+      }
+    }
+
+    public IEnumerable<IEnumerable<T>> Columns {
+      get {
+        for (int i = 0; i < Width; i++) {
+          yield return ColumnEnumerable(i);
+        }
+      }
+    }
+
+    IEnumerable<T> ColumnEnumerable(int index) {
+      for (int i = 0; i < Height; i++) {
+        yield return this[i, index];
+      }
+    }
 
     public void AddColumn() {
       IntWidth += 1;
@@ -153,17 +179,8 @@ namespace Nixill.Collections.Grid {
       return new GridLine<T>(this, true, index);
     }
 
-    public IEnumerator<IEnumerable<T>> GetColumnEnumerator() {
-      for (int i = 0; i < Width; i++) {
-        yield return GetColumn(i);
-      }
-    }
-
-    public IEnumerator<IEnumerable<T>> GetEnumerator() {
-      for (int i = 0; i < Height; i++) {
-        yield return GetRow(i);
-      }
-    }
+    public IEnumerator<IEnumerable<T>> GetColumnEnumerator() => Columns.GetEnumerator();
+    public IEnumerator<IEnumerable<T>> GetEnumerator() => Rows.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
