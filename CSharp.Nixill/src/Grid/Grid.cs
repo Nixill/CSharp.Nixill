@@ -78,7 +78,7 @@ namespace Nixill.Collections.Grid {
     public IEnumerable<IEnumerable<T>> Rows {
       get {
         for (int i = 0; i < Height; i++) {
-          yield return GetRow(i);
+          yield return RowEnumerable(i);
         }
       }
     }
@@ -176,7 +176,7 @@ namespace Nixill.Collections.Grid {
     }
 
     public IList<T> GetColumn(int index) {
-      return new GridLine<T>(this, true, index);
+      return new List<T>(ColumnEnumerable(index));
     }
 
     public IEnumerator<IEnumerable<T>> GetColumnEnumerator() => Columns.GetEnumerator();
@@ -185,7 +185,7 @@ namespace Nixill.Collections.Grid {
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public IList<T> GetRow(int index) {
-      return new GridLine<T>(this, false, index);
+      return new List<T>(RowEnumerable(index));
     }
 
     public GridReference IndexOf(T item) {
@@ -258,102 +258,5 @@ namespace Nixill.Collections.Grid {
       if (row < 0 || row >= Height) throw new ArgumentOutOfRangeException("Can only remove existing rows.");
       BackingList.RemoveAt(row);
     }
-  }
-
-  /// <summary>
-  /// One line - either a whole row or column - of a grid.
-  ///
-  /// The constructed GridLine is a window to a static point. GridLines to
-  /// invalid rows or columns (higher than the range) can be constructed,
-  /// but attempts to retrieve data from them will cause exceptions. A
-  /// GridLine won't move with the actual line it initially references,
-  /// i.e. a GridLine for column 2 will always point to whatever happens
-  /// to be the column in that position. However, the size of the line
-  /// will change with the size of that axis of the grid.
-  ///
-  /// A GridLine's structure cannot be modified from the GridLine class,
-  /// but will reflect any changes made from the Grid class. Individual
-  /// elements are likewise synced but can be changed from either class.
-  /// </summary>
-  public class GridLine<T> : IList<T> {
-    public IGrid<T> ParentGrid { get; internal set; }
-    public bool IsColumn { get; internal set; }
-    public int Index { get; internal set; }
-
-    public T this[int index] {
-      get {
-        if (!IsColumn) return ParentGrid[Index, index];
-        else return ParentGrid[index, Index];
-      }
-      set {
-        if (!IsColumn) ParentGrid[Index, index] = value;
-        else ParentGrid[index, Index] = value;
-      }
-    }
-
-    public int Count => IsColumn ? ParentGrid.Height : ParentGrid.Width;
-
-    public bool IsReadOnly => false;
-
-    public GridLine(IGrid<T> parent, bool isColumn, int index) {
-      ParentGrid = parent;
-      IsColumn = isColumn;
-      Index = index;
-    }
-
-    public void Add(T item) {
-      throw new System.NotSupportedException();
-    }
-
-    public void Clear() {
-      throw new System.NotSupportedException();
-    }
-
-    public bool Contains(T item) {
-      foreach (T itm in this) {
-        if (object.Equals(itm, item)) return true;
-      }
-      return false;
-    }
-
-    public void CopyTo(T[] array, int arrayIndex) {
-      ((List<T>)this).CopyTo(array, arrayIndex);
-    }
-
-    public IEnumerator<T> GetEnumerator() {
-      int len = Count;
-      for (int i = 0; i < len; i++) {
-        yield return this[i];
-      }
-    }
-
-    public int IndexOf(T item) {
-      int len = Count;
-      for (int i = 0; i < len; i++) {
-        if (object.Equals(item, this[i])) return i;
-      }
-      return -1;
-    }
-
-    public void Insert(int index, T item) {
-      throw new System.NotSupportedException();
-    }
-
-    public bool Remove(T item) {
-      throw new System.NotSupportedException();
-    }
-
-    public void RemoveAt(int index) {
-      throw new System.NotSupportedException();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() {
-      int len = Count;
-      for (int i = 0; i < len; i++) {
-        yield return this[i];
-      }
-    }
-
-    public static explicit operator List<T>(GridLine<T> input) => new List<T>(input);
   }
 }

@@ -234,4 +234,39 @@ public static class EnumerableUtils {
   }
 
   public static string FormString(this IEnumerable<char> chars) => new string(chars.ToArray());
+
+  public static IEnumerable<TSource> WhereOrderedBy<TSource, TKey>(this IEnumerable<TSource> sequence,
+  Func<TSource, TKey> mutator, IComparer<TKey> comparer, bool desc = false, bool distinctly = false) {
+    bool assigned = false;
+    TKey last = default(TKey);
+
+    Func<int, bool> expected;
+
+    if (desc)
+      if (distinctly) expected = (i) => i < 0;
+      else expected = (i) => i <= 0;
+    else
+      if (distinctly) expected = (i) => i > 0;
+    else expected = (i) => i >= 0;
+
+    foreach (TSource item in sequence) {
+      TKey key = mutator(item);
+
+      if ((!assigned) || expected(comparer.Compare(key, last))) {
+        last = key;
+        assigned = true;
+        yield return item;
+      }
+    }
+  }
+
+  public static IEnumerable<TSource> WhereOrderedBy<TSource, TKey>(this IEnumerable<TSource> sequence,
+    Func<TSource, TKey> mutator, bool desc = false, bool distinctly = false)
+      => sequence.WhereOrderedBy(mutator, Comparer<TKey>.Default, desc, distinctly);
+
+  public static IEnumerable<T> WhereOrdered<T>(this IEnumerable<T> sequence, IComparer<T> comparer, bool desc = false,
+    bool distinctly = false) => sequence.WhereOrderedBy(x => x, comparer, desc, distinctly);
+
+  public static IEnumerable<T> WhereOrdered<T>(this IEnumerable<T> sequence, bool desc = false, bool distinctly = false)
+    => sequence.WhereOrderedBy(x => x, Comparer<T>.Default, desc, distinctly);
 }

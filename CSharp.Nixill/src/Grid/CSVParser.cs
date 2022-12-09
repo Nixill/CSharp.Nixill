@@ -166,7 +166,7 @@ namespace Nixill.Collections.Grid.CSV {
     /// </summary>
     /// <param name="input">The grid to output.</param>
     public static IEnumerable<string> GridToStringEnumerable<T>(IGrid<T> input) {
-      foreach (GridLine<T> line in input) {
+      foreach (IEnumerable<T> line in input) {
         StringBuilder ret = new StringBuilder();
         foreach (T obj in line) {
           ret.Append("," + CSVEscape(obj?.ToString() ?? ""));
