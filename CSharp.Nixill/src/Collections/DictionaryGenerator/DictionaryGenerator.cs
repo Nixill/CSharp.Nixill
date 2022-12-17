@@ -27,9 +27,27 @@ namespace Nixill.Collections {
     public IDictionary<K, V> Dict { get; }
 
     /// <summary>
-    /// Creates a new, empty Dictionary with the default initial capacity
-    /// and default equality comparer.
+    /// Creates a new, empty Dictionary&lt;K, V&gt; with a
+    /// DefaultGenerator.
     /// </summary>
+    public DictionaryGenerator() {
+      Dict = new Dictionary<K, V>();
+      Generator = new DefaultGenerator<K, V>();
+    }
+
+    /// <summary>
+    /// Creates a new, empty Dictionary&lt;K, V&gt; and wraps it with the
+    /// provided Generator.
+    /// </summary>
+    public DictionaryGenerator(Generator<K, V> gen) {
+      Dict = new Dictionary<K, V>();
+      Generator = gen;
+    }
+
+    /// <summary>
+    /// Wraps an existing IDictionary with the provided Generator.
+    /// </summary>
+    /// <param name="dict">The Dictionary to use.</param>
     /// <param name="gen">The Generator to use.</param>
     public DictionaryGenerator(IDictionary<K, V> dict, Generator<K, V> gen) {
       Dict = dict;
@@ -198,5 +216,13 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="value">The value to check for.</param>
     public bool? CanGenerate(V val) => null;
+  }
+
+  public static class DictionaryGeneratorExtensions {
+    public static DictionaryGenerator<K, V> WithGenerator<K, V>(this IDictionary<K, V> dict, Generator<K, V> gen)
+      => new DictionaryGenerator<K, V>(dict, gen);
+    
+    public static DictionaryGenerator<K, V> CopyWithGenerator<K, V>(this IDictionary<K, V> dict, Generator<K, V> gen)
+      => new DictionaryGenerator<K, V>(new Dictionary<K, V>(dict), gen);
   }
 }

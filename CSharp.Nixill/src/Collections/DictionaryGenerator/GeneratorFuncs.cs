@@ -95,7 +95,7 @@ namespace Nixill.Collections {
     /// in sequence.
     /// </summary>
     public new bool? CanGenerate(int val) {
-      return Count <= val;
+      return Count == val;
     }
   }
 
