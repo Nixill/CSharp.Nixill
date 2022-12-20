@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <PackageId>Nixill</PackageId>
     <Version>$(RELEASE_VERSION)</Version>
     <Authors>Nixill</Authors>
     <PackageDescription>Some niche but neat things Nix oft needs.</PackageDescription>
     <RepositoryUrl>https://github.com/ShadowFoxNixill/CSharp.Nixill</RepositoryUrl>
     <RootNamespace>Nixill</RootNamespace>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
