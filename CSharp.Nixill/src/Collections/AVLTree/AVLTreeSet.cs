@@ -5,7 +5,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
-namespace Nixill.Collections {
+namespace Nixill.Collections
+{
   /// <summary>
   ///   This is an implementation of <see cref="ISet<T>" /> backed by an
   ///   AVL tree.
@@ -23,7 +24,8 @@ namespace Nixill.Collections {
   ///   </para>
   /// </remarks>
   /// <typeparam name="T">The type of the data stored in the nodes</typeparam>
-  public class AVLTreeSet<T> : INavigableSet<T> {
+  public class AVLTreeSet<T> : INavigableSet<T>
+  {
     #region Fields
 
     private Node<T> Root;
@@ -108,11 +110,14 @@ namespace Nixill.Collections {
     /// <param name="comparer">
     ///   The function that compares the elements of the set.
     /// </param>
-    public AVLTreeSet(IEnumerable<T> elems, Comparison<T> comparer) {
+    public AVLTreeSet(IEnumerable<T> elems, Comparison<T> comparer)
+    {
       this.Comparer = comparer;
 
-      if (elems != null) {
-        foreach (var elem in elems) {
+      if (elems != null)
+      {
+        foreach (var elem in elems)
+        {
           this.Add(elem);
         }
       }
@@ -134,7 +139,8 @@ namespace Nixill.Collections {
 
     #region Enums
 
-    public enum SplitOperationMode {
+    public enum SplitOperationMode
+    {
       IncludeSplitValueToLeftSubtree,
       IncludeSplitValueToRightSubtree,
       DoNotIncludeSplitValue
@@ -149,7 +155,8 @@ namespace Nixill.Collections {
     /// Complexity: O(log(N))
     /// </summary>
     /// <param name="arg">The arg.</param>
-    public bool Add(T arg) {
+    public bool Add(T arg)
+    {
       bool wasAdded = false;
       bool wasSuccessful = false;
 
@@ -165,10 +172,12 @@ namespace Nixill.Collections {
     /// Complexity: O(log(N))
     /// </summary>
     /// <param name="arg">The arg.</param>
-    public bool Delete(T arg) {
+    public bool Delete(T arg)
+    {
       bool wasSuccessful = false;
 
-      if (this.Root != null) {
+      if (this.Root != null)
+      {
         bool wasDeleted = false;
         this.Root = this.Delete(this.Root, arg, ref wasDeleted, ref wasSuccessful);
       }
@@ -184,10 +193,13 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="value">The location which upon return will store the min value in the tree.</param>
     /// <returns>a boolean indicating success or failure</returns>
-    public bool GetMin(out T value) {
-      if (this.Root != null) {
+    public bool GetMin(out T value)
+    {
+      if (this.Root != null)
+      {
         var min = FindMin(this.Root);
-        if (min != null) {
+        if (min != null)
+        {
           value = min.Data;
           return true;
         }
@@ -203,10 +215,13 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="value">The location which upon return will store the max value in the tree.</param>
     /// <returns>a boolean indicating success or failure</returns>
-    public bool GetMax(out T value) {
-      if (this.Root != null) {
+    public bool GetMax(out T value)
+    {
+      if (this.Root != null)
+      {
         var max = FindMax(this.Root);
-        if (max != null) {
+        if (max != null)
+        {
           value = max.Data;
           return true;
         }
@@ -224,7 +239,8 @@ namespace Nixill.Collections {
     /// <returns>
     ///   <c>true</c> if tree contains the specified arg; otherwise, <c>false</c>.
     /// </returns>
-    public bool Contains(T arg) {
+    public bool Contains(T arg)
+    {
       return this.Search(this.Root, arg) != null;
     }
 
@@ -232,8 +248,10 @@ namespace Nixill.Collections {
     /// Deletes the min. value in the tree. 
     /// Complexity: O(log(N))
     /// </summary>
-    public bool DeleteMin() {
-      if (this.Root != null) {
+    public bool DeleteMin()
+    {
+      if (this.Root != null)
+      {
         bool wasDeleted = false, wasSuccessful = false;
         this.Root = this.DeleteMin(this.Root, ref wasDeleted, ref wasSuccessful);
 
@@ -247,8 +265,10 @@ namespace Nixill.Collections {
     /// Deletes the max. value in the tree. 
     /// Complexity: O(log(N))
     /// </summary>
-    public bool DeleteMax() {
-      if (this.Root != null) {
+    public bool DeleteMax()
+    {
+      if (this.Root != null)
+      {
         bool wasDeleted = false, wasSuccessful = false;
         this.Root = this.DeleteMax(this.Root, ref wasDeleted, ref wasSuccessful);
 
@@ -263,7 +283,8 @@ namespace Nixill.Collections {
     /// Complexity: O(log N).
     /// </summary>
     /// <returns>the avl tree height</returns>
-    public int GetHeightLogN() {
+    public int GetHeightLogN()
+    {
       return this.GetHeightLogN(this.Root);
     }
 
@@ -271,7 +292,8 @@ namespace Nixill.Collections {
     /// Clears this instance.
     /// Complexity: O(1).
     /// </summary>
-    public void Clear() {
+    public void Clear()
+    {
       this.Root = null;
       Count = 0;
     }
@@ -279,8 +301,10 @@ namespace Nixill.Collections {
     /// <summary>
     /// Prints this instance.
     /// </summary>
-    public void Print() {
-      this.Visit((node, level) => {
+    public void Print()
+    {
+      this.Visit((node, level) =>
+      {
         Console.Write(new string(' ', 2 * level));
         Console.WriteLine("{0, 6}", node.Data);
       });
@@ -295,7 +319,8 @@ namespace Nixill.Collections {
     /// Returns the value requested if the collection contains it, as well
     /// as the next higher and lower values.
     /// </summary>
-    public NodeTriplet<T> SearchAround(T value) {
+    public NodeTriplet<T> SearchAround(T value)
+    {
       return new NodeTriplet<T>(SearchBounded(value));
     }
 
@@ -309,7 +334,8 @@ namespace Nixill.Collections {
     /// <exception cref="InvalidOperationException">
     /// The <c>oldValue</c> is not present within the set.
     /// </exception>
-    public void ReplaceValue(T oldValue, T newValue) {
+    public void ReplaceValue(T oldValue, T newValue)
+    {
       var nodes = SearchBounded(oldValue);
       if (nodes.Exact == null) throw new InvalidOperationException("The oldValue was not found in the set.");
       if (nodes.Higher != null && Comparer(newValue, nodes.Higher.Data) >= 0) throw new ArgumentOutOfRangeException("newValue", "Higher than or equal to the next node.");
@@ -321,15 +347,18 @@ namespace Nixill.Collections {
 
     #region Interface Implementations
 
-    public bool TryGetLower(T from, out T value) {
+    public bool TryGetLower(T from, out T value)
+    {
       var nodes = SearchBounded(from);
       var node = nodes.Lower;
 
-      if (node != null) {
+      if (node != null)
+      {
         value = node.Data;
         return true;
       }
-      else {
+      else
+      {
         value = default(T);
         return false;
       }
@@ -337,23 +366,28 @@ namespace Nixill.Collections {
 
     public bool ContainsLower(T from) => TryGetLower(from, out T placeholder);
 
-    public T Lower(T from) {
+    public T Lower(T from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have lower values in an empty AVLTreeSet.");
-      if (TryGetLower(from, out T value)) {
+      if (TryGetLower(from, out T value))
+      {
         return value;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no lower value in the AVLTreeSet.");
     }
 
-    public bool TryGetFloor(T from, out T value) {
+    public bool TryGetFloor(T from, out T value)
+    {
       var nodes = SearchBounded(from);
       var node = nodes.Exact ?? nodes.Lower;
 
-      if (node != null) {
+      if (node != null)
+      {
         value = node.Data;
         return true;
       }
-      else {
+      else
+      {
         value = default(T);
         return false;
       }
@@ -361,23 +395,28 @@ namespace Nixill.Collections {
 
     public bool ContainsFloor(T from) => TryGetFloor(from, out T placeholder);
 
-    public T Floor(T from) {
+    public T Floor(T from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have floor values in an empty AVLTreeSet.");
-      if (TryGetFloor(from, out T value)) {
+      if (TryGetFloor(from, out T value))
+      {
         return value;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no floor value in the AVLTreeSet.");
     }
 
-    public bool TryGetCeiling(T from, out T value) {
+    public bool TryGetCeiling(T from, out T value)
+    {
       var nodes = SearchBounded(from);
       var node = nodes.Exact ?? nodes.Higher;
 
-      if (node != null) {
+      if (node != null)
+      {
         value = node.Data;
         return true;
       }
-      else {
+      else
+      {
         value = default(T);
         return false;
       }
@@ -385,23 +424,28 @@ namespace Nixill.Collections {
 
     public bool ContainsCeiling(T from) => TryGetCeiling(from, out T placeholder);
 
-    public T Ceiling(T from) {
+    public T Ceiling(T from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have ceiling values in an empty AVLTreeSet.");
-      if (TryGetCeiling(from, out T value)) {
+      if (TryGetCeiling(from, out T value))
+      {
         return value;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no ceiling value in the AVLTreeSet.");
     }
 
-    public bool TryGetHigher(T from, out T value) {
+    public bool TryGetHigher(T from, out T value)
+    {
       var nodes = SearchBounded(from);
       var node = nodes.Higher;
 
-      if (node != null) {
+      if (node != null)
+      {
         value = node.Data;
         return true;
       }
-      else {
+      else
+      {
         value = default(T);
         return false;
       }
@@ -409,39 +453,47 @@ namespace Nixill.Collections {
 
     public bool ContainsHigher(T from) => TryGetHigher(from, out T placeholder);
 
-    public T Higher(T from) {
+    public T Higher(T from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have higher values in an empty AVLTreeSet.");
-      if (TryGetHigher(from, out T value)) {
+      if (TryGetHigher(from, out T value))
+      {
         return value;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no higher value in the AVLTreeSet.");
     }
 
-    public T LowestValue() {
+    public T LowestValue()
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot get the lowest value of an empty AVLTreeSet.");
       GetMin(out T val);
       return val;
     }
 
-    public T HighestValue() {
+    public T HighestValue()
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot get the highest value of an empty AVLTreeSet.");
       GetMax(out T val);
       return val;
     }
 
-    public void ExceptWith(IEnumerable<T> elems) {
+    public void ExceptWith(IEnumerable<T> elems)
+    {
       Root = new AVLTreeSet<T>(this.Except(elems), Comparer).Root;
     }
 
-    public void IntersectWith(IEnumerable<T> elems) {
+    public void IntersectWith(IEnumerable<T> elems)
+    {
       Root = new AVLTreeSet<T>(this.Intersect(elems), Comparer).Root;
     }
 
-    public void SymmetricExceptWith(IEnumerable<T> elems) {
+    public void SymmetricExceptWith(IEnumerable<T> elems)
+    {
       Root = new AVLTreeSet<T>(this.Except(elems).Union(elems.Except(this)), Comparer).Root;
     }
 
-    public void UnionWith(IEnumerable<T> elems) {
+    public void UnionWith(IEnumerable<T> elems)
+    {
       Root = new AVLTreeSet<T>(this.Union(elems), Comparer).Root;
     }
 
@@ -454,8 +506,10 @@ namespace Nixill.Collections {
 
     void ICollection<T>.Add(T item) { Add(item); }
 
-    public void CopyTo(T[] array, int index) {
-      foreach (T item in this) {
+    public void CopyTo(T[] array, int index)
+    {
+      foreach (T item in this)
+      {
         array[index++] = item;
       }
     }
@@ -469,9 +523,11 @@ namespace Nixill.Collections {
 
     #region Internal Methods
 
-    internal int GetCount() {
+    internal int GetCount()
+    {
       int count = 0;
-      this.Visit((node, level) => {
+      this.Visit((node, level) =>
+      {
         count++;
       });
       return count;
@@ -481,7 +537,8 @@ namespace Nixill.Collections {
 
     #region Private Methods
 
-    private IEnumerable<T> RecursiveEnumerate(Node<T> node) {
+    private IEnumerable<T> RecursiveEnumerate(Node<T> node)
+    {
       if (node == null) yield break;
 
       foreach (T item in RecursiveEnumerate(node.Left)) yield return item;
@@ -489,11 +546,14 @@ namespace Nixill.Collections {
       foreach (T item in RecursiveEnumerate(node.Right)) yield return item;
     }
 
-    private static Comparison<T> GetComparer() {
-      if (typeof(IComparable<T>).IsAssignableFrom(typeof(T)) || typeof(System.IComparable).IsAssignableFrom(typeof(T))) {
+    private static Comparison<T> GetComparer()
+    {
+      if (typeof(IComparable<T>).IsAssignableFrom(typeof(T)) || typeof(System.IComparable).IsAssignableFrom(typeof(T)))
+      {
         return Comparer<T>.Default.Compare;
       }
-      else {
+      else
+      {
         throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The type {0} cannot be compared. It must implement IComparable<T> or IComparable interface", typeof(T).FullName));
       }
     }
@@ -503,13 +563,17 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="node">The node.</param>
     /// <returns>The height of the tree. Runs in O(log(n)) where n is the number of nodes in the tree </returns>
-    private int GetHeightLogN(Node<T> node) {
-      if (node == null) {
+    private int GetHeightLogN(Node<T> node)
+    {
+      if (node == null)
+      {
         return 0;
       }
-      else {
+      else
+      {
         int leftHeight = this.GetHeightLogN(node.Left);
-        if (node.Balance == 1) {
+        if (node.Balance == 1)
+        {
           leftHeight++;
         }
 
@@ -523,31 +587,40 @@ namespace Nixill.Collections {
     /// <param name="elem">The elem.</param>
     /// <param name="data">The data.</param>
     /// <returns></returns>
-    private Node<T> Add(Node<T> elem, T data, ref bool wasAdded, ref bool wasSuccessful) {
-      if (elem == null) {
+    private Node<T> Add(Node<T> elem, T data, ref bool wasAdded, ref bool wasSuccessful)
+    {
+      if (elem == null)
+      {
         elem = new Node<T> { Data = data, Left = null, Right = null, Balance = 0 };
 
         wasAdded = true;
         wasSuccessful = true;
       }
-      else {
+      else
+      {
         int resultCompare = this.Comparer(data, elem.Data);
 
-        if (resultCompare < 0) {
+        if (resultCompare < 0)
+        {
           var newLeft = Add(elem.Left, data, ref wasAdded, ref wasSuccessful);
-          if (elem.Left != newLeft) {
+          if (elem.Left != newLeft)
+          {
             elem.Left = newLeft;
           }
 
-          if (wasAdded) {
+          if (wasAdded)
+          {
             --elem.Balance;
 
-            if (elem.Balance == 0) {
+            if (elem.Balance == 0)
+            {
               wasAdded = false;
             }
-            else if (elem.Balance == -2) {
+            else if (elem.Balance == -2)
+            {
               int leftBalance = newLeft.Balance;
-              if (leftBalance == 1) {
+              if (leftBalance == 1)
+              {
                 int elemLeftRightBalance = newLeft.Right.Balance;
 
                 elem.Left = RotateLeft(newLeft);
@@ -557,7 +630,8 @@ namespace Nixill.Collections {
                 elem.Left.Balance = elemLeftRightBalance == 1 ? -1 : 0;
                 elem.Right.Balance = elemLeftRightBalance == -1 ? 1 : 0;
               }
-              else if (leftBalance == -1) {
+              else if (leftBalance == -1)
+              {
                 elem = RotateRight(elem);
                 elem.Balance = 0;
                 elem.Right.Balance = 0;
@@ -567,20 +641,26 @@ namespace Nixill.Collections {
             }
           }
         }
-        else if (resultCompare > 0) {
+        else if (resultCompare > 0)
+        {
           var newRight = this.Add(elem.Right, data, ref wasAdded, ref wasSuccessful);
-          if (elem.Right != newRight) {
+          if (elem.Right != newRight)
+          {
             elem.Right = newRight;
           }
 
-          if (wasAdded) {
+          if (wasAdded)
+          {
             ++elem.Balance;
-            if (elem.Balance == 0) {
+            if (elem.Balance == 0)
+            {
               wasAdded = false;
             }
-            else if (elem.Balance == 2) {
+            else if (elem.Balance == 2)
+            {
               int rightBalance = newRight.Balance;
-              if (rightBalance == -1) {
+              if (rightBalance == -1)
+              {
                 int elemRightLeftBalance = newRight.Left.Balance;
 
                 elem.Right = RotateRight(newRight);
@@ -590,7 +670,8 @@ namespace Nixill.Collections {
                 elem.Left.Balance = elemRightLeftBalance == 1 ? -1 : 0;
                 elem.Right.Balance = elemRightLeftBalance == -1 ? 1 : 0;
               }
-              else if (rightBalance == 1) {
+              else if (rightBalance == 1)
+              {
                 elem = RotateLeft(elem);
 
                 elem.Balance = 0;
@@ -612,25 +693,32 @@ namespace Nixill.Collections {
     /// <param name="node">The node.</param>
     /// <param name="arg">The arg.</param>
     /// <returns></returns>
-    private Node<T> Delete(Node<T> node, T arg, ref bool wasDeleted, ref bool wasSuccessful) {
+    private Node<T> Delete(Node<T> node, T arg, ref bool wasDeleted, ref bool wasSuccessful)
+    {
       int cmp = this.Comparer(arg, node.Data);
       Node<T> newChild = null;
 
-      if (cmp < 0) {
-        if (node.Left != null) {
+      if (cmp < 0)
+      {
+        if (node.Left != null)
+        {
           newChild = this.Delete(node.Left, arg, ref wasDeleted, ref wasSuccessful);
-          if (node.Left != newChild) {
+          if (node.Left != newChild)
+          {
             node.Left = newChild;
           }
 
-          if (wasDeleted) {
+          if (wasDeleted)
+          {
             node.Balance++;
           }
         }
       }
-      else if (cmp == 0) {
+      else if (cmp == 0)
+      {
         wasDeleted = true;
-        if (node.Left != null && node.Right != null) {
+        if (node.Left != null && node.Right != null)
+        {
           var min = FindMin(node.Right);
           T data = node.Data;
           node.Data = min.Data;
@@ -639,47 +727,59 @@ namespace Nixill.Collections {
           wasDeleted = false;
 
           newChild = this.Delete(node.Right, data, ref wasDeleted, ref wasSuccessful);
-          if (node.Right != newChild) {
+          if (node.Right != newChild)
+          {
             node.Right = newChild;
           }
 
-          if (wasDeleted) {
+          if (wasDeleted)
+          {
             node.Balance--;
           }
         }
-        else if (node.Left == null) {
+        else if (node.Left == null)
+        {
           wasSuccessful = true;
 
           return node.Right;
         }
-        else {
+        else
+        {
           wasSuccessful = true;
 
           return node.Left;
         }
       }
-      else {
-        if (node.Right != null) {
+      else
+      {
+        if (node.Right != null)
+        {
           newChild = this.Delete(node.Right, arg, ref wasDeleted, ref wasSuccessful);
-          if (node.Right != newChild) {
+          if (node.Right != newChild)
+          {
             node.Right = newChild;
           }
 
-          if (wasDeleted) {
+          if (wasDeleted)
+          {
             node.Balance--;
           }
         }
       }
 
-      if (wasDeleted) {
-        if (node.Balance == 1 || node.Balance == -1) {
+      if (wasDeleted)
+      {
+        if (node.Balance == 1 || node.Balance == -1)
+        {
           wasDeleted = false;
         }
-        else if (node.Balance == -2) {
+        else if (node.Balance == -2)
+        {
           var nodeLeft = node.Left;
           int leftBalance = nodeLeft.Balance;
 
-          if (leftBalance == 1) {
+          if (leftBalance == 1)
+          {
             int leftRightBalance = nodeLeft.Right.Balance;
 
             node.Left = RotateLeft(nodeLeft);
@@ -689,12 +789,14 @@ namespace Nixill.Collections {
             node.Left.Balance = (leftRightBalance == 1) ? -1 : 0;
             node.Right.Balance = (leftRightBalance == -1) ? 1 : 0;
           }
-          else if (leftBalance == -1) {
+          else if (leftBalance == -1)
+          {
             node = RotateRight(node);
             node.Balance = 0;
             node.Right.Balance = 0;
           }
-          else if (leftBalance == 0) {
+          else if (leftBalance == 0)
+          {
             node = RotateRight(node);
             node.Balance = 1;
             node.Right.Balance = -1;
@@ -702,11 +804,13 @@ namespace Nixill.Collections {
             wasDeleted = false;
           }
         }
-        else if (node.Balance == 2) {
+        else if (node.Balance == 2)
+        {
           var nodeRight = node.Right;
           int rightBalance = nodeRight.Balance;
 
-          if (rightBalance == -1) {
+          if (rightBalance == -1)
+          {
             int rightLeftBalance = nodeRight.Left.Balance;
 
             node.Right = RotateRight(nodeRight);
@@ -716,12 +820,14 @@ namespace Nixill.Collections {
             node.Left.Balance = (rightLeftBalance == 1) ? -1 : 0;
             node.Right.Balance = (rightLeftBalance == -1) ? 1 : 0;
           }
-          else if (rightBalance == 1) {
+          else if (rightBalance == 1)
+          {
             node = RotateLeft(node);
             node.Balance = 0;
             node.Left.Balance = 0;
           }
-          else if (rightBalance == 0) {
+          else if (rightBalance == 0)
+          {
             node = RotateLeft(node);
             node.Balance = -1;
             node.Left.Balance = 1;
@@ -739,8 +845,10 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="node">The node.</param>
     /// <returns></returns>
-    private static Node<T> FindMin(Node<T> node) {
-      while (node != null && node.Left != null) {
+    private static Node<T> FindMin(Node<T> node)
+    {
+      while (node != null && node.Left != null)
+      {
         node = node.Left;
       }
 
@@ -752,8 +860,10 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="node">The node.</param>
     /// <returns></returns>
-    private static Node<T> FindMax(Node<T> node) {
-      while (node != null && node.Right != null) {
+    private static Node<T> FindMax(Node<T> node)
+    {
+      while (node != null && node.Right != null)
+      {
         node = node.Right;
       }
 
@@ -766,19 +876,25 @@ namespace Nixill.Collections {
     /// <param name="subtree">The subtree.</param>
     /// <param name="data">The data to search for.</param>
     /// <returns>null if not found, otherwise the node instance with the specified value</returns>
-    private Node<T> Search(Node<T> subtree, T data) {
-      if (subtree != null) {
-        if (this.Comparer(data, subtree.Data) < 0) {
+    private Node<T> Search(Node<T> subtree, T data)
+    {
+      if (subtree != null)
+      {
+        if (this.Comparer(data, subtree.Data) < 0)
+        {
           return this.Search(subtree.Left, data);
         }
-        else if (this.Comparer(data, subtree.Data) > 0) {
+        else if (this.Comparer(data, subtree.Data) > 0)
+        {
           return this.Search(subtree.Right, data);
         }
-        else {
+        else
+        {
           return subtree;
         }
       }
-      else {
+      else
+      {
         return null;
       }
     }
@@ -789,10 +905,12 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="node">The node.</param>
     /// <returns></returns>
-    private Node<T> DeleteMin(Node<T> node, ref bool wasDeleted, ref bool wasSuccessful) {
+    private Node<T> DeleteMin(Node<T> node, ref bool wasDeleted, ref bool wasSuccessful)
+    {
       Debug.Assert(node != null);
 
-      if (node.Left == null) {
+      if (node.Left == null)
+      {
         wasDeleted = true;
         wasSuccessful = true;
 
@@ -800,17 +918,22 @@ namespace Nixill.Collections {
       }
 
       node.Left = this.DeleteMin(node.Left, ref wasDeleted, ref wasSuccessful);
-      if (wasDeleted) {
+      if (wasDeleted)
+      {
         node.Balance++;
       }
 
-      if (wasDeleted) {
-        if (node.Balance == 1 || node.Balance == -1) {
+      if (wasDeleted)
+      {
+        if (node.Balance == 1 || node.Balance == -1)
+        {
           wasDeleted = false;
         }
-        else if (node.Balance == -2) {
+        else if (node.Balance == -2)
+        {
           int leftBalance = node.Left.Balance;
-          if (leftBalance == 1) {
+          if (leftBalance == 1)
+          {
             int leftRightBalance = node.Left.Right.Balance;
 
             node.Left = RotateLeft(node.Left);
@@ -820,12 +943,14 @@ namespace Nixill.Collections {
             node.Left.Balance = (leftRightBalance == 1) ? -1 : 0;
             node.Right.Balance = (leftRightBalance == -1) ? 1 : 0;
           }
-          else if (leftBalance == -1) {
+          else if (leftBalance == -1)
+          {
             node = RotateRight(node);
             node.Balance = 0;
             node.Right.Balance = 0;
           }
-          else if (leftBalance == 0) {
+          else if (leftBalance == 0)
+          {
             node = RotateRight(node);
             node.Balance = 1;
             node.Right.Balance = -1;
@@ -833,9 +958,11 @@ namespace Nixill.Collections {
             wasDeleted = false;
           }
         }
-        else if (node.Balance == 2) {
+        else if (node.Balance == 2)
+        {
           int rightBalance = node.Right.Balance;
-          if (rightBalance == -1) {
+          if (rightBalance == -1)
+          {
             int rightLeftBalance = node.Right.Left.Balance;
 
             node.Right = RotateRight(node.Right);
@@ -845,12 +972,14 @@ namespace Nixill.Collections {
             node.Left.Balance = (rightLeftBalance == 1) ? -1 : 0;
             node.Right.Balance = (rightLeftBalance == -1) ? 1 : 0;
           }
-          else if (rightBalance == 1) {
+          else if (rightBalance == 1)
+          {
             node = RotateLeft(node);
             node.Balance = 0;
             node.Left.Balance = 0;
           }
-          else if (rightBalance == 0) {
+          else if (rightBalance == 0)
+          {
             node = RotateLeft(node);
             node.Balance = -1;
             node.Left.Balance = 1;
@@ -869,10 +998,12 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="node">The node.</param>
     /// <returns></returns>
-    private Node<T> DeleteMax(Node<T> node, ref bool wasDeleted, ref bool wasSuccessful) {
+    private Node<T> DeleteMax(Node<T> node, ref bool wasDeleted, ref bool wasSuccessful)
+    {
       Debug.Assert(node != null);
 
-      if (node.Right == null) {
+      if (node.Right == null)
+      {
         wasDeleted = true;
         wasSuccessful = true;
 
@@ -880,17 +1011,22 @@ namespace Nixill.Collections {
       }
 
       node.Right = this.DeleteMax(node.Right, ref wasDeleted, ref wasSuccessful);
-      if (wasDeleted) {
+      if (wasDeleted)
+      {
         node.Balance--;
       }
 
-      if (wasDeleted) {
-        if (node.Balance == 1 || node.Balance == -1) {
+      if (wasDeleted)
+      {
+        if (node.Balance == 1 || node.Balance == -1)
+        {
           wasDeleted = false;
         }
-        else if (node.Balance == -2) {
+        else if (node.Balance == -2)
+        {
           int leftBalance = node.Left.Balance;
-          if (leftBalance == 1) {
+          if (leftBalance == 1)
+          {
             int leftRightBalance = node.Left.Right.Balance;
 
             node.Left = RotateLeft(node.Left);
@@ -900,12 +1036,14 @@ namespace Nixill.Collections {
             node.Left.Balance = (leftRightBalance == 1) ? -1 : 0;
             node.Right.Balance = (leftRightBalance == -1) ? 1 : 0;
           }
-          else if (leftBalance == -1) {
+          else if (leftBalance == -1)
+          {
             node = RotateRight(node);
             node.Balance = 0;
             node.Right.Balance = 0;
           }
-          else if (leftBalance == 0) {
+          else if (leftBalance == 0)
+          {
             node = RotateRight(node);
             node.Balance = 1;
             node.Right.Balance = -1;
@@ -913,9 +1051,11 @@ namespace Nixill.Collections {
             wasDeleted = false;
           }
         }
-        else if (node.Balance == 2) {
+        else if (node.Balance == 2)
+        {
           int rightBalance = node.Right.Balance;
-          if (rightBalance == -1) {
+          if (rightBalance == -1)
+          {
             int rightLeftBalance = node.Right.Left.Balance;
 
             node.Right = RotateRight(node.Right);
@@ -925,12 +1065,14 @@ namespace Nixill.Collections {
             node.Left.Balance = (rightLeftBalance == 1) ? -1 : 0;
             node.Right.Balance = (rightLeftBalance == -1) ? 1 : 0;
           }
-          else if (rightBalance == 1) {
+          else if (rightBalance == 1)
+          {
             node = RotateLeft(node);
             node.Balance = 0;
             node.Left.Balance = 0;
           }
-          else if (rightBalance == 0) {
+          else if (rightBalance == 0)
+          {
             node = RotateLeft(node);
             node.Balance = -1;
             node.Left.Balance = 1;
@@ -948,8 +1090,10 @@ namespace Nixill.Collections {
     /// Visits the tree using the specified visitor.
     /// </summary>
     /// <param name="visitor">The visitor.</param>
-    private void Visit(VisitNodeHandler<Node<T>> visitor) {
-      if (this.Root != null) {
+    private void Visit(VisitNodeHandler<Node<T>> visitor)
+    {
+      if (this.Root != null)
+      {
         this.Root.Visit(visitor, 0);
       }
     }
@@ -959,7 +1103,8 @@ namespace Nixill.Collections {
     /// Precondition: (node != null && node.Right != null)
     /// </summary>
     /// <returns></returns>
-    private static Node<T> RotateLeft(Node<T> node) {
+    private static Node<T> RotateLeft(Node<T> node)
+    {
       Debug.Assert(node != null && node.Right != null);
 
       var right = node.Right;
@@ -977,7 +1122,8 @@ namespace Nixill.Collections {
     /// Precondition: (node != null && node.Left != null)
     /// </summary>
     /// <returns></returns>
-    private static Node<T> RotateRight(Node<T> node) {
+    private static Node<T> RotateRight(Node<T> node)
+    {
       Debug.Assert(node != null && node.Left != null);
 
       var left = node.Left;
@@ -992,37 +1138,46 @@ namespace Nixill.Collections {
     /// <summary>
     ///   Searches down the tree.
     /// </summary>
-    private (Node<T> Lower, Node<T> Exact, Node<T> Higher) SearchBounded(T value) {
+    private (Node<T> Lower, Node<T> Exact, Node<T> Higher) SearchBounded(T value)
+    {
       if (Root == null) return (null, null, null);
 
       Node<T> lower = null, higher = null;
       Node<T> current = Root;
 
-      while (true) {
+      while (true)
+      {
         int comp = Comparer(value, current.Data);
 
-        if (comp == 0) {
-          if (current.Left != null) {
+        if (comp == 0)
+        {
+          if (current.Left != null)
+          {
             lower = current.Left;
             while (lower.Right != null) lower = lower.Right;
           }
-          if (current.Right != null) {
+          if (current.Right != null)
+          {
             higher = current.Right;
             while (higher.Left != null) higher = higher.Left;
           }
           return (lower, current, higher);
         }
 
-        else if (comp < 0) {
-          if (current.Left != null) {
+        else if (comp < 0)
+        {
+          if (current.Left != null)
+          {
             higher = current;
             current = current.Left;
           }
           else return (lower, null, current);
         }
 
-        else {
-          if (current.Right != null) {
+        else
+        {
+          if (current.Right != null)
+          {
             lower = current;
             current = current.Right;
           }
@@ -1039,7 +1194,8 @@ namespace Nixill.Collections {
     /// node class
     /// </summary>
     /// <typeparam name="TElem">The type of the elem.</typeparam>
-    internal class Node<TElem> {
+    internal class Node<TElem>
+    {
       #region Properties
 
       public Node<TElem> Left { get; set; }
@@ -1059,18 +1215,22 @@ namespace Nixill.Collections {
       /// </summary>
       /// <param name="visitor">The visitor.</param>
       /// <param name="level">The level.</param>
-      public void Visit(VisitNodeHandler<Node<TElem>> visitor, int level) {
-        if (visitor == null) {
+      public void Visit(VisitNodeHandler<Node<TElem>> visitor, int level)
+      {
+        if (visitor == null)
+        {
           return;
         }
 
-        if (this.Left != null) {
+        if (this.Left != null)
+        {
           this.Left.Visit(visitor, level + 1);
         }
 
         visitor(this, level);
 
-        if (this.Right != null) {
+        if (this.Right != null)
+        {
           this.Right.Visit(visitor, level + 1);
         }
       }
@@ -1081,7 +1241,8 @@ namespace Nixill.Collections {
     #endregion
   }
 
-  public class NodeTriplet<T> {
+  public class NodeTriplet<T>
+  {
     internal readonly NodeValue Lesser;
     internal readonly NodeValue Equal;
     internal readonly NodeValue Greater;
@@ -1090,36 +1251,45 @@ namespace Nixill.Collections {
     public bool HasEqualValue => Equal != null;
     public bool HasGreaterValue => Greater != null;
 
-    public T LesserValue {
-      get {
+    public T LesserValue
+    {
+      get
+      {
         if (HasLesserValue) return Lesser.Value;
         else throw new InvalidOperationException("No lesser value exists.");
       }
     }
 
-    public T EqualValue {
-      get {
+    public T EqualValue
+    {
+      get
+      {
         if (HasEqualValue) return Equal.Value;
         else throw new InvalidOperationException("No equal value exists.");
       }
     }
 
-    public T GreaterValue {
-      get {
+    public T GreaterValue
+    {
+      get
+      {
         if (HasGreaterValue) return Greater.Value;
         else throw new InvalidOperationException("No greater value exists.");
       }
     }
 
-    internal NodeTriplet((AVLTreeSet<T>.Node<T> L, AVLTreeSet<T>.Node<T> E, AVLTreeSet<T>.Node<T> G) nodes) {
+    internal NodeTriplet((AVLTreeSet<T>.Node<T> L, AVLTreeSet<T>.Node<T> E, AVLTreeSet<T>.Node<T> G) nodes)
+    {
       if (nodes.L != null) Lesser = new NodeValue(nodes.L.Data);
       if (nodes.E != null) Equal = new NodeValue(nodes.E.Data);
       if (nodes.G != null) Greater = new NodeValue(nodes.G.Data);
     }
 
-    internal class NodeValue {
+    internal class NodeValue
+    {
       public readonly T Value;
-      public NodeValue(T val) {
+      public NodeValue(T val)
+      {
         Value = val;
       }
     }

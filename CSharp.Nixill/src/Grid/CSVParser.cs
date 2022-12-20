@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Nixill.Utils;
 
-namespace Nixill.Collections.Grid.CSV {
+namespace Nixill.Collections.Grid.CSV
+{
   /// <summary>
   /// This class contains static methods to convert between Grids of
   /// strings and comma separated value format files and text.
@@ -25,12 +26,14 @@ namespace Nixill.Collections.Grid.CSV {
   /// </description></item>
   /// </list>
   /// </summary>
-  public class CSVParser {
+  public class CSVParser
+  {
     /// <summary>
     /// Reads a CSV file into a Grid of strings.
     /// </summary>
     /// <param name="path">The path of the file to read.</param>
-    public static Grid<string> FileToGrid(string path) {
+    public static Grid<string> FileToGrid(string path)
+    {
       return EnumerableToGrid(FileUtils.FileCharEnumerator(path));
     }
 
@@ -38,7 +41,8 @@ namespace Nixill.Collections.Grid.CSV {
     /// Reads a CSV stream into a Grid of strings.
     /// </summary>
     /// <param name="reader">The StreamReader to read from.</param>
-    public static Grid<string> StreamToGrid(StreamReader reader) {
+    public static Grid<string> StreamToGrid(StreamReader reader)
+    {
       return EnumerableToGrid(FileUtils.StreamCharEnumerator(reader));
     }
 
@@ -46,7 +50,8 @@ namespace Nixill.Collections.Grid.CSV {
     /// Reads a CSV string into a Grid of strings.
     /// </summary>
     /// <param name="input">The input to read.</param>
-    public static Grid<string> StringToGrid(string input) {
+    public static Grid<string> StringToGrid(string input)
+    {
       return EnumerableToGrid(input);
     }
 
@@ -55,7 +60,8 @@ namespace Nixill.Collections.Grid.CSV {
     /// stream of grid rows.
     /// </summary>
     /// <param name="input">The input stream to read.</param>
-    public static IEnumerable<IList<string>> EnumerableToRows(IEnumerable<char> input) {
+    public static IEnumerable<IList<string>> EnumerableToRows(IEnumerable<char> input)
+    {
       List<string> innerList = new List<string>();
       StringBuilder val = new StringBuilder();
 
@@ -77,29 +83,35 @@ namespace Nixill.Collections.Grid.CSV {
       // the record.
       bool lastIsDQ = false;
 
-      foreach (char chr in input) {
-        if (chr == '"') {
+      foreach (char chr in input)
+      {
+        if (chr == '"')
+        {
           // Quotes always change "in quotes" state, and two in a row add 
           // a " char to the value.
-          if (lastIsDQ) {
+          if (lastIsDQ)
+          {
             lastIsDQ = false;
             val.Append('"');
           }
-          else {
+          else
+          {
             lastIsDQ = true;
           }
           inQuotes = !inQuotes;
           lastIsCR = false;
           isEmptyLine = false;
         }
-        else if (inQuotes) {
+        else if (inQuotes)
+        {
           // Aside from quotes, all characters within quotes are treated
           // literally.
           val.Append(chr);
           lastIsDQ = false;
           lastIsCR = false;
         }
-        else if (chr == ',') {
+        else if (chr == ',')
+        {
           // Outside quotes, commas add new values to the current row.
           innerList.Add(val.ToString());
           val.Clear();
@@ -107,7 +119,8 @@ namespace Nixill.Collections.Grid.CSV {
           lastIsCR = false;
           isEmptyLine = false;
         }
-        else if (chr == '\r') {
+        else if (chr == '\r')
+        {
           // Outside quotes, \r characters create new rows.
           innerList.Add(val.ToString());
           yield return innerList;
@@ -116,14 +129,17 @@ namespace Nixill.Collections.Grid.CSV {
           lastIsCR = true;
           isEmptyLine = true;
         }
-        else if (chr == '\n') {
+        else if (chr == '\n')
+        {
           // Outside quotes, \n characters create new rows - except for \n
           // characters that immediately follow \r characters, in which
           // cases the row was already created by the \r character.
-          if (lastIsCR) {
+          if (lastIsCR)
+          {
             lastIsCR = false;
           }
-          else {
+          else
+          {
             innerList.Add(val.ToString());
             yield return innerList;
             val.Clear();
@@ -131,7 +147,8 @@ namespace Nixill.Collections.Grid.CSV {
             isEmptyLine = true;
           }
         }
-        else {
+        else
+        {
           // Everything else is literal in a CSV.
           val.Append(chr);
           lastIsCR = false;
@@ -140,7 +157,8 @@ namespace Nixill.Collections.Grid.CSV {
         }
       }
 
-      if (!isEmptyLine) {
+      if (!isEmptyLine)
+      {
         innerList.Add(val.ToString());
         yield return innerList;
       }
@@ -151,10 +169,12 @@ namespace Nixill.Collections.Grid.CSV {
     /// Grid of strings.
     /// </summary>
     /// <param name="input">The input stream to read.</param>
-    public static Grid<string> EnumerableToGrid(IEnumerable<char> input) {
+    public static Grid<string> EnumerableToGrid(IEnumerable<char> input)
+    {
       List<IList<string>> backingList = new List<IList<string>>();
 
-      foreach (IList<string> innerList in EnumerableToRows(input)) {
+      foreach (IList<string> innerList in EnumerableToRows(input))
+      {
         backingList.Add(innerList);
       }
 
@@ -165,10 +185,13 @@ namespace Nixill.Collections.Grid.CSV {
     /// Returns an enumeraor over each row of a grid as strings.
     /// </summary>
     /// <param name="input">The grid to output.</param>
-    public static IEnumerable<string> GridToStringEnumerable<T>(IGrid<T> input) {
-      foreach (IEnumerable<T> line in input) {
+    public static IEnumerable<string> GridToStringEnumerable<T>(IGrid<T> input)
+    {
+      foreach (IEnumerable<T> line in input)
+      {
         StringBuilder ret = new StringBuilder();
-        foreach (T obj in line) {
+        foreach (T obj in line)
+        {
           ret.Append("," + CSVEscape(obj?.ToString() ?? ""));
         }
         if (ret.Length > 0) ret.Remove(0, 1);
@@ -180,9 +203,11 @@ namespace Nixill.Collections.Grid.CSV {
     /// Converts a grid to a csv string.
     /// </summary>
     /// <param name="input">The grid to convert.</param>
-    public static string GridToString<T>(IGrid<T> input) {
+    public static string GridToString<T>(IGrid<T> input)
+    {
       StringBuilder ret = new StringBuilder();
-      foreach (string line in GridToStringEnumerable(input)) {
+      foreach (string line in GridToStringEnumerable(input))
+      {
         ret.Append('\n' + line);
       }
       if (ret.Length > 0) ret.Remove(0, 1);
@@ -194,9 +219,12 @@ namespace Nixill.Collections.Grid.CSV {
     /// </summary>
     /// <param name="input">The grid to output.</param>
     /// <param name="file">The file to write to.</param>
-    public static void GridToFile<T>(IGrid<T> input, string file) {
-      using (StreamWriter writer = new StreamWriter(file)) {
-        foreach (string line in GridToStringEnumerable(input)) {
+    public static void GridToFile<T>(IGrid<T> input, string file)
+    {
+      using (StreamWriter writer = new StreamWriter(file))
+      {
+        foreach (string line in GridToStringEnumerable(input))
+        {
           writer.WriteLine(line);
         }
       }
@@ -211,8 +239,10 @@ namespace Nixill.Collections.Grid.CSV {
     /// wrapped in quotes. Otherwise, the input string is returned
     /// unaltered.
     /// </summary>
-    public static string CSVEscape(string input) {
-      if (input.Contains('\"') || input.Contains(',') || input.Contains('\n') || input.Contains('\r')) {
+    public static string CSVEscape(string input)
+    {
+      if (input.Contains('\"') || input.Contains(',') || input.Contains('\n') || input.Contains('\r'))
+      {
         input = '"' + input.Replace("\"", "\"\"") + '"';
       }
       return input;

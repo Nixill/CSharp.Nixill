@@ -1,10 +1,12 @@
 using System;
-namespace Nixill.Collections {
+namespace Nixill.Collections
+{
   /// <summary>
   /// A Generator that always returns the same value (supplied at
   /// construction).
   /// </summary>
-  public class SingleValueGenerator<K, V> : Generator<K, V> {
+  public class SingleValueGenerator<K, V> : Generator<K, V>
+  {
     /// <summary>
     /// The value this Generator returns.
     /// </summary>
@@ -13,7 +15,8 @@ namespace Nixill.Collections {
     /// <summary>
     /// Creates a new SingleValueGenerator with a given value.
     /// </summary>
-    public SingleValueGenerator(V val) {
+    public SingleValueGenerator(V val)
+    {
       Val = val;
     }
 
@@ -33,7 +36,8 @@ namespace Nixill.Collections {
     /// Generator. This is always <c>false</c>, unless the given value is
     /// the one supplied at construction.
     /// </summary>
-    public new bool? CanGenerate(V val) {
+    public new bool? CanGenerate(V val)
+    {
       if (Val == null) return val == null;
       else return Val.Equals(val);
     }
@@ -42,7 +46,8 @@ namespace Nixill.Collections {
   /// <summary>
   /// A Generator that returns the key as its own value.
   /// </summary>
-  public class EchoGenerator<T> : Generator<T, T> {
+  public class EchoGenerator<T> : Generator<T, T>
+  {
     /// <summary>
     /// Returns (echoes) the supplied value.
     /// </summary>
@@ -65,7 +70,8 @@ namespace Nixill.Collections {
   /// A Generator that returns incrementally counted keys, starting with
   /// zero.
   /// </summary>
-  public class CountingGenerator<K> : Generator<K, int> {
+  public class CountingGenerator<K> : Generator<K, int>
+  {
     /// <summary>
     /// The next number that will be Generated.
     /// </summary>
@@ -74,7 +80,8 @@ namespace Nixill.Collections {
     /// <summary>
     /// Creates a new CountingGenerator.
     /// </summary>
-    public CountingGenerator() {
+    public CountingGenerator()
+    {
       Count = 0;
     }
 
@@ -94,7 +101,8 @@ namespace Nixill.Collections {
     /// value. This is <c>false</c> for any value except the next number
     /// in sequence.
     /// </summary>
-    public new bool? CanGenerate(int val) {
+    public new bool? CanGenerate(int val)
+    {
       return Count == val;
     }
   }
@@ -102,7 +110,8 @@ namespace Nixill.Collections {
   /// <summary>
   /// A Generator based on an arbitrary Func.
   /// </summary>
-  public class FuncGenerator<K, V> : Generator<K, V> {
+  public class FuncGenerator<K, V> : Generator<K, V>
+  {
     /// <summary>
     /// The Func that is used to perform the actual generation of values.
     /// </summary>
@@ -130,7 +139,8 @@ namespace Nixill.Collections {
     /// Creates a new FuncGenerator with given generating and checking
     /// funcs.
     /// </summary>
-    public FuncGenerator(Func<K, V> func, Func<K, bool?> keyCheck, Func<V, bool?> valCheck) {
+    public FuncGenerator(Func<K, V> func, Func<K, bool?> keyCheck, Func<V, bool?> valCheck)
+    {
       GeneratingFunc = func;
       KeyCheckFunc = keyCheck;
       ValCheckFunc = valCheck;
@@ -145,7 +155,8 @@ namespace Nixill.Collections {
   /// A Generator that generates values which are the HashCodes of the
   /// keys used to generate them.
   /// </summary>
-  public class HashCodeGenerator<K> : Generator<K, int> {
+  public class HashCodeGenerator<K> : Generator<K, int>
+  {
     /// <summary>
     /// Returns the HashCode of the key.
     /// </summary>
@@ -156,7 +167,8 @@ namespace Nixill.Collections {
   /// A Generator that generates values which are the string
   /// representations of the keys used to generate them.
   /// </summary>
-  public class ToStringGenerator<K> : Generator<K, string> {
+  public class ToStringGenerator<K> : Generator<K, string>
+  {
     /// <summary>
     /// Returns the string representation of the key.
     /// </summary>
@@ -166,7 +178,8 @@ namespace Nixill.Collections {
   /// <summary>
   /// A Generator that generates default values for a type.
   /// </summary>
-  public class DefaultGenerator<K, V> : Generator<K, V> {
+  public class DefaultGenerator<K, V> : Generator<K, V>
+  {
     /// <summary>
     /// Returns the default value for the type <c>V</c>.
     /// </summary>
@@ -176,7 +189,8 @@ namespace Nixill.Collections {
   /// <summary>
   /// A Generator that uses the empty constructor to create values.
   /// </summary>
-  public class EmptyConstructorGenerator<K, V> : Generator<K, V> where V : new() {
+  public class EmptyConstructorGenerator<K, V> : Generator<K, V> where V : new()
+  {
     /// <summary>
     /// Returns the value type initialized with a default constructor.
     /// </summary>

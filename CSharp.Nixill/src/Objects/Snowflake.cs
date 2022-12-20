@@ -3,7 +3,8 @@ using System.Threading;
 using Nixill.Utils;
 using NodaTime;
 
-namespace Nixill.Objects {
+namespace Nixill.Objects
+{
   /// <summary>
   /// Represents a
   /// <a href="https://github.com/twitter-archive/snowflake/tree/snowflake-2010">Snowflake</a>.
@@ -12,7 +13,8 @@ namespace Nixill.Objects {
   /// The Snowflakes are not program-specific, but do follow the format
   /// originally created by Twitter and documented at that link.
   /// </remarks>
-  public class Snowflake : IComparable<Snowflake>, IComparable<long>, IComparable<Instant> {
+  public class Snowflake : IComparable<Snowflake>, IComparable<long>, IComparable<Instant>
+  {
     // The default epoch is Y2K. However, this can be overridden by the program using the library for convenience.
     // Libraries that use this class should not override this value without clearly documenting it.
     /// <summary>
@@ -113,7 +115,8 @@ namespace Nixill.Objects {
     /// <param name="epoch">The epoch the Snowflake is counting from. If
     /// unspecified, defaults to
     /// <a cref="Snowflake.DefaultEpoch">Snowflake.DefaultEpoch</a>.</param>
-    public Snowflake(Instant? time = null, int worker = 0, int sequence = 0, Instant? epoch = null) {
+    public Snowflake(Instant? time = null, int worker = 0, int sequence = 0, Instant? epoch = null)
+    {
       // Set default values
       Instant vTime = time ?? SystemClock.Instance.GetCurrentInstant();
       int vWorker = worker & 0x3FF;
@@ -141,7 +144,8 @@ namespace Nixill.Objects {
     /// <param name="epoch">The epoch the Snowflake is counting from. If
     /// unspecified, defaults to
     /// <a cref="Snowflake.DefaultEpoch">Snowflake.DefaultEpoch</a>.</param>
-    public Snowflake(long id = 0, Instant? epoch = null) {
+    public Snowflake(long id = 0, Instant? epoch = null)
+    {
       if (id < 0) throw new ArgumentOutOfRangeException("id", "ID cannot be negative.");
 
       Epoch = epoch ?? DefaultEpoch;
@@ -157,7 +161,8 @@ namespace Nixill.Objects {
     /// automatically returns <c>false</c>.
     /// </remarks>
     /// <param name="other">The other object to compare to.</param>
-    public sealed override bool Equals(object other) {
+    public sealed override bool Equals(object other)
+    {
       if (!(other is Snowflake that)) return false;
 
       return ID == that.ID && Epoch == that.Epoch;
@@ -166,7 +171,8 @@ namespace Nixill.Objects {
     /// <summary>
     /// Gets the hash code of this Snowflake.
     /// </summary>
-    public sealed override int GetHashCode() {
+    public sealed override int GetHashCode()
+    {
       int hash = (int)(ID & 0xFFFFFFFF);
       hash ^= (int)((ID >> 32) & 0xFFFFFFFF);
       hash ^= Epoch.GetHashCode();
@@ -181,7 +187,8 @@ namespace Nixill.Objects {
     /// Snowflakes are compared by absolute time first. Two Snowflakes
     /// with equal absolute times are compared by the numeric ID.
     /// </remarks>
-    public int CompareTo(Snowflake other) {
+    public int CompareTo(Snowflake other)
+    {
       return CompareUtils.FirstNonZero(
         CompareTo(other.Time),
         ID.CompareTo(other.ID)
@@ -194,7 +201,8 @@ namespace Nixill.Objects {
     /// <remarks>
     /// Only the numeric ID is compared; the epoch is ignored.
     /// </remarks>
-    public int CompareTo(long other) {
+    public int CompareTo(long other)
+    {
       return ID.CompareTo(other);
     }
 
@@ -206,7 +214,8 @@ namespace Nixill.Objects {
     /// Only absolute times are compared; the worker and sequence numbers
     /// are ignored.
     /// </summary>
-    public int CompareTo(Instant other) {
+    public int CompareTo(Instant other)
+    {
       return ((IComparable<Instant>)Time).CompareTo(other);
     }
 
@@ -306,7 +315,8 @@ namespace Nixill.Objects {
   /// independently generate Snowflakes should each use their own
   /// SnowflakeFactory.
   /// </remarks>
-  public class SnowflakeFactory {
+  public class SnowflakeFactory
+  {
     /// <summary>
     /// The worker, or configured machine id, of the factory.
     /// </summary>
@@ -337,13 +347,15 @@ namespace Nixill.Objects {
     /// <a cref="Snowflake.DefaultEpoch">Snowflake.DefaultEpoch</a>.
     /// Changing Snowflake.DefaultEpoch later will not affect this factory
     /// even in such a circumstance.</param>
-    public SnowflakeFactory(int worker, Instant epoch) {
+    public SnowflakeFactory(int worker, Instant epoch)
+    {
       Worker = worker;
       Sequence = 0;
       LastGen = SystemClock.Instance.GetCurrentInstant();
     }
 
-    private static Instant TruncateMilliseconds(Instant when) {
+    private static Instant TruncateMilliseconds(Instant when)
+    {
       Duration offset = when - Snowflake.DefaultEpoch;
       long nanos = offset.ToInt64Nanoseconds();
       long nanosOfMillis = nanos % 1_000_000;
@@ -355,16 +367,20 @@ namespace Nixill.Objects {
     /// </summary>
     /// <param name="ifFull">What to do if 4,096 Snowflakes have already
     /// been generated during the current millisecond.</param>
-    public Snowflake Generate(SnowflakeGenOption ifFull = SnowflakeGenOption.Hang) {
+    public Snowflake Generate(SnowflakeGenOption ifFull = SnowflakeGenOption.Hang)
+    {
       Instant now = TruncateMilliseconds(SystemClock.Instance.GetCurrentInstant());
 
-      if (now > LastGen) {
+      if (now > LastGen)
+      {
         LastGen = now;
         Sequence = 0;
       }
 
-      if (Sequence >= 4096) {
-        switch (ifFull) {
+      if (Sequence >= 4096)
+      {
+        switch (ifFull)
+        {
           case SnowflakeGenOption.Null:
             return null;
           case SnowflakeGenOption.Error:
@@ -395,7 +411,8 @@ namespace Nixill.Objects {
     /// this method can only error when Snowflakes overflow within a
     /// millisecond.
     /// </remarks>
-    public Snowflake[] BulkGenerate(int count) {
+    public Snowflake[] BulkGenerate(int count)
+    {
       if (count <= 0) throw new ArgumentOutOfRangeException("count", "Must be at least 1.");
       if (count + Sequence > 4096) throw new ArgumentOutOfRangeException("count", "Cannot generate more than 4096 Snowflakes in one millisecond.");
 
@@ -403,12 +420,14 @@ namespace Nixill.Objects {
 
       Instant now = TruncateMilliseconds(SystemClock.Instance.GetCurrentInstant());
 
-      if (now > LastGen) {
+      if (now > LastGen)
+      {
         LastGen = now;
         Sequence = 0;
       }
 
-      for (int i = 0; i < count; i++) {
+      for (int i = 0; i < count; i++)
+      {
         ret[i] = new Snowflake(now, Worker, Sequence++, Epoch);
       }
 
@@ -420,7 +439,8 @@ namespace Nixill.Objects {
   /// How to handle Snowflake generation when attempting to generate more
   /// than 4,096 Snowflakes within a single millisecond.
   /// </summary>
-  public enum SnowflakeGenOption {
+  public enum SnowflakeGenOption
+  {
     /// <summary>Return null.</summary>
     Null,
     /// <summary>Throw a SnowflakeGenerationException.</summary>
@@ -438,7 +458,8 @@ namespace Nixill.Objects {
   /// Snowflakes within a single millisecond.
   /// </summary>
   [System.Serializable]
-  public class SnowflakeGenerationException : System.Exception {
+  public class SnowflakeGenerationException : System.Exception
+  {
     public SnowflakeGenerationException() { }
     public SnowflakeGenerationException(string message) : base(message) { }
     public SnowflakeGenerationException(string message, System.Exception inner) : base(message, inner) { }

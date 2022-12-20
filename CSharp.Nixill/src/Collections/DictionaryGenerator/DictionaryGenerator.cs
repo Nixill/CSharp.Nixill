@@ -2,7 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Nixill.Collections {
+namespace Nixill.Collections
+{
   /// <summary>
   /// A class that wraps around an
   /// <see cref="IDictionary&lt;TKey, TValue&gt;" />, adding automatic
@@ -14,7 +15,8 @@ namespace Nixill.Collections {
   /// <typeparam name="V">
   /// The type of the values used in the dictionary.
   /// </typeparam>
-  public class DictionaryGenerator<K, V> : IDictionary<K, V> {
+  public class DictionaryGenerator<K, V> : IDictionary<K, V>
+  {
     /// <summary>
     /// The <see cref="Generator" /> used by this <c>DictionaryGenerator</c>.
     /// </summary>
@@ -30,7 +32,8 @@ namespace Nixill.Collections {
     /// Creates a new, empty Dictionary&lt;K, V&gt; with a
     /// DefaultGenerator.
     /// </summary>
-    public DictionaryGenerator() {
+    public DictionaryGenerator()
+    {
       Dict = new Dictionary<K, V>();
       Generator = new DefaultGenerator<K, V>();
     }
@@ -39,7 +42,8 @@ namespace Nixill.Collections {
     /// Creates a new, empty Dictionary&lt;K, V&gt; and wraps it with the
     /// provided Generator.
     /// </summary>
-    public DictionaryGenerator(Generator<K, V> gen) {
+    public DictionaryGenerator(Generator<K, V> gen)
+    {
       Dict = new Dictionary<K, V>();
       Generator = gen;
     }
@@ -49,7 +53,8 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="dict">The Dictionary to use.</param>
     /// <param name="gen">The Generator to use.</param>
-    public DictionaryGenerator(IDictionary<K, V> dict, Generator<K, V> gen) {
+    public DictionaryGenerator(IDictionary<K, V> dict, Generator<K, V> gen)
+    {
       Dict = dict;
       Generator = gen;
     }
@@ -61,8 +66,10 @@ namespace Nixill.Collections {
     /// generates a value, sets it to that key, and returns it.
     /// </summary>
     /// <param name="key">The key of the value to get or set.</param>
-    public V this[K key] {
-      get {
+    public V this[K key]
+    {
+      get
+      {
         if (Dict.ContainsKey(key)) return Dict[key];
         else return Add(key);
       }
@@ -75,14 +82,18 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="key">The key of the entry to add.</param>
     /// <returns>The added value.</returns>
-    public V Add(K key) {
-      if (key == null) {
+    public V Add(K key)
+    {
+      if (key == null)
+      {
         throw new ArgumentNullException("Null keys cannot be added to GeneratorDictionaries.");
       }
-      else if (Dict.ContainsKey(key)) {
+      else if (Dict.ContainsKey(key))
+      {
         throw new ArgumentException("Key " + key.ToString() + " already exists in map.");
       }
-      else {
+      else
+      {
         V val = Generator.Generate(key);
         Dict[key] = val;
         return val;
@@ -125,12 +136,15 @@ namespace Nixill.Collections {
 
     public bool ContainsKey(K key) => Dict.ContainsKey(key);
     public bool Remove(K key) => Dict.Remove(key);
-    public bool TryGetValue(K key, out V value) {
-      try {
+    public bool TryGetValue(K key, out V value)
+    {
+      try
+      {
         value = this[key];
         return true;
       }
-      catch (KeyNotFoundException) {
+      catch (KeyNotFoundException)
+      {
         value = default(V);
         return false;
       }
@@ -138,21 +152,25 @@ namespace Nixill.Collections {
     public ICollection<K> Keys => Dict.Keys;
     public ICollection<V> Values => Dict.Values;
 
-    public void Add(KeyValuePair<K, V> entry) {
+    public void Add(KeyValuePair<K, V> entry)
+    {
       Add(entry.Key, entry.Value);
     }
 
-    public void Clear() {
+    public void Clear()
+    {
       Dict.Clear();
     }
 
     public bool Contains(KeyValuePair<K, V> entry) => Dict.ContainsKey(entry.Key) && (Dict[entry.Key].Equals(entry.Value));
 
-    public void CopyTo(KeyValuePair<K, V>[] array, int index) {
+    public void CopyTo(KeyValuePair<K, V>[] array, int index)
+    {
       Dict.CopyTo(array, index);
     }
 
-    public bool Remove(KeyValuePair<K, V> entry) {
+    public bool Remove(KeyValuePair<K, V> entry)
+    {
       if (Contains(entry)) return Remove(entry.Key);
       else return false;
     }
@@ -166,7 +184,8 @@ namespace Nixill.Collections {
   /// <summary>
   /// A class used by DictionaryGenerator to create values for given keys.
   /// </summary>
-  public abstract class Generator<K, V> {
+  public abstract class Generator<K, V>
+  {
     /// <summary>
     /// Returns a value for the given key.
     /// </summary>
@@ -218,10 +237,11 @@ namespace Nixill.Collections {
     public bool? CanGenerate(V val) => null;
   }
 
-  public static class DictionaryGeneratorExtensions {
+  public static class DictionaryGeneratorExtensions
+  {
     public static DictionaryGenerator<K, V> WithGenerator<K, V>(this IDictionary<K, V> dict, Generator<K, V> gen)
       => new DictionaryGenerator<K, V>(dict, gen);
-    
+
     public static DictionaryGenerator<K, V> CopyWithGenerator<K, V>(this IDictionary<K, V> dict, Generator<K, V> gen)
       => new DictionaryGenerator<K, V>(new Dictionary<K, V>(dict), gen);
   }

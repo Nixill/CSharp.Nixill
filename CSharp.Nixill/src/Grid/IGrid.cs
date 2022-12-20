@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nixill.Collections.Grid {
+namespace Nixill.Collections.Grid
+{
   /// <summary>
   /// Represents a two-dimensional ordered collection of objects.
   ///
@@ -9,7 +10,8 @@ namespace Nixill.Collections.Grid {
   /// the grid.
   /// </summary>
   /// <typeparam name="T">The type of elements on the grid.</typeparam>
-  public interface IGrid<T> : IEnumerable<IEnumerable<T>> {
+  public interface IGrid<T> : IEnumerable<IEnumerable<T>>
+  {
     /// <summary>The height - number of rows - of the IGrid.</summary>
     int Height { get; }
 

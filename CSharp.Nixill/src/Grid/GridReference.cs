@@ -3,8 +3,10 @@ using System.Text.RegularExpressions;
 using Nixill.Utils;
 using Nixill.Objects;
 
-namespace Nixill.Collections.Grid {
-  public class GridReference : IComparable<GridReference> {
+namespace Nixill.Collections.Grid
+{
+  public class GridReference : IComparable<GridReference>
+  {
     static Regex A1Form = new Regex("^([A-Za-z]+)(\\d+)$");
     static Regex R1C1Form = new Regex("^[Rr](\\d+)[Cc](\\d+)$");
 
@@ -27,7 +29,8 @@ namespace Nixill.Collections.Grid {
     /// </summary>
     /// <param name="column">The column to use.</param>
     /// <param name="row">The row to use.</param>
-    public GridReference(int col, int row) {
+    public GridReference(int col, int row)
+    {
       Column = col;
       Row = row;
     }
@@ -41,17 +44,21 @@ namespace Nixill.Collections.Grid {
     /// notation for R1C1 (with <c>[]</c>).
     /// </summary>
     /// <param name="input">The string representation to use.</param>
-    public GridReference(string input) {
+    public GridReference(string input)
+    {
       Match regMatch = A1Form.Match(input);
       int row;
       int column;
-      if (regMatch.Success) {
+      if (regMatch.Success)
+      {
         column = ColumnNameToNumber(regMatch.Groups[1].Value);
         row = int.Parse(regMatch.Groups[2].Value) - 1;
       }
-      else {
+      else
+      {
         regMatch = R1C1Form.Match(input);
-        if (regMatch.Success) {
+        if (regMatch.Success)
+        {
           row = int.Parse(regMatch.Groups[1].Value) - 1;
           column = int.Parse(regMatch.Groups[2].Value) - 1;
         }
@@ -74,7 +81,8 @@ namespace Nixill.Collections.Grid {
     /// It compares rows first, before columns; a GridReference is "less
     /// than" another GridReference lower and to the left.
     /// </summary>
-    public int CompareTo(GridReference other) {
+    public int CompareTo(GridReference other)
+    {
       return CompareUtils.FirstNonZero(
         Row - other.Row,
         Column - other.Column
@@ -85,7 +93,8 @@ namespace Nixill.Collections.Grid {
     /// Returns a string representation of this GridReference in A1
     /// notation.
     /// </summary>
-    public string ToA1String() {
+    public string ToA1String()
+    {
       return ColumnNumberToName(Column) + (Row + 1);
     }
 
@@ -93,20 +102,24 @@ namespace Nixill.Collections.Grid {
     /// Returns a string representation of this GridReference in R1C1
     /// notation.
     /// </summary>
-    public string ToR1C1String() {
+    public string ToR1C1String()
+    {
       return "R" + (Row + 1) + "C" + (Column + 1);
     }
 
     public override string ToString() => ToA1String();
 
-    public override bool Equals(object obj) {
-      if (obj is GridReference other) {
+    public override bool Equals(object obj)
+    {
+      if (obj is GridReference other)
+      {
         return other.Row == Row && other.Column == Column;
       }
       else return false;
     }
 
-    public override int GetHashCode() {
+    public override int GetHashCode()
+    {
       return (Row & 0xFFFF) << 16
       + (Column & 0xFFFF);
     }
@@ -115,7 +128,8 @@ namespace Nixill.Collections.Grid {
     /// Changes a column name, as seen in several popular spreadsheet
     /// software, to a number. A becomes 0, B becomes 1, etc.
     /// </summary>
-    public static int ColumnNameToNumber(string name) {
+    public static int ColumnNameToNumber(string name)
+    {
       name = ColNameToNum.Apply(name.ToUpper());
       return NumberUtils.LeadingZeroStringToInt(name, 26);
     }
@@ -124,7 +138,8 @@ namespace Nixill.Collections.Grid {
     /// Changes a column number to a name as seen in several popular
     /// spreadsheet software. 0 becomes A, 1 becomes B, etc.
     /// </summary>
-    public static string ColumnNumberToName(int num) {
+    public static string ColumnNumberToName(int num)
+    {
       string name = NumberUtils.IntToLeadingZeroString(num, 26);
       return ColNumToName.Apply(name);
     }

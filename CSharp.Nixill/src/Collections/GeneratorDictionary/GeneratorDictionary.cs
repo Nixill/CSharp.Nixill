@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nixill.Collections {
+namespace Nixill.Collections
+{
   /// <summary>
   /// A class that extends <a cref="Dictionary">Dictionary</a>, adding
   /// automatic generation of values from keys.
@@ -17,7 +18,8 @@ namespace Nixill.Collections {
   /// The type of the values used in the dictionary.
   /// </typeparam>
   [Obsolete]
-  public class GeneratorDictionary<K, V> : Dictionary<K, V> {
+  public class GeneratorDictionary<K, V> : Dictionary<K, V>
+  {
     /// <summary>
     /// The <a cref="Generator">Generator</a> used by this
     /// <c>GeneratorDictionary</c>.
@@ -29,7 +31,8 @@ namespace Nixill.Collections {
     /// and default equality comparer.
     /// </summary>
     /// <param name="gen">The Generator to use.</param>
-    public GeneratorDictionary(Generator<K, V> gen) {
+    public GeneratorDictionary(Generator<K, V> gen)
+    {
       Generator = gen;
     }
 
@@ -38,7 +41,8 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="dictionary">The IDictionary to copy.</param>
     /// <param name="gen">The Generator to use.</param>
-    public GeneratorDictionary(IDictionary<K, V> dictionary, Generator<K, V> gen) : base(dictionary) {
+    public GeneratorDictionary(IDictionary<K, V> dictionary, Generator<K, V> gen) : base(dictionary)
+    {
       Generator = gen;
     }
 
@@ -48,7 +52,8 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="comparer">The IEqualityComparer to use.</param>
     /// <param name="gen">The Generator to use.</param>
-    public GeneratorDictionary(IEqualityComparer<K> comparer, Generator<K, V> gen) : base(comparer) {
+    public GeneratorDictionary(IEqualityComparer<K> comparer, Generator<K, V> gen) : base(comparer)
+    {
       Generator = gen;
     }
 
@@ -58,7 +63,8 @@ namespace Nixill.Collections {
     /// </summary>
     /// <param name="capacity">The initial capacity to use.</param>
     /// <param name="gen">The Generator to use.</param>
-    public GeneratorDictionary(int capacity, Generator<K, V> gen) : base(capacity) {
+    public GeneratorDictionary(int capacity, Generator<K, V> gen) : base(capacity)
+    {
       Generator = gen;
     }
 
@@ -69,7 +75,8 @@ namespace Nixill.Collections {
     /// <param name="dictionary">The IDictionary to copy.</param>
     /// <param name="comparer">The IEqualityComparer to use.</param>
     /// <param name="gen">The Generator to use.</param>
-    public GeneratorDictionary(IDictionary<K, V> dictionary, IEqualityComparer<K> comparer, Generator<K, V> gen) : base(dictionary, comparer) {
+    public GeneratorDictionary(IDictionary<K, V> dictionary, IEqualityComparer<K> comparer, Generator<K, V> gen) : base(dictionary, comparer)
+    {
       Generator = gen;
     }
 
@@ -80,7 +87,8 @@ namespace Nixill.Collections {
     /// <param name="capacity">The initial capacity to use.</param>
     /// <param name="comparer">The IEqualityComparer to use.</param>
     /// <param name="gen">The Generator to use.</param>
-    public GeneratorDictionary(int capacity, IEqualityComparer<K> comparer, Generator<K, V> gen) : base(capacity, comparer) {
+    public GeneratorDictionary(int capacity, IEqualityComparer<K> comparer, Generator<K, V> gen) : base(capacity, comparer)
+    {
       Generator = gen;
     }
 
@@ -91,12 +99,16 @@ namespace Nixill.Collections {
     /// generates a value, sets it to that key, and returns it.
     /// </summary>
     /// <param name="key">The key of the value to get or set.</param>
-    public new V this[K key] {
-      get {
-        try {
+    public new V this[K key]
+    {
+      get
+      {
+        try
+        {
           return base[key];
         }
-        catch (KeyNotFoundException) {
+        catch (KeyNotFoundException)
+        {
           return Add(key);
         }
       }
@@ -108,14 +120,18 @@ namespace Nixill.Collections {
     /// the dictionary.
     /// </summary>
     /// <param name="key">The key of the element to add.</param>
-    public V Add(K key) {
-      if (key == null) {
+    public V Add(K key)
+    {
+      if (key == null)
+      {
         throw new ArgumentNullException("Null keys cannot be added to GeneratorDictionaries.");
       }
-      else if (ContainsKey(key)) {
+      else if (ContainsKey(key))
+      {
         throw new ArgumentException("Key " + key.ToString() + " already exists in map.");
       }
-      else {
+      else
+      {
         V val = Generator.Generate(key);
         base[key] = val;
         return val;

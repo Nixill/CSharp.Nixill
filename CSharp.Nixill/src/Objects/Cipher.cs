@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using Nixill.Collections;
 
-namespace Nixill.Objects {
+namespace Nixill.Objects
+{
   /// <summary>
   /// Represents a simple one-way substitution cipher.
   /// 
@@ -20,7 +21,8 @@ namespace Nixill.Objects {
   ///   <item>No Source character maps to null.</item>
   /// </list>
   /// </summary>
-  public class Cipher {
+  public class Cipher
+  {
     DictionaryGenerator<char, string> CharMap = new DictionaryGenerator<char, string>(new Dictionary<char, string>(), new SingleValueGenerator<char, string>(""));
 
     /// <summary>
@@ -42,9 +44,12 @@ namespace Nixill.Objects {
     /// The reverse of this Cipher, which is the same as this Cipher
     /// except the Source and Target strings are swapped.
     /// </summary>
-    public Cipher Reverse {
-      get {
-        if (_Reverse == null) {
+    public Cipher Reverse
+    {
+      get
+      {
+        if (_Reverse == null)
+        {
           _Reverse = new Cipher(Target, Source);
           _Reverse._Reverse = this;
         }
@@ -56,7 +61,8 @@ namespace Nixill.Objects {
     /// <summary>
     /// Creates a new Cipher.
     /// </summary>
-    public Cipher(string src, string trg) {
+    public Cipher(string src, string trg)
+    {
       if (src == null) throw new ArgumentNullException("src");
       if (trg == null) throw new ArgumentNullException("trg");
 
@@ -72,30 +78,37 @@ namespace Nixill.Objects {
 
       DictionaryGenerator<char, int> metaMap = new DictionaryGenerator<char, int>(new Dictionary<char, int>(), new SingleValueGenerator<char, int>(0));
 
-      for (int i = 0; i < src.Length; i++) {
+      for (int i = 0; i < src.Length; i++)
+      {
         char srcChar = src[i];
         char trgChar = trg[i];
 
         CharMap[srcChar] += trgChar;
 
-        if (reverseScore >= 0) {
+        if (reverseScore >= 0)
+        {
           // Make sure the target isn't null
           if (trgChar == '\0') reverseScore = 1;
-          else {
+          else
+          {
             // Each char should only be a source once
             int score = metaMap[srcChar];
-            if (score == 1 || score == 3) {
+            if (score == 1 || score == 3)
+            {
               // Char is already a source, stop tracking
               reverseScore = -1;
             }
-            else {
+            else
+            {
               // Char isn't yet a source
-              if (score == 0) {
+              if (score == 0)
+              {
                 // Char isn't a target
                 reverseScore += 1;
                 score = 1;
               }
-              else /* srcScore == 2 */ {
+              else /* srcScore == 2 */
+              {
                 // Char is a target
                 reverseScore -= 1;
                 score = 3;
@@ -104,18 +117,22 @@ namespace Nixill.Objects {
 
               // Each char should only be a target once
               score = metaMap[trgChar];
-              if (score == 2 || score == 3) {
+              if (score == 2 || score == 3)
+              {
                 // Char is already a target, stop tracking
                 reverseScore = -1;
               }
-              else {
+              else
+              {
                 // Char isn't yet a target
-                if (score == 0) {
+                if (score == 0)
+                {
                   // Char isn't a source
                   reverseScore += 1;
                   score = 2;
                 }
-                else /* score == 1 */ {
+                else /* score == 1 */
+                {
                   // Char is a source
                   reverseScore -= 1;
                   score = 3;
@@ -137,12 +154,15 @@ namespace Nixill.Objects {
     /// source string is replaced with a character in the same position in
     /// the target string.
     /// </summary>
-    public string Apply(string input) {
+    public string Apply(string input)
+    {
       string ret = "";
 
-      for (int i = 0; i < input.Length; i++) {
+      for (int i = 0; i < input.Length; i++)
+      {
         char inChar = input[i];
-        if (CharMap.ContainsKey(inChar)) {
+        if (CharMap.ContainsKey(inChar))
+        {
           string outChars = CharMap[inChar];
           char outChar = outChars[i % outChars.Length];
           if (outChar != '\0') ret += outChar;

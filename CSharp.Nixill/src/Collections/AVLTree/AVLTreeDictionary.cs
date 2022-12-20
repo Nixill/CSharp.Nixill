@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Nixill.Collections {
+namespace Nixill.Collections
+{
   /// Documented in GitHub.
-  public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V> {
+  public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
+  {
     #region Fields
     private AVLTreeSet<KeyValuePair<K, V>> BackingSet;
     private Comparison<K> KeyComparer;
@@ -15,24 +17,31 @@ namespace Nixill.Collections {
 
     #region Properties
     #region Implementing IDictionary<K, V>
-    public V this[K key] {
-      get {
+    public V this[K key]
+    {
+      get
+      {
         NodeTriplet<KeyValuePair<K, V>> nodes = BackingSet.SearchAround(new KeyValuePair<K, V>(key, DefaultValue));
-        if (nodes.HasEqualValue) {
+        if (nodes.HasEqualValue)
+        {
           return nodes.EqualValue.Value;
         }
-        else {
+        else
+        {
           throw new KeyNotFoundException("The specified key was not found in the dictionary.");
         }
       }
-      set {
+      set
+      {
         var kvp = new KeyValuePair<K, V>(key, value);
         // As a reminder, BackingSet's equality checker only checks the keys.
-        if (BackingSet.Contains(kvp)) {
+        if (BackingSet.Contains(kvp))
+        {
           // ... and ReplaceValue doesn't check equality.
           BackingSet.ReplaceValue(kvp, kvp);
         }
-        else {
+        else
+        {
           BackingSet.Add(kvp);
         }
       }
@@ -65,12 +74,15 @@ namespace Nixill.Collections {
     public AVLTreeDictionary(IEnumerable<KeyValuePair<K, V>> elems, IComparer<K> comparer) : this(elems, comparer.Compare) { }
 
     /// Documented in GitHub.
-    public AVLTreeDictionary(IEnumerable<KeyValuePair<K, V>> elems, Comparison<K> comparer) {
+    public AVLTreeDictionary(IEnumerable<KeyValuePair<K, V>> elems, Comparison<K> comparer)
+    {
       this.KeyComparer = comparer;
       BackingSet = new AVLTreeSet<KeyValuePair<K, V>>((left, right) => KeyComparer(left.Key, right.Key));
 
-      if (elems != null) {
-        foreach (var elem in elems) {
+      if (elems != null)
+      {
+        foreach (var elem in elems)
+        {
           this.Add(elem);
         }
       }
@@ -83,7 +95,8 @@ namespace Nixill.Collections {
 
     public NodeTriplet<KeyValuePair<K, V>> EntriesAround(K from) => BackingSet.SearchAround(new KeyValuePair<K, V>(from, default(V)));
 
-    public NodeTriplet<K> KeysAround(K from) {
+    public NodeTriplet<K> KeysAround(K from)
+    {
       var entries = EntriesAround(from);
       var lesser = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
       var equal = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
@@ -102,25 +115,30 @@ namespace Nixill.Collections {
       BackingSet.TryGetLower(new KeyValuePair<K, V>(from, DefaultValue), out entry);
 
     /// Documented in GitHub.
-    public bool TryGetLowerKey(K from, out K key) {
+    public bool TryGetLowerKey(K from, out K key)
+    {
       bool res = BackingSet.TryGetLower(new KeyValuePair<K, V>(from, DefaultValue), out var entry);
       key = entry.Key;
       return res;
     }
 
     /// Documented in GitHub.
-    public K LowerKey(K from) {
+    public K LowerKey(K from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have Lower keys in an empty AVLTreeDictionary.");
-      if (TryGetLowerKey(from, out K key)) {
+      if (TryGetLowerKey(from, out K key))
+      {
         return key;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no Lower key in the AVLTreeDictionary.");
     }
 
     /// Documented in GitHub.
-    public KeyValuePair<K, V> LowerEntry(K from) {
+    public KeyValuePair<K, V> LowerEntry(K from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have Lower keys in an empty AVLTreeDictionary.");
-      if (TryGetLowerEntry(from, out KeyValuePair<K, V> entry)) {
+      if (TryGetLowerEntry(from, out KeyValuePair<K, V> entry))
+      {
         return entry;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no Lower key in the AVLTreeDictionary.");
@@ -134,25 +152,30 @@ namespace Nixill.Collections {
       BackingSet.TryGetFloor(new KeyValuePair<K, V>(from, DefaultValue), out entry);
 
     /// Documented in GitHub.
-    public bool TryGetFloorKey(K from, out K key) {
+    public bool TryGetFloorKey(K from, out K key)
+    {
       bool res = BackingSet.TryGetFloor(new KeyValuePair<K, V>(from, DefaultValue), out var entry);
       key = entry.Key;
       return res;
     }
 
     /// Documented in GitHub.
-    public K FloorKey(K from) {
+    public K FloorKey(K from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have Floor keys in an empty AVLTreeDictionary.");
-      if (TryGetFloorKey(from, out K key)) {
+      if (TryGetFloorKey(from, out K key))
+      {
         return key;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no Floor key in the AVLTreeDictionary.");
     }
 
     /// Documented in GitHub.
-    public KeyValuePair<K, V> FloorEntry(K from) {
+    public KeyValuePair<K, V> FloorEntry(K from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have Floor keys in an empty AVLTreeDictionary.");
-      if (TryGetFloorEntry(from, out KeyValuePair<K, V> entry)) {
+      if (TryGetFloorEntry(from, out KeyValuePair<K, V> entry))
+      {
         return entry;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no Floor key in the AVLTreeDictionary.");
@@ -166,25 +189,30 @@ namespace Nixill.Collections {
       BackingSet.TryGetCeiling(new KeyValuePair<K, V>(from, DefaultValue), out entry);
 
     /// Documented in GitHub.
-    public bool TryGetCeilingKey(K from, out K key) {
+    public bool TryGetCeilingKey(K from, out K key)
+    {
       bool res = BackingSet.TryGetCeiling(new KeyValuePair<K, V>(from, DefaultValue), out var entry);
       key = entry.Key;
       return res;
     }
 
     /// Documented in GitHub.
-    public K CeilingKey(K from) {
+    public K CeilingKey(K from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have Ceiling keys in an empty AVLTreeDictionary.");
-      if (TryGetCeilingKey(from, out K key)) {
+      if (TryGetCeilingKey(from, out K key))
+      {
         return key;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no Ceiling key in the AVLTreeDictionary.");
     }
 
     /// Documented in GitHub.
-    public KeyValuePair<K, V> CeilingEntry(K from) {
+    public KeyValuePair<K, V> CeilingEntry(K from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have Ceiling keys in an empty AVLTreeDictionary.");
-      if (TryGetCeilingEntry(from, out KeyValuePair<K, V> entry)) {
+      if (TryGetCeilingEntry(from, out KeyValuePair<K, V> entry))
+      {
         return entry;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no Ceiling key in the AVLTreeDictionary.");
@@ -198,25 +226,30 @@ namespace Nixill.Collections {
       BackingSet.TryGetHigher(new KeyValuePair<K, V>(from, DefaultValue), out entry);
 
     /// Documented in GitHub.
-    public bool TryGetHigherKey(K from, out K key) {
+    public bool TryGetHigherKey(K from, out K key)
+    {
       bool res = BackingSet.TryGetHigher(new KeyValuePair<K, V>(from, DefaultValue), out var entry);
       key = entry.Key;
       return res;
     }
 
     /// Documented in GitHub.
-    public K HigherKey(K from) {
+    public K HigherKey(K from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have Higher keys in an empty AVLTreeDictionary.");
-      if (TryGetHigherKey(from, out K key)) {
+      if (TryGetHigherKey(from, out K key))
+      {
         return key;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no Higher key in the AVLTreeDictionary.");
     }
 
     /// Documented in GitHub.
-    public KeyValuePair<K, V> HigherEntry(K from) {
+    public KeyValuePair<K, V> HigherEntry(K from)
+    {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have Higher keys in an empty AVLTreeDictionary.");
-      if (TryGetHigherEntry(from, out KeyValuePair<K, V> entry)) {
+      if (TryGetHigherEntry(from, out KeyValuePair<K, V> entry))
+      {
         return entry;
       }
       else throw new ArgumentOutOfRangeException("from", "There is no Higher key in the AVLTreeDictionary.");
@@ -230,13 +263,16 @@ namespace Nixill.Collections {
 
     #region IDictionary<K, V>
     // Documented in GitHub.
-    public void Add(K key, V value) {
+    public void Add(K key, V value)
+    {
       var kvp = new KeyValuePair<K, V>(key, value);
       // As a reminder, BackingSet's equality checker only checks the keys.
-      if (BackingSet.Contains(kvp)) {
+      if (BackingSet.Contains(kvp))
+      {
         throw new ArgumentException("The specified key is already in use.");
       }
-      else {
+      else
+      {
         BackingSet.Add(kvp);
       }
     }
@@ -248,13 +284,16 @@ namespace Nixill.Collections {
     public bool Remove(K key) => BackingSet.Remove(new KeyValuePair<K, V>(key, DefaultValue));
 
     // Documented in GitHub.
-    public bool TryGetValue(K key, out V value) {
+    public bool TryGetValue(K key, out V value)
+    {
       NodeTriplet<KeyValuePair<K, V>> nodes = BackingSet.SearchAround(new KeyValuePair<K, V>(key, DefaultValue));
-      if (nodes.HasEqualValue) {
+      if (nodes.HasEqualValue)
+      {
         value = nodes.EqualValue.Value;
         return true;
       }
-      else {
+      else
+      {
         value = default(V);
         return false;
       }
@@ -263,13 +302,16 @@ namespace Nixill.Collections {
 
     #region ICollection<KeyValuePair<K, V>>
     // Documented in GitHub.
-    public void Add(KeyValuePair<K, V> entry) {
+    public void Add(KeyValuePair<K, V> entry)
+    {
       // As a reminder, BackingSet's equality checker only checks the keys.
-      if (BackingSet.Contains(entry)) {
+      if (BackingSet.Contains(entry))
+      {
         // ... and ReplaceValue doesn't check equality.
         BackingSet.ReplaceValue(entry, entry);
       }
-      else {
+      else
+      {
         BackingSet.Add(entry);
       }
     }
@@ -278,7 +320,8 @@ namespace Nixill.Collections {
     public void Clear() => BackingSet.Clear();
 
     // Documented in GitHub.
-    public bool Contains(KeyValuePair<K, V> entry) {
+    public bool Contains(KeyValuePair<K, V> entry)
+    {
       var nodes = BackingSet.SearchAround(entry);
       return (nodes.HasEqualValue && nodes.EqualValue.Value.Equals(entry.Value));
     }
@@ -287,7 +330,8 @@ namespace Nixill.Collections {
     public void CopyTo(KeyValuePair<K, V>[] array, int index) => BackingSet.CopyTo(array, index);
 
     // Documented in GitHub.
-    public bool Remove(KeyValuePair<K, V> entry) {
+    public bool Remove(KeyValuePair<K, V> entry)
+    {
       if (Contains(entry)) return BackingSet.Remove(entry);
       else return false;
     }
@@ -305,11 +349,14 @@ namespace Nixill.Collections {
     #endregion
 
     #region Private Methods
-    private static Comparison<K> GetComparer() {
-      if (typeof(IComparable<K>).IsAssignableFrom(typeof(K)) || typeof(System.IComparable).IsAssignableFrom(typeof(K))) {
+    private static Comparison<K> GetComparer()
+    {
+      if (typeof(IComparable<K>).IsAssignableFrom(typeof(K)) || typeof(System.IComparable).IsAssignableFrom(typeof(K)))
+      {
         return Comparer<K>.Default.Compare;
       }
-      else {
+      else
+      {
         throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The type {0} cannot be compared. It must implement IComparable<T> or IComparable interface", typeof(K).FullName));
       }
     }

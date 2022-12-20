@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System;
 
-namespace Nixill.Collections {
+namespace Nixill.Collections
+{
   /// <summary>
   ///   A sorted set that can be navigated using methods such as
   ///   <c>Lower</c>, <c>Floor</c>, <c>Ceiling</c>, and <c>Higher</c>.
   /// </summary>
-  public interface INavigableSet<T> : ISet<T> {
+  public interface INavigableSet<T> : ISet<T>
+  {
     /// <summary>
     ///   Gets the element with the highest value less than a given value.
     /// </summary>
@@ -189,7 +191,8 @@ namespace Nixill.Collections {
   ///   <c>LowerKey</c>, <c>FloorKey</c>, <c>CeilingKey</c>, and
   ///   <c>HigherKey</c>.
   /// </summary>
-  public interface INavigableDictionary<K, V> : IDictionary<K, V> {
+  public interface INavigableDictionary<K, V> : IDictionary<K, V>
+  {
     /// <summary>
     ///   Gets the highest key less than a given value.
     /// </summary>
@@ -505,7 +508,8 @@ namespace Nixill.Collections {
   ///   A read-only sorted set that can be navigated using methods such as
   ///   <c>Lower</c>, <c>Floor</c>, <c>Ceiling</c>, and <c>Higher</c>.
   /// </summary>
-  public interface IReadOnlyNavigableSet<T> : IReadOnlyCollection<T> {
+  public interface IReadOnlyNavigableSet<T> : IReadOnlyCollection<T>
+  {
     /// <summary>
     ///   Gets the element with the highest value less than a given value.
     /// </summary>
@@ -688,7 +692,8 @@ namespace Nixill.Collections {
   ///   such as <c>LowerKey</c>, <c>FloorKey</c>, <c>CeilingKey</c>, and
   ///   <c>HigherKey</c>.
   /// </summary>
-  public interface IReadOnlyNavigableDictionary<K, V> : IReadOnlyDictionary<K, V> {
+  public interface IReadOnlyNavigableDictionary<K, V> : IReadOnlyDictionary<K, V>
+  {
     /// <summary>
     ///   Gets the highest key less than a given value.
     /// </summary>
