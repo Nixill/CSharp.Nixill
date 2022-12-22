@@ -320,4 +320,11 @@ public static class EnumerableUtils
 
   public static IEnumerable<T> WhereOrdered<T>(this IEnumerable<T> sequence, bool desc = false, bool distinctly = false)
     => sequence.WhereOrderedBy(x => x, Comparer<T>.Default, desc, distinctly);
+
+  public static T Pop<T>(this IList<T> list)
+  {
+    T value = list[0];
+    list.RemoveAt(0);
+    return value;
+  }
 }
