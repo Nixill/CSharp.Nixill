@@ -8,7 +8,8 @@ namespace Nixill.Collections;
 
 public class WeightedList<TSumWeight, TWeight, TItem> : ICollection<WeightedEntry<TWeight, TItem>>
   where TSumWeight : IAdditionOperators<TSumWeight, TWeight, TSumWeight>, IAdditiveIdentity<TSumWeight, TSumWeight>,
-    IComparable<TSumWeight>, ISubtractionOperators<TSumWeight, TWeight, TSumWeight>
+    IComparable<TSumWeight>, ISubtractionOperators<TSumWeight, TSumWeight, TWeight>,
+    ISubtractionOperators<TSumWeight, TWeight, TSumWeight>
   where TWeight : IAdditionOperators<TWeight, TWeight, TWeight>, IAdditiveIdentity<TWeight, TWeight>,
     IComparable<TWeight>, ISubtractionOperators<TWeight, TWeight, TWeight>
 {
@@ -31,11 +32,34 @@ public class WeightedList<TSumWeight, TWeight, TItem> : ICollection<WeightedEntr
 
   public int Count => Items.Count;
 
+  public TSumWeight TotalWeight => (Items.Count > 0)
+    ? Items.HighestKey()
+    : TSumWeight.AdditiveIdentity;
+
+  public TItem this[TSumWeight at]
+  {
+    get
+    {
+      if (!IsNonNegative(at))
+      {
+        throw new IndexOutOfRangeException("Only positive positions may be accessed in a WeightedList.");
+      }
+      if (Items.TryGetHigherEntry(at, out var entry))
+      {
+        return entry.Value;
+      }
+      else
+      {
+        throw new IndexOutOfRangeException("The specified position exceeds the total weight of the WeightedList.");
+      }
+    }
+  }
+
   public bool IsReadOnly => false;
 
-  public void Add(WeightedEntry<TWeight, TItem> item) => Add(item.Item, item.Weight);
+  public void Add(WeightedEntry<TWeight, TItem> item) => Add(item.Weight, item.Item);
 
-  public void Add(TItem item, TWeight weight)
+  public void Add(TWeight weight, TItem item)
   {
     if (!IsPositive(weight))
     {
@@ -53,35 +77,62 @@ public class WeightedList<TSumWeight, TWeight, TItem> : ICollection<WeightedEntr
     Items[newTotal] = item;
   }
 
-  public void Clear()
+  public void Clear() => Items.Clear();
+
+  public bool Contains(WeightedEntry<TWeight, TItem> item) => ComparesEqual(item.Weight, WeightOf(item.Item));
+  public bool Contains(TItem item) => IsPositive(WeightOf(item));
+
+  public TWeight WeightOf(TItem item)
   {
-    throw new System.NotImplementedException();
+    var keys = Items.Where(x => x.Value.Equals(item));
+
+    // Does it exist?
+    if (keys.Any())
+    {
+      TSumWeight key = keys.First().Key;
+
+      // Is it the lowest key?
+      if (ComparesEqual(key, Items.LowestKey()))
+      {
+        // The subtraction here makes it a TWeight instead of a
+        // TSumWeight, just in case those are actually different types.
+        return key - TSumWeight.AdditiveIdentity;
+      }
+      else
+      {
+        return key - Items.LowerKey(key);
+      }
+    }
+    else
+    {
+      return TWeight.AdditiveIdentity;
+    }
   }
 
-  public bool Contains(WeightedEntry<TWeight, TItem> item)
+  public void CopyTo(WeightedEntry<TWeight, TItem>[] array, int index)
   {
-    throw new System.NotImplementedException();
-  }
-
-  public bool Contains(TItem item) { }
-  public TWeight WeightOf(TItem item) { }
-
-  public void CopyTo(WeightedEntry<TWeight, TItem>[] array, int arrayIndex)
-  {
-    throw new System.NotImplementedException();
+    foreach (WeightedEntry<TWeight, TItem> item in this)
+    {
+      array[index++] = item;
+    }
   }
 
   public IEnumerator<WeightedEntry<TWeight, TItem>> GetEnumerator()
   {
-    throw new System.NotImplementedException();
+    TSumWeight last = TSumWeight.AdditiveIdentity;
+    foreach (KeyValuePair<TSumWeight, TItem> item in Items)
+    {
+      TWeight weight = item.Key - last;
+      yield return new WeightedEntry<TWeight, TItem>()
+      {
+        Weight = weight,
+        Item = item.Value
+      };
+      last = item.Key;
+    }
   }
 
-  public bool Remove(WeightedEntry<TWeight, TItem> item)
-  {
-    TWeight weightOf = WeightOf(item.Item);
-    if (IsEqual(item.Weight, weightOf)) return Remove(item);
-    else return false;
-  }
+  public bool Remove(WeightedEntry<TWeight, TItem> item) => Remove(item.Weight, item.Item);
 
   public bool Remove(TItem item)
   {
@@ -104,13 +155,48 @@ public class WeightedList<TSumWeight, TWeight, TItem> : ICollection<WeightedEntr
     return true;
   }
 
-  IEnumerator IEnumerable.GetEnumerator()
+  public bool Remove(TWeight weight, TItem item)
   {
-    throw new System.NotImplementedException();
+    TWeight weightOf = WeightOf(item);
+
+    // If we're trying to remove more weight of the item than exists, just
+    // remove the whole item.
+    if (ComparesGreater(weight, weightOf)) weight = weightOf;
+
+    // If no weight exists, then do nothing.
+    if (!IsPositive(weight)) return false;
+
+    // Find this object's key
+    TSumWeight key = Items.Where(x => x.Value.Equals(item)).First().Key;
+
+    // Decrement it and every higher key
+    do
+    {
+      TItem moving = Items[key];
+      Items.Remove(key);
+      if (!Items.ContainsKey(key - weight)) Items.Add(key - weight, moving);
+    } while (Items.TryGetHigherKey(key, out key));
+
+    // And return true
+    return true;
   }
+
+  IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+  private static bool IsZero<T>(T input) where T : IComparable<T>, IAdditiveIdentity<T, T>
+    => input.CompareTo(T.AdditiveIdentity) == 0;
 
   private static bool IsPositive<T>(T input) where T : IComparable<T>, IAdditiveIdentity<T, T>
     => input.CompareTo(T.AdditiveIdentity) > 0;
+
+  private static bool IsNonNegative<T>(T input) where T : IComparable<T>, IAdditiveIdentity<T, T>
+    => input.CompareTo(T.AdditiveIdentity) >= 0;
+
+  private static bool ComparesEqual<T>(T input, T target) where T : IComparable<T>
+    => input.CompareTo(target) == 0;
+
+  private static bool ComparesGreater<T>(T input, T target) where T : IComparable<T>
+    => input.CompareTo(target) > 0;
 
   private static bool IsEqual<T>(T input, T target) => input.Equals(target);
 }
