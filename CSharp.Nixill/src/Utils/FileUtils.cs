@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Nixill.Utils
 {
-  public class FileUtils
+  public static class FileUtils
   {
     /// <summary>
     /// An iterator for characters within a file.

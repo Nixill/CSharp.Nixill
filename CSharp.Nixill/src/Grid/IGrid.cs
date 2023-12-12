@@ -31,11 +31,11 @@ namespace Nixill.Collections.Grid
     IEnumerable<IEnumerable<T>> Columns { get; }
 
     /// <summary>The value of a single cell in the grid.</summary>
-    /// <param name="c">The column of the cell for which to get a
-    /// value.</param>
     /// <param name="r">The row of the cell for which to get a
     /// value.</param>
-    T this[int c, int r] { get; set; }
+    /// <param name="c">The column of the cell for which to get a
+    /// value.</param>
+    T this[int r, int c] { get; set; }
 
     /// <summary>The value of a single cell in the grid.</summary>
     /// <param name="gr">The cell for which to get a value.</param>

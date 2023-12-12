@@ -1,12 +1,13 @@
 using System.Text.RegularExpressions;
 using System;
+using System.Numerics;
 
 namespace Nixill.Utils
 {
   /// <summary>
   /// Provides utilities for working with numbers, including conversion.
   /// </summary>
-  public class NumberUtils
+  public static class NumberUtils
   {
     /// <summary>
     /// Converts a string in an arbitrary base to an int.
@@ -177,15 +178,18 @@ namespace Nixill.Utils
     }
 
     /// <summary>
-    /// Converts a number given in Leading Zero format to an int.
+    /// Converts a bijective number to an int.
     ///
-    /// Leading Zero format is a sequence in which numbers which start
-    /// with zero are distinct from numbers which do not. For example,
-    /// base 10 would count as follows: <c>0, 1, 2, ..., 9, 00, 01, ...,
-    /// 09, 10, 11, ..., 99, 000, 001, ...</c>
+    /// A bijective number is a sequence in which numbers which start with
+    /// zero are distinct from numbers which do not. For example, base 10
+    /// would count as follows: <c>0, 1, 2, ..., 9, 00, 01, ..., 09, 10,
+    /// 11, ..., 99, 000, 001, ...</c>
     ///
-    /// With Leading Zero format, base 1 is a valid base (<c>0, 00, 000,
+    /// For bijective numbers, base 1 is a valid base (<c>0, 00, 000,
     /// ...</c>). The highest valid base is 36.
+    /// 
+    /// This method was already named LeadingZeroStringToInt when I found
+    /// out about the term "bijective number", thus its name.
     /// </summary>
     public static int LeadingZeroStringToInt(string input, int bs)
     {
@@ -275,5 +279,22 @@ namespace Nixill.Utils
     public static float NNMod(float n, float d) => ((n %= d) < 0) ? n + d : n;
     public static double NNMod(double n, double d) => ((n %= d) < 0) ? n + d : n;
     public static decimal NNMod(decimal n, decimal d) => ((n %= d) < 0) ? n + d : n;
+
+    public static int GCD(int a, int b) => (int)GCD((long)a, (long)b);
+    public static long GCD(long a, long b)
+    {
+      // Turn negative numbers positive; since any negative integer can be expressed as -1 times a positive integer, the GCD of two negative numbers (or a negative and a positive) will be the same as GCD(|a|, |b|) anyway
+      if (a < 0) a = -a;
+      if (b < 0) b = -b;
+      // Also, a should be the larger number.
+      if (b > a) (a, b) = (b, a);
+      while (b != 0)
+        (a, b) = (b, a % b);
+      return a;
+    }
+
+    // No int override for LCM because some combinations of ints may
+    // produce long results anyway.
+    public static long LCM(long a, long b) => a / GCD(a, b) * b;
   }
 }

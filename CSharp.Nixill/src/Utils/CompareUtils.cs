@@ -3,7 +3,7 @@ namespace Nixill.Utils
   /// <summary>
   /// Methods with which to ease making comparisons in other classes.
   /// </summary>
-  public class CompareUtils
+  public static class CompareUtils
   {
     /// <summary>
     /// Returns the first non-zero parameter.

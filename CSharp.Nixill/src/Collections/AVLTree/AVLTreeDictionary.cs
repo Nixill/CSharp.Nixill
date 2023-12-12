@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Nixill.Collections
 {
-  /// Documented in GitHub.
+  /// Documented in GitHub: https://github.com/StevenH237/CSharp.Nixill.Docs/blob/master/CSharp.Nixill/Collections/AVLTreeDictionary-K-V.md
   public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   {
     #region Fields
@@ -99,8 +99,8 @@ namespace Nixill.Collections
     {
       var entries = EntriesAround(from);
       var lesser = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
-      var equal = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
-      var greater = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
+      var equal = (entries.HasEqualValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.EqualValue.Key } : null;
+      var greater = (entries.HasGreaterValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.GreaterValue.Key } : null;
       return new NodeTriplet<K>((lesser, equal, greater));
     }
     #endregion

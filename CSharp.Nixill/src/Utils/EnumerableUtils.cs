@@ -327,4 +327,125 @@ public static class EnumerableUtils
     list.RemoveAt(0);
     return value;
   }
+
+  public static IEnumerable<IEnumerable<T>> Permutations<T>(this IEnumerable<T> elems, int limit = 0)
+  {
+    List<T> elemList = elems.ToList();
+    int count = elemList.Count;
+    if (limit < 1) limit += count;
+
+    // Handles both the final level of recursion *and* empty lists
+    if (count < 2)
+    {
+      yield return elemList;
+      yield break;
+    }
+
+    foreach (int i in Enumerable.Range(0, count))
+    {
+      T elem = elemList.Pop();
+
+      if (limit == 1)
+      {
+        yield return EnumerableUtils.Of(elem);
+      }
+      else
+      {
+        foreach (IEnumerable<T> sublist in elemList.Permutations(limit - 1))
+        {
+          yield return sublist.Prepend(elem);
+        }
+      }
+
+      elemList.Add(elem);
+    }
+  }
+
+  public static IEnumerable<IEnumerable<T>> PermutationsDistinct<T>(this IEnumerable<T> elems, int limit = 0)
+  {
+    List<T> elemList = elems.ToList();
+    int count = elemList.Count;
+    if (limit < 1) limit += count;
+
+    // Handles both the final level of recursion *and* empty lists
+    if (count < 2)
+    {
+      yield return elemList;
+      yield break;
+    }
+
+    HashSet<T> yielded = new();
+
+    foreach (int i in Enumerable.Range(0, count))
+    {
+      T elem = elemList.Pop();
+
+      if (!yielded.Contains(elem))
+      {
+        yielded.Add(elem);
+
+        if (limit == 1)
+        {
+          yield return EnumerableUtils.Of(elem);
+        }
+        else
+        {
+          foreach (IEnumerable<T> sublist in elemList.PermutationsDistinct(limit - 1))
+          {
+            yield return sublist.Prepend(elem);
+          }
+        }
+      }
+
+      elemList.Add(elem);
+    }
+  }
+  public static IEnumerable<T> Repeat<T>(this IEnumerable<T> seq, int count)
+  {
+    foreach (int i in Enumerable.Range(0, count))
+    {
+      foreach (T item in seq)
+      {
+        yield return item;
+      }
+    }
+  }
+
+  public static IEnumerable<T> RepeatInfinite<T>(this IEnumerable<T> seq)
+  {
+    while (true)
+    {
+      foreach (T item in seq)
+      {
+        yield return item;
+      }
+    }
+  }
+
+  public static T AggregateFromFirst<T>(this IEnumerable<T> elems, Func<T, T, T> aggregation)
+  {
+    bool assigned = false;
+    T aggregate = default(T);
+
+    foreach (T item in elems)
+    {
+      if (!assigned)
+      {
+        aggregate = item;
+        assigned = true;
+      }
+      else
+      {
+        aggregate = aggregation(aggregate, item);
+      }
+    }
+
+    if (!assigned) throw new InvalidOperationException("Sequence contains no elements.");
+    return aggregate;
+  }
+
+  public static IEnumerable<(T Item, int Index)> WithIndex<T>(this IEnumerable<T> original)
+  {
+    return original.Select((x, i) => (x, i));
+  }
 }
