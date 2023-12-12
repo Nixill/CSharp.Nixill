@@ -255,27 +255,45 @@ public static class EnumerableUtils
     return allItems;
   }
 
+  static void MakeListAdd<T>(ref List<T> list, T item)
+  {
+    if (list == null) list = new();
+    list.Add(item);
+  }
+
   public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
-      Func<TSource, bool> predicate)
+      Func<TSource, bool> predicate, bool appendFails = false, bool prependFails = false, bool skipEmpty = false)
+      => items.ChunkWhile((_, i) => predicate(i), default(TSource), appendFails, prependFails, skipEmpty);
+
+  public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
+      Func<TSource, TSource, bool> predicate, TSource firstComparison = default(TSource), bool appendFails = false,
+      bool prependFails = false, bool skipEmpty = false)
   {
     List<TSource> list = null;
 
+    TSource priorItem = firstComparison;
+
     foreach (TSource item in items)
     {
-      if (predicate(item))
+      if (predicate(priorItem, item))
       {
-        if (list == null) list = new();
-        list.Add(item);
+        MakeListAdd(ref list, item);
       }
       else
       {
-        if (list == null) yield return Enumerable.Empty<TSource>();
-        else
+        if (appendFails) MakeListAdd(ref list, item);
+
+        if (list != null)
         {
           yield return list;
           list = null;
         }
+        else if (!skipEmpty) yield return Enumerable.Empty<TSource>();
+
+        if (prependFails) MakeListAdd(ref list, item);
       }
+
+      priorItem = item;
     }
 
     if (list != null) yield return list;
@@ -448,4 +466,13 @@ public static class EnumerableUtils
   {
     return original.Select((x, i) => (x, i));
   }
+}
+
+[Flags]
+public enum ChunkWhileOptions
+{
+  None = 0,
+  DiscardFailures = 0,
+  AppendFailures = 1,
+  PrependFailures = 2
 }
