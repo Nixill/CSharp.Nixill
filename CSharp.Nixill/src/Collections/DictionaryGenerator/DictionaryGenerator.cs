@@ -29,23 +29,32 @@ namespace Nixill.Collections
     public IDictionary<K, V> Dict { get; }
 
     /// <summary>
+    /// Whether or not to store newly generated values when a key is not
+    /// found in the dictionary during a get operation. Does not affect
+    /// previously generated values, whether they were or weren't stored.
+    /// </summary>
+    public bool StoreGeneratedValues = true;
+
+    /// <summary>
     /// Creates a new, empty Dictionary&lt;K, V&gt; with a
     /// DefaultGenerator.
     /// </summary>
-    public DictionaryGenerator()
+    public DictionaryGenerator(bool storeValues = true)
     {
       Dict = new Dictionary<K, V>();
       Generator = new DefaultGenerator<K, V>();
+      StoreGeneratedValues = storeValues;
     }
 
     /// <summary>
     /// Creates a new, empty Dictionary&lt;K, V&gt; and wraps it with the
     /// provided Generator.
     /// </summary>
-    public DictionaryGenerator(Generator<K, V> gen)
+    public DictionaryGenerator(Generator<K, V> gen, bool storeValues = true)
     {
       Dict = new Dictionary<K, V>();
       Generator = gen;
+      StoreGeneratedValues = storeValues;
     }
 
     /// <summary>
@@ -53,17 +62,19 @@ namespace Nixill.Collections
     /// </summary>
     /// <param name="dict">The Dictionary to use.</param>
     /// <param name="gen">The Generator to use.</param>
-    public DictionaryGenerator(IDictionary<K, V> dict, Generator<K, V> gen)
+    public DictionaryGenerator(IDictionary<K, V> dict, Generator<K, V> gen, bool storeValues = true)
     {
       Dict = dict;
       Generator = gen;
+      StoreGeneratedValues = storeValues;
     }
 
     /// <summary>
     /// Gets or sets the value associated with the specified key.
     ///
     /// If the specified key is not found, a get operation automatically
-    /// generates a value, sets it to that key, and returns it.
+    /// generates a value, sets it to that key (if the DictionaryGenerator
+    /// is set to do so), and returns it.
     /// </summary>
     /// <param name="key">The key of the value to get or set.</param>
     public V this[K key]
@@ -71,7 +82,8 @@ namespace Nixill.Collections
       get
       {
         if (Dict.ContainsKey(key)) return Dict[key];
-        else return Add(key);
+        else if (StoreGeneratedValues) return Add(key);
+        else return Generator.Generate(key);
       }
       set => Dict[key] = value;
     }
@@ -90,7 +102,7 @@ namespace Nixill.Collections
       }
       else if (Dict.ContainsKey(key))
       {
-        throw new ArgumentException("Key " + key.ToString() + " already exists in map.");
+        throw new ArgumentException("Key " + key.ToString() + " already exists in the Dictionary.");
       }
       else
       {

@@ -191,31 +191,31 @@ namespace Nixill.Collections.Grid
 
     public void InsertColumnShiftLeft(int before)
     {
-      BackingGrid.InsertColumn(before);
+      BackingGrid.InsertColumn(before + ColumnOffset);
       ColumnOffset += 1;
     }
 
     public void InsertColumnShiftLeft<U>(int before, IEnumerable<U> column) where U : T
     {
-      BackingGrid.InsertColumn(before, column);
+      BackingGrid.InsertColumn(before + ColumnOffset, column);
       ColumnOffset += 1;
     }
 
     public void InsertColumnShiftLeft(int before, T columnItem)
     {
-      BackingGrid.InsertColumn(before, columnItem);
+      BackingGrid.InsertColumn(before + ColumnOffset, columnItem);
       ColumnOffset += 1;
     }
 
     public void InsertColumnShiftLeft(int before, Func<T> columnItemFunc)
     {
-      BackingGrid.InsertColumn(before, columnItemFunc);
+      BackingGrid.InsertColumn(before + ColumnOffset, columnItemFunc);
       ColumnOffset += 1;
     }
 
     public void InsertColumnShiftLeft(int before, Func<int, T> columnItemFunc)
     {
-      BackingGrid.InsertColumn(before, columnItemFunc);
+      BackingGrid.InsertColumn(before + ColumnOffset, columnItemFunc);
       ColumnOffset += 1;
     }
 
@@ -227,31 +227,31 @@ namespace Nixill.Collections.Grid
 
     public void InsertRowShiftUp(int before)
     {
-      BackingGrid.InsertRow(before);
+      BackingGrid.InsertRow(before + RowOffset);
       RowOffset += 1;
     }
 
     public void InsertRowShiftUp<U>(int before, IEnumerable<U> row) where U : T
     {
-      BackingGrid.InsertRow(before, row);
+      BackingGrid.InsertRow(before + RowOffset, row);
       RowOffset += 1;
     }
 
     public void InsertRowShiftUp(int before, T rowItem)
     {
-      BackingGrid.InsertRow(before, rowItem);
+      BackingGrid.InsertRow(before + RowOffset, rowItem);
       RowOffset += 1;
     }
 
     public void InsertRowShiftUp(int before, Func<T> rowItemFunc)
     {
-      BackingGrid.InsertRow(before, rowItemFunc);
+      BackingGrid.InsertRow(before + RowOffset, rowItemFunc);
       RowOffset += 1;
     }
 
     public void InsertRowShiftUp(int before, Func<int, T> rowItemFunc)
     {
-      BackingGrid.InsertRow(before, rowItemFunc);
+      BackingGrid.InsertRow(before + RowOffset, rowItemFunc);
       RowOffset += 1;
     }
 
