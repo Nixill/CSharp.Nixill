@@ -44,7 +44,7 @@ namespace Nixill.Collections
     }
 
     public DictionaryGenerator()
-    : this(new Dictionary<K, V>(), new DefaultGenerator<K, V>(), false)
+    : this(new Dictionary<K, V>(), new DefaultGenerator<K, V>(), true)
     { }
 
     public DictionaryGenerator(bool storeValues)
