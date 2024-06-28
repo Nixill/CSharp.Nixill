@@ -249,6 +249,10 @@ namespace Nixill.Collections
     /// </summary>
     /// <param name="value">The value to check for.</param>
     public bool? CanGenerate(V val) => null;
+
+    public DictionaryGenerator<K, V> Wrap(IDictionary<K, V> dict) => new DictionaryGenerator<K, V>(dict, this);
+
+    public DictionaryGenerator<K, V> Wrap() => new DictionaryGenerator<K, V>(this);
   }
 
   public static class DictionaryGeneratorExtensions
