@@ -208,7 +208,7 @@ public static class EnumerableUtils
       Func<TSource, TResult> mutator) where TResult : IComparable<TResult>
   {
     TResult baseline = default(TResult);
-    List<TSource> allItems = null;
+    List<TSource> allItems = new();
     bool assigned = false;
 
     foreach (TSource item in list)
@@ -233,7 +233,7 @@ public static class EnumerableUtils
       Func<TSource, TResult> mutator, IComparer<TResult> comp)
   {
     TResult baseline = default(TResult);
-    List<TSource> allItems = null;
+    List<TSource> allItems = new();
     bool assigned = false;
     Comparison<TResult> cFunc = comp.Compare;
 
