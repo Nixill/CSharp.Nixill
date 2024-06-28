@@ -505,6 +505,81 @@ public static class EnumerableUtils
   {
     return original.Select((x, i) => (x, i));
   }
+
+  static IEnumerable<T> ExceptDualBy<T, K>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, K> keySelector)
+    => first.ExceptBy(second.Select(keySelector), keySelector);
+
+  static IEnumerable<T> ExceptDualBy<T, K>(this IEnumerable<T> first, IEnumerable<T> second,
+      Func<T, K> keySelector, IEqualityComparer<K> comparer)
+    => first.ExceptBy(second.Select(keySelector), keySelector, comparer);
+
+  static IEnumerable<T> IntersectDualBy<T, K>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, K> keySelector)
+    => first.IntersectBy(second.Select(keySelector), keySelector);
+
+  static IEnumerable<T> IntersectDualBy<T, K>(this IEnumerable<T> first, IEnumerable<T> second,
+      Func<T, K> keySelector, IEqualityComparer<K> comparer)
+    => first.IntersectBy(second.Select(keySelector), keySelector, comparer);
+
+  static IEnumerable<T> SymmetricExcept<T>(this IEnumerable<T> first, IEnumerable<T> second)
+  {
+    var set = first.ToHashSet();
+    set.SymmetricExceptWith(second);
+    return set;
+  }
+
+  static IEnumerable<T> SymmetricExcept<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer)
+  {
+    var set = first.ToHashSet(comparer);
+    set.SymmetricExceptWith(second);
+    return set;
+  }
+
+  public static IEnumerable<T> ExceptInstances<T>(this IEnumerable<T> first, IEnumerable<T> second)
+  {
+    Dictionary<T, int> counts = second.GroupBy(t => t).Select(g => new KeyValuePair<T, int>(g.Key, g.Count())).ToDictionary();
+
+    foreach (T item in first)
+    {
+      if (counts.ContainsKey(item) && counts[item] > 0)
+      {
+        counts[item]--;
+      }
+      else
+      {
+        yield return item;
+      }
+    }
+  }
+
+  public static IEnumerable<T> IntersectInstances<T>(this IEnumerable<T> first, IEnumerable<T> second)
+  {
+    Dictionary<T, int> counts = second.GroupBy(t => t).Select(g => new KeyValuePair<T, int>(g.Key, g.Count())).ToDictionary();
+
+    foreach (T item in first)
+    {
+      if (counts.ContainsKey(item) && counts[item] > 0)
+      {
+        counts[item]--;
+        yield return item;
+      }
+    }
+  }
+
+  public static string SJoin<T>(this IEnumerable<T> objects, string with)
+    => string.Join(with, objects);
+
+  public static IEnumerable<(T, T)> Pairs<T>(this IEnumerable<T> sequence)
+  {
+    bool first = true;
+    T last = default(T);
+
+    foreach (T item in sequence)
+    {
+      if (!first) yield return (last, item);
+      last = item;
+      first = false;
+    }
+  }
 }
 
 [Flags]
