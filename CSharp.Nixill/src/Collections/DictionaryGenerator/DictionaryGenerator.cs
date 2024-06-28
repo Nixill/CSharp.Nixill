@@ -35,39 +35,41 @@ namespace Nixill.Collections
     /// </summary>
     public bool StoreGeneratedValues = true;
 
-    /// <summary>
-    /// Creates a new, empty Dictionary&lt;K, V&gt; with a
-    /// DefaultGenerator.
-    /// </summary>
-    public DictionaryGenerator(bool storeValues = true)
-    {
-      Dict = new Dictionary<K, V>();
-      Generator = new DefaultGenerator<K, V>();
-      StoreGeneratedValues = storeValues;
-    }
-
-    /// <summary>
-    /// Creates a new, empty Dictionary&lt;K, V&gt; and wraps it with the
-    /// provided Generator.
-    /// </summary>
-    public DictionaryGenerator(Generator<K, V> gen, bool storeValues = true)
-    {
-      Dict = new Dictionary<K, V>();
-      Generator = gen;
-      StoreGeneratedValues = storeValues;
-    }
-
-    /// <summary>
-    /// Wraps an existing IDictionary with the provided Generator.
-    /// </summary>
-    /// <param name="dict">The Dictionary to use.</param>
-    /// <param name="gen">The Generator to use.</param>
+    // The primary generator
     public DictionaryGenerator(IDictionary<K, V> dict, Generator<K, V> gen, bool storeValues = true)
     {
       Dict = dict;
       Generator = gen;
       StoreGeneratedValues = storeValues;
     }
+
+    public DictionaryGenerator()
+    : this(new Dictionary<K, V>(), new DefaultGenerator<K, V>(), false)
+    { }
+
+    public DictionaryGenerator(bool storeValues)
+    : this(new Dictionary<K, V>(), new DefaultGenerator<K, V>(), storeValues)
+    { }
+
+    public DictionaryGenerator(Generator<K, V> gen, bool storeValues = true)
+    : this(new Dictionary<K, V>(), gen, storeValues)
+    { }
+
+    public DictionaryGenerator(Func<K, V> genFunc, bool storeValues = true)
+    : this(new Dictionary<K, V>(), new FuncGenerator<K, V>(genFunc), storeValues)
+    { }
+
+    public DictionaryGenerator(IDictionary<K, V> dict, Func<K, V> genFunc, bool storeValues = true)
+    : this(dict, new FuncGenerator<K, V>(genFunc), storeValues)
+    { }
+
+    public DictionaryGenerator(V item, bool storeValues = true)
+    : this(new Dictionary<K, V>(), new SingleValueGenerator<K, V>(item), storeValues)
+    { }
+
+    public DictionaryGenerator(IDictionary<K, V> dict, V item, bool storeValues = true)
+    : this(dict, new SingleValueGenerator<K, V>(item), storeValues)
+    { }
 
     /// <summary>
     /// Gets or sets the value associated with the specified key.
