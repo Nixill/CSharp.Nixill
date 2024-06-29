@@ -62,7 +62,7 @@ public static class EnumerableUtils
   public static IEnumerable<T> MaxMany<T>(this IEnumerable<T> list) where T : IComparable<T>
   {
     T baseline = default(T);
-    List<T> allItems = null;
+    List<T> allItems = new();
     bool assigned = false;
 
     foreach (T item in list)
@@ -85,7 +85,7 @@ public static class EnumerableUtils
   public static IEnumerable<T> MaxMany<T>(this IEnumerable<T> list, IComparer<T> comp)
   {
     T baseline = default(T);
-    List<T> allItems = null;
+    List<T> allItems = new();
     bool assigned = false;
     Comparison<T> cFunc = comp.Compare;
 
@@ -110,7 +110,7 @@ public static class EnumerableUtils
       Func<TSource, TResult> mutator) where TResult : IComparable<TResult>
   {
     TResult baseline = default(TResult);
-    List<TSource> allItems = null;
+    List<TSource> allItems = new();
     bool assigned = false;
 
     foreach (TSource item in list)
@@ -135,7 +135,7 @@ public static class EnumerableUtils
       Func<TSource, TResult> mutator, IComparer<TResult> comp)
   {
     TResult baseline = default(TResult);
-    List<TSource> allItems = null;
+    List<TSource> allItems = new();
     bool assigned = false;
     Comparison<TResult> cFunc = comp.Compare;
 
@@ -160,7 +160,7 @@ public static class EnumerableUtils
   public static IEnumerable<T> MinMany<T>(this IEnumerable<T> list) where T : IComparable<T>
   {
     T baseline = default(T);
-    List<T> allItems = null;
+    List<T> allItems = new();
     bool assigned = false;
 
     foreach (T item in list)
@@ -183,7 +183,7 @@ public static class EnumerableUtils
   public static IEnumerable<T> MinMany<T>(this IEnumerable<T> list, IComparer<T> comp)
   {
     T baseline = default(T);
-    List<T> allItems = null;
+    List<T> allItems = new();
     bool assigned = false;
     Comparison<T> cFunc = comp.Compare;
 
