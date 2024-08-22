@@ -26,7 +26,7 @@ namespace Nixill.Collections.Grid.CSV
   /// </description></item>
   /// </list>
   /// </summary>
-  public class CSVParser
+  public static class CSVParser
   {
     /// <summary>
     /// Reads a CSV file into a Grid of strings.
