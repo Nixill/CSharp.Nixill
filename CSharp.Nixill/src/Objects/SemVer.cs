@@ -22,7 +22,7 @@ namespace Nixill.Objects
 
     private static readonly Regex PreReleaseRegex = new Regex("^(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*$");
     private static readonly Regex BuildMetadataRegex = new Regex("^[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*$");
-    private static readonly Regex FullRegex = new Regex("^(?P<major>0|[1-9]\\d*)\\.(?P<minor>0|[1-9]\\d*)\\.(?P<patch>0|[1-9]\\d*)(?:-(?P<prerelease>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$");
+    private static readonly Regex FullRegex = new Regex("^(?<major>0|[1-9]\\d*)\\.(?<minor>0|[1-9]\\d*)\\.(?<patch>0|[1-9]\\d*)(?:-(?<prerelease>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$");
 
     /// <summary>Constructs a <c>SemVer</c> consisting only of the main numbers.</summary>
     public SemVer(int major, int minor, int patch) : this(major, minor, patch, null, null) { }
@@ -105,7 +105,7 @@ namespace Nixill.Objects
       // separated identifier from left to right until a difference is
       // found as follows:"
       string[] leftPR = PreRelease.Split('.');
-      string[] rightPR = PreRelease.Split('.');
+      string[] rightPR = target.PreRelease.Split('.');
       int length = Math.Min(leftPR.Length, rightPR.Length);
 
       for (int i = 0; i < length; i++)
@@ -113,9 +113,8 @@ namespace Nixill.Objects
         string leftPRE = leftPR[i];
         string rightPRE = rightPR[i];
 
-        int leftPRN, rightPRN;
-        bool leftIsNum = int.TryParse(leftPRE, out leftPRN);
-        bool rightIsNum = int.TryParse(rightPRE, out rightPRN);
+        bool leftIsNum = int.TryParse(leftPRE, out int leftPRN);
+        bool rightIsNum = int.TryParse(rightPRE, out int rightPRN);
         // "identifiers consisting of only digits are compared numerically"
         if (leftIsNum && rightIsNum)
         {
@@ -149,11 +148,11 @@ namespace Nixill.Objects
     /// This check follows rule 11. Notably, this means that build
     /// metadata is ignored for the purposes of the check. Use
     /// <a cref="EqualsStrict(SemVer)">EqualsStrict</a> to check with metadata.
+    /// </summary>
     ///
     /// <exception cref="InvalidCastException">
     /// If <c>obj</c> is not a <c>SemVer</c>.
     /// </exception>
-    /// </summary>
     public override bool Equals(object obj)
     {
       SemVer target = (SemVer)obj;
