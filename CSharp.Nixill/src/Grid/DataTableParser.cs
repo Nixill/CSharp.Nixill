@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using Nixill.Utils;
 
 namespace Nixill.Collections.Grid.CSV;
@@ -54,6 +55,15 @@ public static class DataTableCSVParser
             types.Add(typeof(string));
           }
         }
+
+        if (primaryKey != null)
+          table.PrimaryKey = primaryKey.Select(x => table.Columns[x]).ToArray();
+
+        isHeaderRow = false;
+      }
+      else
+      {
+
       }
     }
   }
