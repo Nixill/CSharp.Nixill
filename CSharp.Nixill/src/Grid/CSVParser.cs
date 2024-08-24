@@ -8,24 +8,26 @@ namespace Nixill.Collections.Grid.CSV
   /// <summary>
   /// This class contains static methods to convert between Grids of
   /// strings and comma separated value format files and text.
-  ///
-  /// The parser follows the specifications laid out in
+  /// </summary>
+  /// <remarks>
+  /// The parser and formatter follow the specifications laid out in
   /// <a href="https://tools.ietf.org/html/rfc4180">RFC 4180</a>, with the
   /// following exceptions:
   ///
   /// <list type="bullet">
   /// <item><description>
-  /// Input records may be separated by CRLF, CR, or LF (but not LFCR).
+  /// When parsing, records may be separated by CRLF, CR, or LF (but not
+  /// LFCR).
   /// </description></item>
   /// <item><description>
-  /// Output records are separated by LF, not CRLF.
-  /// </description></item>
-  /// <item><description>
-  /// In input, two consecutive double quotes always produces a double
+  /// When parsing, two consecutive double quotes always produces a double
   /// quote character, even when not enclosed in quotes.
   /// </description></item>
+  /// <item><description>
+  /// When formatting, records are separated by LF, not CRLF.
+  /// </description></item>
   /// </list>
-  /// </summary>
+  /// </remarks>
   public static class CSVParser
   {
     /// <summary>
