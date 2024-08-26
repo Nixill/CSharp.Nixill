@@ -39,6 +39,7 @@ public static class DataTableCSVParser
   static DataTableCSVParser()
   {
     Deserializers = [];
+    Serializers = [];
   }
 
   /// <summary>Parses a <see cref="DataTable"/> from a file.</summary>
@@ -53,7 +54,7 @@ public static class DataTableCSVParser
   /// </param>
   /// <param name="primaryKey">Column(s) which form the primary key.</param>
   /// <returns>The parsed DataTable.</returns>
-  public static DataTable FileToDataTable(string path, IDictionary<string, DataColumn> columnDefs = null,
+  public static DataTable FileToDataTable(string path, IEnumerable<DataColumn> columnDefs = null,
     IDictionary<Type, Func<string, object>> deserializers = null, IEnumerable<string> primaryKey = null)
     => EnumerableToDataTable(FileUtils.FileCharEnumerator(path), columnDefs, deserializers, primaryKey);
 
@@ -73,7 +74,7 @@ public static class DataTableCSVParser
   /// </param>
   /// <param name="primaryKey">Column(s) which form the primary key.</param>
   /// <returns>The parsed DataTable.</returns>
-  public static DataTable StreamToDataTable(StreamReader reader, IDictionary<string, DataColumn> columnDefs = null,
+  public static DataTable StreamToDataTable(StreamReader reader, IEnumerable<DataColumn> columnDefs = null,
     IDictionary<Type, Func<string, object>> deserializers = null, IEnumerable<string> primaryKey = null)
     => EnumerableToDataTable(FileUtils.StreamCharEnumerator(reader), columnDefs, deserializers, primaryKey);
 
@@ -91,13 +92,12 @@ public static class DataTableCSVParser
   /// </param>
   /// <param name="primaryKey">Column(s) which form the primary key.</param>
   /// <returns>The parsed DataTable.</returns>
-  public static DataTable EnumerableToDataTable(IEnumerable<char> input,
-    IDictionary<string, DataColumn> columnDefs = null, IDictionary<Type, Func<string, object>> deserializers = null,
-    IEnumerable<string> primaryKey = null)
+  public static DataTable EnumerableToDataTable(IEnumerable<char> input, IEnumerable<DataColumn> columnDefs = null,
+    IDictionary<Type, Func<string, object>> deserializers = null, IEnumerable<string> primaryKey = null)
   {
     DataTable table = new();
 
-    columnDefs ??= new Dictionary<string, DataColumn>();
+    var colDefsDict = (columnDefs ?? []).Select(c => (c.ColumnName, c)).ToDictionary();
     deserializers ??= new Dictionary<Type, Func<string, object>>();
 
     var types = new List<Type>();
@@ -111,7 +111,7 @@ public static class DataTableCSVParser
       {
         foreach (string item in row)
         {
-          if (columnDefs.TryGetValue(item, out DataColumn col))
+          if (colDefsDict.TryGetValue(item, out DataColumn col))
           {
             table.Columns.Add(col);
             types.Add(col.DataType);
@@ -138,9 +138,14 @@ public static class DataTableCSVParser
         // Ignore both extra columns and unspecified columns
         foreach (((string value, Type type), int index) in row.Zip(types).WithIndex())
         {
-          object obj = Deserialize(type, value, deserializers);
-          dataRow[index] = obj;
+          if (value != "" && value != null)
+          {
+            object obj = Deserialize(type, value, deserializers);
+            dataRow[index] = obj;
+          }
         }
+
+        table.Rows.Add(dataRow);
       }
     }
 
@@ -243,6 +248,8 @@ public static class DataTableCSVParser
 
   static object Deserialize(Type type, string input, IDictionary<Type, Func<string, object>> localDeserializers)
   {
+    if (type == typeof(string)) return input;
+
     if (localDeserializers != null && localDeserializers.TryGetValue(type, out Func<string, object> value))
       return value(input);
 
@@ -269,6 +276,8 @@ public static class DataTableCSVParser
 
   static string Serialize(object input, IDictionary<Type, Func<object, string>> localSerializers)
   {
+    if (input is string strInput) return strInput;
+
     Type type = input.GetType();
 
     if (localSerializers != null && localSerializers.TryGetValue(type, out var value))
