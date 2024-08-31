@@ -172,9 +172,21 @@ public static class DataTableCSVParser
       .SJoin(",");
 
     foreach (DataRow row in table.AsEnumerable())
-      yield return GetValues(row)
+    {
+      List<string> values = [];
+
+      for (int i = 0; i < table.Columns.Count; i++)
+      {
+        DataColumn col = table.Columns[i];
+        object val = row[i];
+        if (col.DefaultValue != null && val.Equals(col.DefaultValue)) values.Add("");
+        else values.Add(Serialize(val, serializers));
+      }
+
+      yield return values
         .Select(v => CSVParser.CSVEscape(Serialize(v, serializers)))
         .SJoin(",");
+    }
   }
 
   /// <summary>
@@ -241,11 +253,6 @@ public static class DataTableCSVParser
     for (int i = 0; i < table.Columns.Count; i++) yield return table.Columns[i];
   }
 
-  static IEnumerable<object> GetValues(DataRow row)
-  {
-    for (int i = 0; i < row.Table.Columns.Count; i++) yield return row[i];
-  }
-
   static object Deserialize(Type type, string input, IDictionary<Type, Func<string, object>> localDeserializers)
   {
     if (type == typeof(string)) return input;
@@ -270,6 +277,9 @@ public static class DataTableCSVParser
 
     MethodInfo method = type.GetMethod("Parse", [typeof(string)]);
     if (method != null && method.IsStatic) return method.Invoke(null, [input]);
+
+    ConstructorInfo constructor = type.GetConstructor([typeof(string)]);
+    if (constructor != null) return constructor.Invoke([input]);
 
     throw new NoDeserializerException(type);
   }
