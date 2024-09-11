@@ -11,11 +11,12 @@ namespace Nixill.Utils
     /// <param name="path">The path of the file to read.</param>
     public static IEnumerable<char> FileCharEnumerator(string path)
     {
-      StreamReader reader = new StreamReader(path);
+      using StreamReader reader = new StreamReader(path);
       foreach (char c in StreamCharEnumerator(reader))
       {
         yield return c;
       }
+      reader.Close();
     }
 
     /// <summary>
