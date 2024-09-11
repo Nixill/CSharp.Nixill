@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nixill.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nixill.Utils;
 
@@ -578,6 +579,26 @@ public static class EnumerableUtils
       if (!first) yield return (last, item);
       last = item;
       first = false;
+    }
+  }
+
+  public static void NoWait(this IEnumerable<Task> tasks)
+  {
+    tasks.Do(x => { });
+  }
+
+  public static async Task WaitAllNoReturn(this IEnumerable<Task> tasks)
+  {
+    Task[] array = [.. tasks];
+    foreach (Task t in array) await t;
+  }
+
+  public static async IAsyncEnumerable<T> WaitAllReturns<T>(this IEnumerable<Task<T>> tasks)
+  {
+    Task<T>[] array = [.. tasks];
+    foreach (Task<T> t in array)
+    {
+      yield return await t;
     }
   }
 }
