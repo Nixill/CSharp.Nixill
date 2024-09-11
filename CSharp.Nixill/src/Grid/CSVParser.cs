@@ -243,6 +243,8 @@ namespace Nixill.Collections.Grid.CSV
     /// </summary>
     public static string CSVEscape(string input)
     {
+      if (input == null) return "";
+
       if (input.Contains('\"') || input.Contains(',') || input.Contains('\n') || input.Contains('\r'))
       {
         input = '"' + input.Replace("\"", "\"\"") + '"';
