@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nixill.Collections;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Numerics;
 
 namespace Nixill.Utils;
 
@@ -600,6 +601,50 @@ public static class EnumerableUtils
     {
       yield return await t;
     }
+  }
+
+  public static T Sum<T>(this IEnumerable<T> inputs)
+    where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>
+  => inputs.Sum<T, T>();
+
+  public static TOutput Sum<TInput, TOutput>(this IEnumerable<TInput> inputs)
+    where TInput : IAdditionOperators<TInput, TOutput, TOutput>, IAdditiveIdentity<TInput, TOutput>
+  {
+    TOutput output = TInput.AdditiveIdentity;
+    foreach (TInput input in inputs) output = input + output;
+    return output;
+  }
+
+  public static T Average<T>(this IEnumerable<T> inputs)
+    where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IDivisionOperators<T, int, T>
+  => inputs.Average<T, T>();
+
+  public static TOutput Average<TInput, TOutput>(this IEnumerable<TInput> inputs)
+    where TInput : IAdditionOperators<TInput, TOutput, TOutput>, IAdditiveIdentity<TInput, TOutput>
+    where TOutput : IDivisionOperators<TOutput, int, TOutput>
+  {
+    TInput[] inputArray = inputs.ToArray();
+
+    if (inputArray.Length == 0) throw new DivideByZeroException("Cannot get average of a zero-length input.");
+
+    TOutput sum = inputArray.Sum<TInput, TOutput>();
+    return sum / inputArray.Length;
+  }
+
+  public static T Average<T>(this IEnumerable<T> inputs, T defaultValue)
+    where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IDivisionOperators<T, int, T>
+  => inputs.Average<T, T>(defaultValue);
+
+  public static TOutput Average<TInput, TOutput>(this IEnumerable<TInput> inputs, TOutput defaultValue)
+    where TInput : IAdditionOperators<TInput, TOutput, TOutput>, IAdditiveIdentity<TInput, TOutput>
+    where TOutput : IDivisionOperators<TOutput, int, TOutput>
+  {
+    TInput[] inputArray = inputs.ToArray();
+
+    if (inputArray.Length == 0) return defaultValue;
+
+    TOutput sum = inputArray.Sum<TInput, TOutput>();
+    return sum / inputArray.Length;
   }
 }
 
