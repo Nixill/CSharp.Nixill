@@ -631,10 +631,6 @@ public static class EnumerableUtils
     return sum / inputArray.Length;
   }
 
-  public static T Average<T>(this IEnumerable<T> inputs, T defaultValue)
-    where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IDivisionOperators<T, int, T>
-  => inputs.Average<T, T>(defaultValue);
-
   public static TOutput Average<TInput, TOutput>(this IEnumerable<TInput> inputs, TOutput defaultValue)
     where TInput : IAdditionOperators<TInput, TOutput, TOutput>, IAdditiveIdentity<TInput, TOutput>
     where TOutput : IDivisionOperators<TOutput, int, TOutput>
