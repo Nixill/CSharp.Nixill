@@ -4,6 +4,7 @@ using Nixill.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Numerics;
+using System.Text;
 
 namespace Nixill.Utils;
 
@@ -641,6 +642,42 @@ public static class EnumerableUtils
 
     TOutput sum = inputArray.Sum<TInput, TOutput>();
     return sum / inputArray.Length;
+  }
+
+  public static IEnumerable<string> CharLimitedJoin<T>(this IEnumerable<T> seq, string sep, int limit)
+  {
+    string memory = "";
+    IEnumerator<string> iter = seq.Select(x => x?.ToString() ?? "").GetEnumerator();
+
+    while (true)
+    {
+      while (memory.Length >= limit)
+      {
+        yield return memory[..limit];
+        memory = memory[limit..];
+      }
+
+      StringBuilder build = new(memory);
+      string output = "";
+
+      while (build.Length < limit)
+      {
+        output = build.ToString();
+        if (iter.MoveNext())
+        {
+          if (build.Length > 0) build.Append(sep);
+          build.Append(iter.Current);
+        }
+        else
+        {
+          if (output != "") yield return output;
+          yield break;
+        }
+      }
+
+      yield return output;
+      memory = iter.Current;
+    }
   }
 }
 
