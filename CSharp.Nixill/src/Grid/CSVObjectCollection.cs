@@ -18,21 +18,16 @@ public class CSVObjectCollection<T> : IList<T>
 
   public CSVObjectCollection() { }
 
-  public CSVObjectCollection(IEnumerable<T> contents)
-  {
-    _Contents = [.. contents];
-  }
-
   public CSVObjectCollection(IEnumerable<string> columns, IEnumerable<T> contents)
   {
     _Columns = [.. columns];
     _Contents = [.. contents];
   }
 
-  public CSVObjectCollection(CSVObjectCollection<T> clones)
+  public CSVObjectCollection(CSVObjectCollection<T> cloneOf)
   {
-    _Columns = [.. clones._Columns];
-    _Contents = [.. clones];
+    _Columns = [.. cloneOf._Columns];
+    _Contents = [.. cloneOf];
   }
 
   public static CSVObjectCollection<T> ParseObjectsFromFile(string path, Func<IDictionary<string, string>, T> deserializer)
@@ -70,14 +65,7 @@ public class CSVObjectCollection<T> : IList<T>
   public string NewRow(T item, Func<T, IDictionary<string, string>> serializer)
   {
     _Contents.Add(item);
-
-    var properties = serializer(item);
-    var columnValues = _Columns.Select(c =>
-    {
-      if (properties.TryGetValue(c, out string v)) return v;
-      return null;
-    });
-    return columnValues.Select(CSVParser.CSVEscape).SJoin(",");
+    return ItemToRow(item, serializer);
   }
 
   public string ItemToRow(T item, Func<T, IDictionary<string, string>> serializer)
@@ -224,7 +212,7 @@ public static class CSVObjectCollection
     => CSVObjectCollection<T>.ParseObjects(input, deserializer);
 }
 
-file class PropertyDictionary(Dictionary<string, string> backing) : IDictionary<string, string>
+internal class PropertyDictionary(Dictionary<string, string> backing) : IDictionary<string, string>
 {
   readonly Dictionary<string, string> Backing = backing;
 
@@ -285,7 +273,7 @@ file class PropertyDictionary(Dictionary<string, string> backing) : IDictionary<
   IEnumerator IEnumerable.GetEnumerator() => Backing.GetEnumerator();
 }
 
-file static class PropertyDictionaryExtensions
+internal static class PropertyDictionaryExtensions
 {
   public static PropertyDictionary ToPropertyDictionary(this IEnumerable<(string, string)> dict)
     => new PropertyDictionary(dict.ToDictionary());
