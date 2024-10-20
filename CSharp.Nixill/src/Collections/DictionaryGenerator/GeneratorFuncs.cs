@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 namespace Nixill.Collections
 {
   /// <summary>
@@ -195,5 +196,24 @@ namespace Nixill.Collections
     /// Returns the value type initialized with a default constructor.
     /// </summary>
     public override V Generate(K key) => new V();
+  }
+
+  public class ConstructorGenerator<K, V> : Generator<K, V>
+  {
+    ConstructorInfo Constructor;
+
+    public ConstructorGenerator()
+    {
+      Type kType = typeof(K);
+      Type vType = typeof(V);
+
+      Constructor = vType.GetConstructor([kType]);
+
+      if (Constructor == null || Constructor.IsPrivate)
+        throw new InvalidOperationException($"Cannot create a ConstructorGenerator<{kType.Name},"
+        + $"{vType.Name}> because {vType.Name} does not have a non-private constructor {vType.Name}({kType.Name}).");
+    }
+
+    public override V Generate(K key) => (V)Constructor.Invoke([key]);
   }
 }
