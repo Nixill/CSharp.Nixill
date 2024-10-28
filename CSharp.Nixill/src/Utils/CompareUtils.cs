@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+
 namespace Nixill.Utils
 {
   /// <summary>
@@ -21,5 +24,11 @@ namespace Nixill.Utils
       }
       return 0;
     }
+
+    public static bool ContainsAny(this string str, params string[] values)
+      => values.Any(s => str.Contains(s));
+
+    public static bool ContainsAny(this string str, StringComparison comparison, params string[] values)
+      => values.Any(s => str.Contains(s, comparison));
   }
 }
