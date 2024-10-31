@@ -679,6 +679,23 @@ public static class EnumerableUtils
       memory = iter.Current;
     }
   }
+
+  public static IEnumerable<TOut> SelectUnerrored<TIn, TOut>(this IEnumerable<TIn> items, Func<TIn, TOut> selector)
+  {
+    foreach (TIn item in items)
+    {
+      try
+      {
+        yield return selector(item);
+      }
+      finally { }
+    }
+  }
+
+  public static IEnumerable<T> For<T>(T seed, Predicate<T> predicate, Func<T, T> step)
+  {
+    for (T value = seed; predicate(value); value = step(value)) yield return value;
+  }
 }
 
 [Flags]
