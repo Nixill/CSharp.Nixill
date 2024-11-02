@@ -696,6 +696,24 @@ public static class EnumerableUtils
   {
     for (T value = seed; predicate(value); value = step(value)) yield return value;
   }
+
+  public static IEnumerable<T> ForInfinite<T>(T seed, Func<T, T> step)
+  {
+    for (T value = seed; true; value = step(value)) yield return value;
+  }
+
+  public static T ForUntil<T>(T seed, Predicate<T> endCondition, Func<T, T> step)
+  {
+    T value = seed;
+    for (; !endCondition(value); value = step(value)) { }
+    return value;
+  }
+
+  public static IDictionary<K, IEnumerable<V>> ToDictionary<K, V>(this IEnumerable<IGrouping<K, V>> items)
+    => items.Select(g => new KeyValuePair<K, IEnumerable<V>>(g.Key, g)).ToDictionary();
+
+  public static IEnumerable<IGrouping<K, V>> TupleGrouple<K, V>(this IEnumerable<(K, V)> items)
+    => items.GroupBy(i => i.Item1).Select(g => g.Select(i => i.Item2).GroupBy(i => g.Key).Single());
 }
 
 [Flags]
