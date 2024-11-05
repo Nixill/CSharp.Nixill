@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Nixill.Utils;
 using Nixill.Objects;
 
-namespace Nixill.Collections.Grid
+namespace Nixill.Collections
 {
   public class GridReference : IComparable<GridReference>
   {

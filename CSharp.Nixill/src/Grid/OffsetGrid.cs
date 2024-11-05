@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Nixill.Collections.Grid
+namespace Nixill.Collections
 {
   public class OffsetGrid<T> : IGrid<T>
   {

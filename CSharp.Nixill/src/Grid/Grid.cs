@@ -2,8 +2,12 @@ using System.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nixill.Serialization;
+using System.Text;
+using System.IO;
+using Nixill.Utils;
 
-namespace Nixill.Collections.Grid
+namespace Nixill.Collections
 {
   public class Grid<T> : IGrid<T>
   {
@@ -312,6 +316,90 @@ namespace Nixill.Collections.Grid
     {
       if (row < 0 || row >= Height) throw new ArgumentOutOfRangeException("Can only remove existing rows.");
       BackingList.RemoveAt(row);
+    }
+
+    /// <summary>
+    /// Reads a CSV file into a Grid of strings.
+    /// </summary>
+    /// <param name="path">The path of the file to read.</param>
+    public static Grid<string> FileToGrid(string path)
+    {
+      return EnumerableToGrid(FileUtils.FileCharEnumerator(path));
+    }
+
+    /// <summary>
+    /// Reads a CSV stream into a Grid of strings.
+    /// </summary>
+    /// <param name="reader">The StreamReader to read from.</param>
+    public static Grid<string> StreamToGrid(StreamReader reader)
+    {
+      return EnumerableToGrid(FileUtils.StreamCharEnumerator(reader));
+    }
+
+    /// <summary>
+    /// Reads a char enumerator and converts the streamed chars into a
+    /// Grid of strings.
+    /// </summary>
+    /// <param name="input">The input stream to read.</param>
+    public static Grid<string> EnumerableToGrid(IEnumerable<char> input)
+    {
+      List<IList<string>> backingList = new List<IList<string>>();
+
+      foreach (IList<string> innerList in CSVParser.EnumerableToRows(input))
+      {
+        backingList.Add(innerList);
+      }
+
+      return new Grid<string>(backingList);
+    }
+
+    /// <summary>
+    /// Returns an enumeraor over each row of a grid as strings.
+    /// </summary>
+    /// <param name="input">The grid to output.</param>
+    public IEnumerable<string> GridToStringEnumerable()
+    {
+      foreach (IEnumerable<T> line in this)
+      {
+        StringBuilder ret = new StringBuilder();
+        foreach (T obj in line)
+        {
+          ret.Append("," + CSVParser.CSVEscape(obj?.ToString() ?? ""));
+        }
+        if (ret.Length > 0) ret.Remove(0, 1);
+        yield return ret.ToString();
+      }
+    }
+
+    /// <summary>
+    /// Converts a grid to a csv string.
+    /// </summary>
+    /// <param name="input">The grid to convert.</param>
+    public string GridToString()
+    {
+      StringBuilder ret = new StringBuilder();
+      foreach (string line in GridToStringEnumerable())
+      {
+        ret.Append('\n' + line);
+      }
+      if (ret.Length > 0) ret.Remove(0, 1);
+      return ret.ToString();
+    }
+
+    /// <summary>
+    /// Converts a grid to a csv string and writes it to a file.
+    /// </summary>
+    /// <param name="input">The grid to output.</param>
+    /// <param name="file">The file to write to.</param>
+    public void GridToFile(string file)
+    {
+      using (StreamWriter writer = new StreamWriter(file))
+      {
+        foreach (string line in GridToStringEnumerable())
+        {
+          writer.WriteLine(line);
+        }
+      }
     }
   }
 }
