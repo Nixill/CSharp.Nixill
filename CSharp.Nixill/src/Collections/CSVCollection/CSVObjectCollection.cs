@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using Nixill.Serialization;
 using Nixill.Utils;
 
-namespace Nixill.Collections.Grid.CSV;
+namespace Nixill.Collections;
 
 public class CSVObjectCollection<T> : IList<T>
 {
