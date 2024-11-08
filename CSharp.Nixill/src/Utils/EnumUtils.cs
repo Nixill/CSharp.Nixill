@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Nixill.Utils;
@@ -30,13 +27,13 @@ public static class EnumUtils
     => ValuesWithAttribute<TEnum, TAttribute>()
       .Where(t => condition(t.Attribute));
 
-  public static IEnumerable<(TEnum value, IEnumerable<TAttribute> Attributes)> ValuesWithAttributes<TEnum, TAttribute>()
+  public static IEnumerable<(TEnum Value, IEnumerable<TAttribute> Attributes)> ValuesWithAttributes<TEnum, TAttribute>()
     where TEnum : struct, Enum where TAttribute : Attribute
     => typeof(TEnum).GetFields()
       .Select(f => (Value: (TEnum)f.GetRawConstantValue(), Attributes: f.GetCustomAttributes<TAttribute>()))
       .Where(f => f.Attributes.Any());
 
-  public static IEnumerable<(TEnum value, IEnumerable<TAttribute> Attributes)>
+  public static IEnumerable<(TEnum Value, IEnumerable<TAttribute> Attributes)>
     ValuesWithAttributes<TEnum, TAttribute>(Predicate<IEnumerable<TAttribute>> condition)
     where TEnum : struct, Enum where TAttribute : Attribute
     => ValuesWithAttributes<TEnum, TAttribute>()
@@ -48,7 +45,6 @@ public static class EnumUtils
     .GetField(value.ToString())
       ?? throw new InvalidCastException($"No enum constant exists for ({typeof(TEnum).Name}).{value}"))
     .GetCustomAttribute<TAttribute>();
-
 
   public static IEnumerable<TAttribute> AttributesOf<TEnum, TAttribute>(TEnum value)
     where TEnum : struct, Enum where TAttribute : Attribute

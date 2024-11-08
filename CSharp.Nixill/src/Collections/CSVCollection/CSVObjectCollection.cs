@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Nixill.Serialization;
 using Nixill.Utils;
+using Nixill.Utils.Extensions;
 
 namespace Nixill.Collections;
 
@@ -77,18 +78,18 @@ public class CSVObjectCollection<T> : IList<T>
       if (properties.TryGetValue(c, out string v)) return v;
       return null;
     });
-    return columnValues.Select(CSVParser.CSVEscape).SJoin(",");
+    return columnValues.Select(CSVParser.CSVEscape).StringJoin(",");
   }
 
   public IEnumerable<string> RowsAsCSV(Func<T, IDictionary<string, string>> serializer)
   {
-    yield return _Columns.Select(CSVParser.CSVEscape).SJoin(",");
+    yield return _Columns.Select(CSVParser.CSVEscape).StringJoin(",");
     foreach (string str in _Contents.Select(i => ItemToRow(i, serializer)))
       yield return str;
   }
 
   public string FormatCSV(Func<T, IDictionary<string, string>> serializer)
-    => RowsAsCSV(serializer).SJoin("\n");
+    => RowsAsCSV(serializer).StringJoin("\n");
 
   public void FormatCSVToFile(string path, Func<T, IDictionary<string, string>> serializer)
     => File.WriteAllText(path, FormatCSV(serializer));

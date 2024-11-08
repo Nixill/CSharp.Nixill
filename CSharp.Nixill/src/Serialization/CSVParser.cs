@@ -1,7 +1,6 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
-using Nixill.Utils;
 
 namespace Nixill.Serialization
 {

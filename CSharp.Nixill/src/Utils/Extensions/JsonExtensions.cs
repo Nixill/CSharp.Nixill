@@ -1,8 +1,6 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
 
-namespace Nixill.Utils;
+namespace Nixill.Utils.Extensions;
 
 public static class JsonExtensions
 {

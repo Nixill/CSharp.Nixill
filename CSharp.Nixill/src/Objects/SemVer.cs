@@ -88,7 +88,7 @@ namespace Nixill.Objects
       // "Precedence is determined by the first difference when comparing
       // each of these identifiers from left to right as follows: Major,
       // minor, and patch versions are always compared numerically."
-      int ret = CompareUtils.FirstNonZero(
+      int ret = Sequence.FirstNonZero(
         Major - target.Major,
         Minor - target.Minor,
         Patch - target.Patch);
