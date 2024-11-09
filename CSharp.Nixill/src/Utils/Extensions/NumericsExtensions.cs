@@ -92,7 +92,7 @@ public static class NumericsExtensions
   static IEnumerable<TOut> ManyMax<TIn, TOut, TKey>(IEnumerable<TIn> list, Func<TIn, TOut> mutator,
     Func<TOut, TKey> keySelector, IComparer<TKey> comparison)
   {
-    TKey current = default(TKey);
+    TKey current = default(TKey)!;
     List<TOut> output = [];
     bool assigned = false;
 

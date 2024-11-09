@@ -2,17 +2,17 @@ namespace Nixill.Utils.Extensions;
 
 public static class SequenceExtensions
 {
-  public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
-    Func<TSource, bool> predicate, bool appendFails = false, bool prependFails = false, bool skipEmpty = false)
+  public static IEnumerable<IEnumerable<TSource?>> ChunkWhile<TSource>(this IEnumerable<TSource?> items,
+    Func<TSource?, bool> predicate, bool appendFails = false, bool prependFails = false, bool skipEmpty = false)
     => items.ChunkWhile((_, i) => predicate(i), default(TSource), appendFails, prependFails, skipEmpty);
 
   public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
-      Func<TSource, TSource, bool> predicate, TSource firstComparison = default(TSource), bool appendFails = false,
+      Func<TSource, TSource, bool> predicate, TSource? firstComparison = default(TSource), bool appendFails = false,
       bool prependFails = false, bool skipEmpty = false)
   {
-    List<TSource> list = null;
+    List<TSource>? list = null;
 
-    TSource priorItem = firstComparison;
+    TSource priorItem = firstComparison!;
 
     foreach (TSource item in items)
     {
@@ -40,7 +40,7 @@ public static class SequenceExtensions
     if (list != null) yield return list;
   }
 
-  static void MakeListAdd<T>(ref List<T> list, T item)
+  static void MakeListAdd<T>(ref List<T>? list, T item)
   {
     if (list == null) list = new();
     list.Add(item);
@@ -49,7 +49,7 @@ public static class SequenceExtensions
   public static IEnumerable<(T, T)> Pairs<T>(this IEnumerable<T> sequence)
   {
     bool first = true;
-    T last = default(T);
+    T last = default(T)!;
 
     foreach (T item in sequence)
     {
@@ -75,7 +75,7 @@ public static class SequenceExtensions
   Func<TSource, TKey> mutator, IComparer<TKey> comparer, bool desc = false, bool distinctly = false)
   {
     bool assigned = false;
-    TKey last = default(TKey);
+    TKey last = default(TKey)!;
 
     Func<int, bool> expected;
 

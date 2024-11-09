@@ -48,6 +48,7 @@ public static class SetExtensions
     => first.ExceptBy(second.Select(keySelector), keySelector, comparer);
 
   public static IEnumerable<T> ExceptInstances<T>(this IEnumerable<T> first, IEnumerable<T> second)
+    where T : notnull
   {
     Dictionary<T, int> counts = second.GroupBy(t => t).Select(g => new KeyValuePair<T, int>(g.Key, g.Count())).ToDictionary();
 
@@ -73,6 +74,7 @@ public static class SetExtensions
     => first.IntersectBy(second.Select(keySelector), keySelector, comparer);
 
   public static IEnumerable<T> IntersectInstances<T>(this IEnumerable<T> first, IEnumerable<T> second)
+    where T : notnull
   {
     Dictionary<T, int> counts = second.GroupBy(t => t).Select(g => new KeyValuePair<T, int>(g.Key, g.Count())).ToDictionary();
 

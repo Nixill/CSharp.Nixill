@@ -84,7 +84,7 @@ public class LengthList<TSumLength, TLength, TItem> : ICollection<LengthEntry<TL
 
   public TLength LengthOf(TItem item)
   {
-    var keys = Items.Where(x => x.Value.Equals(item));
+    var keys = Items.Where(x => object.Equals(x.Value, item));
 
     // Does it exist?
     if (keys.Any())
@@ -152,7 +152,7 @@ public class LengthList<TSumLength, TLength, TItem> : ICollection<LengthEntry<TL
     if (!IsPositive(length)) return false;
 
     // Find this object's key and remove it
-    TSumLength key = Items.Where(x => x.Value.Equals(item)).First().Key;
+    TSumLength key = Items.Where(x => object.Equals(x.Value, item)).First().Key;
     Items.Remove(key);
 
     // Decrement every higher key
@@ -179,7 +179,7 @@ public class LengthList<TSumLength, TLength, TItem> : ICollection<LengthEntry<TL
     if (!IsPositive(length)) return false;
 
     // Find this object's key
-    TSumLength key = Items.Where(x => x.Value.Equals(item)).First().Key;
+    TSumLength key = Items.Where(x => object.Equals(x.Value, item)).First().Key;
 
     // Decrement it and every higher key
     do
@@ -210,7 +210,7 @@ public class LengthList<TSumLength, TLength, TItem> : ICollection<LengthEntry<TL
   private static bool ComparesGreater<T>(T input, T target) where T : IComparable<T>
     => input.CompareTo(target) > 0;
 
-  private static bool IsEqual<T>(T input, T target) => input.Equals(target);
+  private static bool IsEqual<T>(T input, T target) => object.Equals(input, target);
 }
 
 public struct LengthEntry<A, V>

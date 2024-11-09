@@ -21,7 +21,7 @@ public static class NumberConverter
   }
 
   #region ├ Parsing / DigitArray
-  public static DigitArray ParseToDigitArray(string str, Digits digits = null)
+  public static DigitArray ParseToDigitArray(string str, Digits? digits = null)
   {
     digits ??= Digits.Base36; // default
 
@@ -137,7 +137,7 @@ public static class NumberConverter
     else return ret;
   }
 
-  public static T Parse<T>(string str, int numberBase, Digits digits = null, bool bijective = false)
+  public static T Parse<T>(string str, int numberBase, Digits? digits = null, bool bijective = false)
     where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplyOperators<T, T, T>,
       IMultiplicativeIdentity<T, T>, IComparable<T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>
     // IEqualityOperators<T, T, bool>
@@ -239,7 +239,7 @@ public static class NumberConverter
     return new DigitArray(wholeInts, decimalInts, isNegative);
   }
 
-  public static string Format(DigitArray arr, Digits digits = null)
+  public static string Format(DigitArray arr, Digits? digits = null)
   {
     digits ??= Digits.Base36;
 
@@ -271,7 +271,7 @@ public static class NumberConverter
     return builder.ToString();
   }
 
-  public static string Format<T>(T value, int numberBase, Digits digits = null, bool bijective = false,
+  public static string Format<T>(T value, int numberBase, Digits? digits = null, bool bijective = false,
     int maxDecimals = 10) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>,
       IComparable<T>, IModulusOperators<T, T, T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>,
       IMultiplyOperators<T, T, T>
@@ -346,7 +346,7 @@ internal class NumberCache<T> : INumberCache where T : IAdditionOperators<T, T, 
   public int GetFormatValue<T1>(T1 input)
   {
     if (typeof(T) != typeof(T1)) throw new InvalidOperationException($"This NumberCache does not store {typeof(T1)}s.");
-    while (((T)(object)input).CompareTo(HighestValue) > 0) CountEnumerator.MoveNext();
+    while (((T)(object)input!).CompareTo(HighestValue) > 0) CountEnumerator.MoveNext();
 
     return FormatValues[(T)(object)input];
   }

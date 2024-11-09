@@ -32,5 +32,6 @@ public static class CollectionExtensions
   }
 
   public static IDictionary<K, IEnumerable<V>> ToDictionary<K, V>(this IEnumerable<IGrouping<K, V>> items)
+    where K : notnull
     => items.Select(g => new KeyValuePair<K, IEnumerable<V>>(g.Key, g)).ToDictionary();
 }

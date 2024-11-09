@@ -147,7 +147,7 @@ namespace Nixill.Serialization
     /// wrapped in quotes. Otherwise, the input string is returned
     /// unaltered.
     /// </summary>
-    public static string CSVEscape(string input)
+    public static string CSVEscape(string? input)
     {
       if (input == null) return "";
 

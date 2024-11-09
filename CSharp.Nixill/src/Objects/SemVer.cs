@@ -16,9 +16,9 @@ namespace Nixill.Objects
     /// <value>The patch number, as defined by spec rule 6.</value>
     public readonly int Patch;
     /// <value>The pre-release tag, as defined by spec rule 9.</value>
-    public readonly string PreRelease = null;
+    public readonly string? PreRelease = null;
     /// <value>The build metadata, as defined by spec rule 10.</value>
-    public readonly string BuildMetadata = null;
+    public readonly string? BuildMetadata = null;
 
     private static readonly Regex PreReleaseRegex = new Regex("^(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*$");
     private static readonly Regex BuildMetadataRegex = new Regex("^[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*$");
@@ -29,7 +29,7 @@ namespace Nixill.Objects
     /// <summary>Constructs a <c>SemVer</c> consisting of all parts.
     ///
     /// <c>prerelease</c> and <c>build</c> may be <c>null</c> to be omitted, but may not be empty strings.</summary> 
-    public SemVer(int major, int minor, int patch, string prerelease, string build)
+    public SemVer(int major, int minor, int patch, string? prerelease, string? build)
     {
       Major = major;
       Minor = minor;
@@ -83,13 +83,13 @@ namespace Nixill.Objects
     /// <summary>
     /// Compares two semantic versions according to spec rule 11.
     /// </summary>
-    public int CompareTo(SemVer target)
+    public int CompareTo(SemVer? target)
     {
       // "Precedence is determined by the first difference when comparing
       // each of these identifiers from left to right as follows: Major,
       // minor, and patch versions are always compared numerically."
       int ret = Sequence.FirstNonZero(
-        Major - target.Major,
+        Major - target!.Major,
         Minor - target.Minor,
         Patch - target.Patch);
 
@@ -104,8 +104,8 @@ namespace Nixill.Objects
       // minor, and patch version MUST be determined by comparing each dot
       // separated identifier from left to right until a difference is
       // found as follows:"
-      string[] leftPR = PreRelease.Split('.');
-      string[] rightPR = target.PreRelease.Split('.');
+      string[] leftPR = PreRelease!.Split('.');
+      string[] rightPR = target.PreRelease!.Split('.');
       int length = Math.Min(leftPR.Length, rightPR.Length);
 
       for (int i = 0; i < length; i++)
@@ -153,9 +153,9 @@ namespace Nixill.Objects
     /// <exception cref="InvalidCastException">
     /// If <c>obj</c> is not a <c>SemVer</c>.
     /// </exception>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-      SemVer target = (SemVer)obj;
+      SemVer target = (SemVer)obj!;
       return
         Major == target.Major &&
         Minor == target.Minor &&

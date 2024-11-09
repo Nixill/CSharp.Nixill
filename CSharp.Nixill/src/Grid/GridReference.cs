@@ -78,10 +78,10 @@ namespace Nixill.Collections
     /// It compares rows first, before columns; a GridReference is "less
     /// than" another GridReference lower and to the left.
     /// </summary>
-    public int CompareTo(GridReference other)
+    public int CompareTo(GridReference? other)
     {
       return Sequence.FirstNonZero(
-        Row - other.Row,
+        Row - other!.Row,
         Column - other.Column
       );
     }
@@ -106,7 +106,7 @@ namespace Nixill.Collections
 
     public override string ToString() => ToA1String();
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
       if (obj is GridReference other)
       {

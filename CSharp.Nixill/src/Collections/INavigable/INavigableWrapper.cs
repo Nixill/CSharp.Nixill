@@ -6,7 +6,7 @@ namespace Nixill.Collections
 {
   internal class ReadOnlyNavigableDictionaryWrapper<K, V> : IReadOnlyNavigableDictionary<K, V>
   {
-    internal INavigableDictionary<K, V> Backing;
+    internal required INavigableDictionary<K, V> Backing;
 
     public V this[K key] { get => Backing[key]; set => Backing[key] = value; }
 
@@ -174,7 +174,7 @@ namespace Nixill.Collections
 
   internal class ReadOnlyNavigableSetWrapper<T> : IReadOnlyNavigableSet<T>
   {
-    internal INavigableSet<T> Backing;
+    internal required INavigableSet<T> Backing;
 
     public int Count => Backing.Count;
 

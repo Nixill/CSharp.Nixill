@@ -6,7 +6,7 @@ namespace Nixill.Collections
   /// A Generator that always returns the same value (supplied at
   /// construction).
   /// </summary>
-  public class SingleValueGenerator<K, V> : Generator<K, V>
+  public class SingleValueGenerator<K, V> : Generator<K, V> where K : notnull
   {
     /// <summary>
     /// The value this Generator returns.
@@ -47,7 +47,7 @@ namespace Nixill.Collections
   /// <summary>
   /// A Generator that returns the key as its own value.
   /// </summary>
-  public class EchoGenerator<T> : Generator<T, T>
+  public class EchoGenerator<T> : Generator<T, T> where T : notnull
   {
     /// <summary>
     /// Returns (echoes) the supplied value.
@@ -71,7 +71,7 @@ namespace Nixill.Collections
   /// A Generator that returns incrementally counted keys, starting with
   /// zero.
   /// </summary>
-  public class CountingGenerator<K> : Generator<K, int>
+  public class CountingGenerator<K> : Generator<K, int> where K : notnull
   {
     /// <summary>
     /// The next number that will be Generated.
@@ -111,7 +111,7 @@ namespace Nixill.Collections
   /// <summary>
   /// A Generator based on an arbitrary Func.
   /// </summary>
-  public class FuncGenerator<K, V> : Generator<K, V>
+  public class FuncGenerator<K, V> : Generator<K, V> where K : notnull
   {
     /// <summary>
     /// The Func that is used to perform the actual generation of values.
@@ -156,7 +156,7 @@ namespace Nixill.Collections
   /// A Generator that generates values which are the HashCodes of the
   /// keys used to generate them.
   /// </summary>
-  public class HashCodeGenerator<K> : Generator<K, int>
+  public class HashCodeGenerator<K> : Generator<K, int> where K : notnull
   {
     /// <summary>
     /// Returns the HashCode of the key.
@@ -168,29 +168,29 @@ namespace Nixill.Collections
   /// A Generator that generates values which are the string
   /// representations of the keys used to generate them.
   /// </summary>
-  public class ToStringGenerator<K> : Generator<K, string>
+  public class ToStringGenerator<K> : Generator<K, string> where K : notnull
   {
     /// <summary>
     /// Returns the string representation of the key.
     /// </summary>
-    public override string Generate(K key) => key.ToString();
+    public override string Generate(K key) => key.ToString()!;
   }
 
   /// <summary>
   /// A Generator that generates default values for a type.
   /// </summary>
-  public class DefaultGenerator<K, V> : Generator<K, V>
+  public class DefaultGenerator<K, V> : Generator<K, V> where K : notnull
   {
     /// <summary>
     /// Returns the default value for the type <c>V</c>.
     /// </summary>
-    public override V Generate(K key) => default(V);
+    public override V Generate(K key) => default(V)!;
   }
 
   /// <summary>
   /// A Generator that uses the empty constructor to create values.
   /// </summary>
-  public class EmptyConstructorGenerator<K, V> : Generator<K, V> where V : new()
+  public class EmptyConstructorGenerator<K, V> : Generator<K, V> where K : notnull where V : new()
   {
     /// <summary>
     /// Returns the value type initialized with a default constructor.
@@ -198,7 +198,7 @@ namespace Nixill.Collections
     public override V Generate(K key) => new V();
   }
 
-  public class ConstructorGenerator<K, V> : Generator<K, V>
+  public class ConstructorGenerator<K, V> : Generator<K, V> where K : notnull
   {
     ConstructorInfo Constructor;
 
@@ -207,7 +207,7 @@ namespace Nixill.Collections
       Type kType = typeof(K);
       Type vType = typeof(V);
 
-      Constructor = vType.GetConstructor([kType]);
+      Constructor = vType.GetConstructor([kType])!;
 
       if (Constructor == null || Constructor.IsPrivate)
         throw new InvalidOperationException($"Cannot create a ConstructorGenerator<{kType.Name},"

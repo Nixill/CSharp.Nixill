@@ -10,7 +10,7 @@ using Nixill.Utils.Extensions;
 
 namespace Nixill.Collections;
 
-public class CSVObjectDictionary<K, V> : IDictionary<K, V>
+public class CSVObjectDictionary<K, V> : IDictionary<K, V> where K : notnull
 {
   readonly List<string> _Columns = [];
   readonly Dictionary<K, V> _Contents = [];
@@ -77,7 +77,7 @@ public class CSVObjectDictionary<K, V> : IDictionary<K, V>
     var properties = serializer(new KeyValuePair<K, V>(key, value));
     var columnValues = _Columns.Select(c =>
     {
-      if (properties.TryGetValue(c, out string v)) return v;
+      if (properties.TryGetValue(c, out string? v)) return v;
       return null;
     });
     return columnValues.Select(CSVParser.CSVEscape).StringJoin(",");
@@ -210,14 +210,14 @@ public class CSVObjectDictionary<K, V> : IDictionary<K, V>
 public static class CSVObjectDictionary
 {
   public static CSVObjectDictionary<K, V> ParseObjectsFromFile<K, V>(string path, Func<IDictionary<string, string>,
-    KeyValuePair<K, V>> deserializer)
+    KeyValuePair<K, V>> deserializer) where K : notnull
       => CSVObjectDictionary<K, V>.ParseObjects(FileUtils.FileCharEnumerator(path), deserializer);
 
   public static CSVObjectDictionary<K, V> ParseObjectsFromStream<K, V>(StreamReader reader, Func<IDictionary<string, string>,
-    KeyValuePair<K, V>> deserializer)
+    KeyValuePair<K, V>> deserializer) where K : notnull
       => CSVObjectDictionary<K, V>.ParseObjects(FileUtils.StreamCharEnumerator(reader), deserializer);
 
   public static CSVObjectDictionary<K, V> ParseObjects<K, V>(IEnumerable<char> input, Func<IDictionary<string, string>,
-    KeyValuePair<K, V>> deserializer)
+    KeyValuePair<K, V>> deserializer) where K : notnull
       => CSVObjectDictionary<K, V>.ParseObjects(input, deserializer);
 }

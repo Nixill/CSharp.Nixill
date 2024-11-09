@@ -13,7 +13,7 @@ public class RegexTestAttribute : Attribute
     UsedRegex = new Regex(pattern, options);
   }
 
-  public static (T, Match) TestAgainst<T>(string input)
+  public static (T, Match?) TestAgainst<T>(string input)
     where T : struct, Enum
   {
     foreach (var test in EnumUtils.ValuesWithAttribute<T, RegexTestAttribute>().OrderBy(t => t.Value))

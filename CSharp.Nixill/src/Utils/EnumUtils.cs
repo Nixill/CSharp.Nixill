@@ -8,7 +8,7 @@ public static class EnumUtils
     where TEnum : struct, Enum where TAttribute : Attribute
     => typeof(TEnum).GetFields()
       .Where(f => f.GetCustomAttributes<TAttribute>().Any())
-      .Select(f => (TEnum)f.GetRawConstantValue());
+      .Select(f => (TEnum)f.GetRawConstantValue()!);
 
   public static IEnumerable<TEnum> ValuesWith<TEnum, TAttribute>(Predicate<TAttribute> condition)
     where TEnum : struct, Enum where TAttribute : Attribute
@@ -18,8 +18,8 @@ public static class EnumUtils
   public static IEnumerable<(TEnum Value, TAttribute Attribute)> ValuesWithAttribute<TEnum, TAttribute>()
     where TEnum : struct, Enum where TAttribute : Attribute
     => typeof(TEnum).GetFields()
-      .Select(f => (Value: (TEnum)f.GetRawConstantValue(), Attribute: f.GetCustomAttribute<TAttribute>()))
-      .Where(f => f.Attribute != null);
+      .Select(f => (Value: (TEnum)f.GetRawConstantValue()!, Attribute: f.GetCustomAttribute<TAttribute>()))
+      .Where(f => f.Attribute != null)!;
 
   public static IEnumerable<(TEnum Value, TAttribute Attribute)>
     ValuesWithAttribute<TEnum, TAttribute>(Predicate<TAttribute> condition)
@@ -30,7 +30,7 @@ public static class EnumUtils
   public static IEnumerable<(TEnum Value, IEnumerable<TAttribute> Attributes)> ValuesWithAttributes<TEnum, TAttribute>()
     where TEnum : struct, Enum where TAttribute : Attribute
     => typeof(TEnum).GetFields()
-      .Select(f => (Value: (TEnum)f.GetRawConstantValue(), Attributes: f.GetCustomAttributes<TAttribute>()))
+      .Select(f => (Value: (TEnum)f.GetRawConstantValue()!, Attributes: f.GetCustomAttributes<TAttribute>()))
       .Where(f => f.Attributes.Any());
 
   public static IEnumerable<(TEnum Value, IEnumerable<TAttribute> Attributes)>
@@ -44,7 +44,7 @@ public static class EnumUtils
   => (typeof(TEnum)
     .GetField(value.ToString())
       ?? throw new InvalidCastException($"No enum constant exists for ({typeof(TEnum).Name}).{value}"))
-    .GetCustomAttribute<TAttribute>();
+    .GetCustomAttribute<TAttribute>()!;
 
   public static IEnumerable<TAttribute> AttributesOf<TEnum, TAttribute>(TEnum value)
     where TEnum : struct, Enum where TAttribute : Attribute

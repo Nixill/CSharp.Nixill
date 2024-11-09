@@ -75,7 +75,7 @@ public class CSVObjectCollection<T> : IList<T>
     var properties = serializer(item);
     var columnValues = _Columns.Select(c =>
     {
-      if (properties.TryGetValue(c, out string v)) return v;
+      if (properties.TryGetValue(c, out string? v)) return v;
       return null;
     });
     return columnValues.Select(CSVParser.CSVEscape).StringJoin(",");
@@ -220,7 +220,7 @@ internal class PropertyDictionary(Dictionary<string, string> backing) : IDiction
 
   public string this[string key]
   {
-    get => Backing.TryGetValue(key, out string value) ? value != "" ? value : null : null;
+    get => Backing.TryGetValue(key, out string? value) ? value != "" ? value : null! : null!;
     set => throw new InvalidOperationException("This dictionary is read-only.");
   }
 
