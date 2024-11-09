@@ -340,7 +340,7 @@ namespace Nixill.Collections
     /// Converts a grid to a csv string.
     /// </summary>
     /// <param name="input">The grid to convert.</param>
-    public string GridToString()
+    public string Serialize()
     {
       StringBuilder ret = new StringBuilder();
       foreach (string line in GridToStringEnumerable())
@@ -356,7 +356,7 @@ namespace Nixill.Collections
     /// </summary>
     /// <param name="input">The grid to output.</param>
     /// <param name="file">The file to write to.</param>
-    public void GridToFile(string file)
+    public void SerializeToFile(string file)
     {
       using (StreamWriter writer = new StreamWriter(file))
       {
@@ -374,18 +374,18 @@ namespace Nixill.Collections
     /// Reads a CSV file into a Grid of strings.
     /// </summary>
     /// <param name="path">The path of the file to read.</param>
-    public static Grid<string> FileToGrid(string path)
+    public static Grid<string> DeserializeFromFile(string path)
     {
-      return EnumerableToGrid(FileUtils.FileCharEnumerator(path));
+      return Deserialize(FileUtils.FileCharEnumerator(path));
     }
 
     /// <summary>
     /// Reads a CSV stream into a Grid of strings.
     /// </summary>
     /// <param name="reader">The StreamReader to read from.</param>
-    public static Grid<string> StreamToGrid(StreamReader reader)
+    public static Grid<string> Deserialize(StreamReader reader)
     {
-      return EnumerableToGrid(FileUtils.StreamCharEnumerator(reader));
+      return Deserialize(FileUtils.StreamCharEnumerator(reader));
     }
 
     /// <summary>
@@ -393,7 +393,7 @@ namespace Nixill.Collections
     /// Grid of strings.
     /// </summary>
     /// <param name="input">The input stream to read.</param>
-    public static Grid<string> EnumerableToGrid(IEnumerable<char> input)
+    public static Grid<string> Deserialize(IEnumerable<char> input)
     {
       List<IList<string>> backingList = new List<IList<string>>();
 
