@@ -319,41 +319,6 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Reads a CSV file into a Grid of strings.
-    /// </summary>
-    /// <param name="path">The path of the file to read.</param>
-    public static Grid<string> FileToGrid(string path)
-    {
-      return EnumerableToGrid(FileUtils.FileCharEnumerator(path));
-    }
-
-    /// <summary>
-    /// Reads a CSV stream into a Grid of strings.
-    /// </summary>
-    /// <param name="reader">The StreamReader to read from.</param>
-    public static Grid<string> StreamToGrid(StreamReader reader)
-    {
-      return EnumerableToGrid(FileUtils.StreamCharEnumerator(reader));
-    }
-
-    /// <summary>
-    /// Reads a char enumerator and converts the streamed chars into a
-    /// Grid of strings.
-    /// </summary>
-    /// <param name="input">The input stream to read.</param>
-    public static Grid<string> EnumerableToGrid(IEnumerable<char> input)
-    {
-      List<IList<string>> backingList = new List<IList<string>>();
-
-      foreach (IList<string> innerList in CSVParser.EnumerableToRows(input))
-      {
-        backingList.Add(innerList);
-      }
-
-      return new Grid<string>(backingList);
-    }
-
-    /// <summary>
     /// Returns an enumeraor over each row of a grid as strings.
     /// </summary>
     /// <param name="input">The grid to output.</param>
@@ -400,6 +365,44 @@ namespace Nixill.Collections
           writer.WriteLine(line);
         }
       }
+    }
+  }
+
+  public static class Grid
+  {
+    /// <summary>
+    /// Reads a CSV file into a Grid of strings.
+    /// </summary>
+    /// <param name="path">The path of the file to read.</param>
+    public static Grid<string> FileToGrid(string path)
+    {
+      return EnumerableToGrid(FileUtils.FileCharEnumerator(path));
+    }
+
+    /// <summary>
+    /// Reads a CSV stream into a Grid of strings.
+    /// </summary>
+    /// <param name="reader">The StreamReader to read from.</param>
+    public static Grid<string> StreamToGrid(StreamReader reader)
+    {
+      return EnumerableToGrid(FileUtils.StreamCharEnumerator(reader));
+    }
+
+    /// <summary>
+    /// Reads a char enumerator and converts the streamed chars into a
+    /// Grid of strings.
+    /// </summary>
+    /// <param name="input">The input stream to read.</param>
+    public static Grid<string> EnumerableToGrid(IEnumerable<char> input)
+    {
+      List<IList<string>> backingList = new List<IList<string>>();
+
+      foreach (IList<string> innerList in CSVParser.EnumerableToRows(input))
+      {
+        backingList.Add(innerList);
+      }
+
+      return new Grid<string>(backingList);
     }
   }
 }
