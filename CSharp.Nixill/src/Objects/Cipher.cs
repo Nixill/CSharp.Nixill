@@ -56,7 +56,7 @@ namespace Nixill.Objects
         return _Reverse;
       }
     }
-    Cipher _Reverse = null;
+    Cipher? _Reverse = null;
 
     /// <summary>
     /// Creates a new Cipher.

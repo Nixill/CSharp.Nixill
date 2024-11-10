@@ -15,7 +15,7 @@ namespace Nixill.Collections
   /// <typeparam name="V">
   /// The type of the values used in the dictionary.
   /// </typeparam>
-  public class DictionaryGenerator<K, V> : IDictionary<K, V>
+  public class DictionaryGenerator<K, V> : IDictionary<K, V> where K : notnull
   {
     /// <summary>
     /// The <see cref="Generator" /> used by this <c>DictionaryGenerator</c>.
@@ -159,7 +159,7 @@ namespace Nixill.Collections
       }
       catch (KeyNotFoundException)
       {
-        value = default(V);
+        value = default(V)!;
         return false;
       }
     }
@@ -176,7 +176,7 @@ namespace Nixill.Collections
       Dict.Clear();
     }
 
-    public bool Contains(KeyValuePair<K, V> entry) => Dict.ContainsKey(entry.Key) && (Dict[entry.Key].Equals(entry.Value));
+    public bool Contains(KeyValuePair<K, V> entry) => Dict.ContainsKey(entry.Key) && (Dict[entry.Key]!.Equals(entry.Value));
 
     public void CopyTo(KeyValuePair<K, V>[] array, int index)
     {
@@ -198,7 +198,7 @@ namespace Nixill.Collections
   /// <summary>
   /// A class used by DictionaryGenerator to create values for given keys.
   /// </summary>
-  public abstract class Generator<K, V>
+  public abstract class Generator<K, V> where K : notnull
   {
     /// <summary>
     /// Returns a value for the given key.
@@ -258,9 +258,11 @@ namespace Nixill.Collections
   public static class DictionaryGeneratorExtensions
   {
     public static DictionaryGenerator<K, V> WithGenerator<K, V>(this IDictionary<K, V> dict, Generator<K, V> gen)
+      where K : notnull
       => new DictionaryGenerator<K, V>(dict, gen);
 
     public static DictionaryGenerator<K, V> CopyWithGenerator<K, V>(this IDictionary<K, V> dict, Generator<K, V> gen)
+      where K : notnull
       => new DictionaryGenerator<K, V>(new Dictionary<K, V>(dict), gen);
   }
 }

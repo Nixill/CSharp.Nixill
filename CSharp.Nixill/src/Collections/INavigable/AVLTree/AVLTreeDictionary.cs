@@ -12,7 +12,7 @@ namespace Nixill.Collections
     #region Fields
     private AVLTreeSet<KeyValuePair<K, V>> BackingSet;
     private Comparison<K> KeyComparer;
-    private V DefaultValue = default(V);
+    private V DefaultValue = default(V)!;
     #endregion
 
     #region Properties
@@ -59,13 +59,13 @@ namespace Nixill.Collections
 
     #region Constructors
     /// Documented in GitHub.
-    public AVLTreeDictionary() : this(null, GetComparer()) { }
+    public AVLTreeDictionary() : this([], GetComparer()) { }
 
     /// Documented in GitHub.
-    public AVLTreeDictionary(IComparer<K> comparer) : this(null, comparer.Compare) { }
+    public AVLTreeDictionary(IComparer<K> comparer) : this([], comparer.Compare) { }
 
     /// Documented in GitHub.
-    public AVLTreeDictionary(Comparison<K> comparer) : this(null, comparer) { }
+    public AVLTreeDictionary(Comparison<K> comparer) : this([], comparer) { }
 
     /// Documented in GitHub.
     public AVLTreeDictionary(IEnumerable<KeyValuePair<K, V>> elems) : this(elems, GetComparer()) { }
@@ -78,14 +78,6 @@ namespace Nixill.Collections
     {
       this.KeyComparer = comparer;
       BackingSet = new AVLTreeSet<KeyValuePair<K, V>>((left, right) => KeyComparer(left.Key, right.Key));
-
-      if (elems != null)
-      {
-        foreach (var elem in elems)
-        {
-          this.Add(elem);
-        }
-      }
     }
     #endregion
 
@@ -93,7 +85,7 @@ namespace Nixill.Collections
     /// Documented in GitHub.
     public bool IsEmpty() => BackingSet.IsEmpty();
 
-    public NodeTriplet<KeyValuePair<K, V>> EntriesAround(K from) => BackingSet.SearchAround(new KeyValuePair<K, V>(from, default(V)));
+    public NodeTriplet<KeyValuePair<K, V>> EntriesAround(K from) => BackingSet.SearchAround(new KeyValuePair<K, V>(from, default(V)!));
 
     public NodeTriplet<K> KeysAround(K from)
     {
@@ -294,7 +286,7 @@ namespace Nixill.Collections
       }
       else
       {
-        value = default(V);
+        value = default(V)!;
         return false;
       }
     }
@@ -323,7 +315,7 @@ namespace Nixill.Collections
     public bool Contains(KeyValuePair<K, V> entry)
     {
       var nodes = BackingSet.SearchAround(entry);
-      return (nodes.HasEqualValue && nodes.EqualValue.Value.Equals(entry.Value));
+      return (nodes.HasEqualValue && nodes.EqualValue.Value!.Equals(entry.Value));
     }
 
     // Documented in GitHub.

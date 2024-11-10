@@ -1,12 +1,10 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
 
-namespace Nixill.Utils;
+namespace Nixill.Utils.Extensions;
 
 public static class JsonExtensions
 {
-  public static JsonNode ReadPath(this JsonNode root, params object[] pathElements)
+  public static JsonNode? ReadPath(this JsonNode root, params object[] pathElements)
   {
     JsonNode node = root;
 
@@ -14,14 +12,14 @@ public static class JsonExtensions
     {
       if (o is string s)
       {
-        JsonNode nextNode = node[s];
+        JsonNode? nextNode = node[s];
         if (nextNode == null) return null;
         else node = nextNode;
       }
 
       else if (o is int i)
       {
-        JsonNode nextNode = node[i];
+        JsonNode? nextNode = node[i];
         if (nextNode == null) return null;
         else node = nextNode;
       }
@@ -40,7 +38,7 @@ public static class JsonExtensions
     {
       if (o is string s)
       {
-        JsonNode nextNode = node[s];
+        JsonNode? nextNode = node[s];
 
         if (nextNode == null)
         {
@@ -56,7 +54,7 @@ public static class JsonExtensions
 
       else if (o is int i)
       {
-        JsonNode nextNode = node[i];
+        JsonNode? nextNode = node[i];
 
         if (nextNode == null)
         {

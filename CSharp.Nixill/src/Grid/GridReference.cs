@@ -1,17 +1,14 @@
 using System;
 using System.Text.RegularExpressions;
-using Nixill.Utils;
 using Nixill.Objects;
+using Nixill.Utils;
 
-namespace Nixill.Collections.Grid
+namespace Nixill.Collections
 {
   public class GridReference : IComparable<GridReference>
   {
     static Regex A1Form = new Regex("^([A-Za-z]+)(\\d+)$");
     static Regex R1C1Form = new Regex("^[Rr](\\d+)[Cc](\\d+)$");
-
-    static Cipher ColNameToNum = new Cipher("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789ABCDEFGHIJKLMNOP");
-    static Cipher ColNumToName = ColNameToNum.Reverse;
 
     /// <summary>The column of the referenced cell.</summary>
     public int Column { get; }
@@ -81,10 +78,10 @@ namespace Nixill.Collections.Grid
     /// It compares rows first, before columns; a GridReference is "less
     /// than" another GridReference lower and to the left.
     /// </summary>
-    public int CompareTo(GridReference other)
+    public int CompareTo(GridReference? other)
     {
-      return CompareUtils.FirstNonZero(
-        Row - other.Row,
+      return Sequence.FirstNonZero(
+        Row - other!.Row,
         Column - other.Column
       );
     }
@@ -109,7 +106,7 @@ namespace Nixill.Collections.Grid
 
     public override string ToString() => ToA1String();
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
       if (obj is GridReference other)
       {
@@ -130,8 +127,7 @@ namespace Nixill.Collections.Grid
     /// </summary>
     public static int ColumnNameToNumber(string name)
     {
-      name = ColNameToNum.Apply(name.ToUpper());
-      return NumberUtils.LeadingZeroStringToInt(name, 26);
+      return NumberConverter.Parse<int>(name, 26, Digits.Alpha, bijective: true) - 1;
     }
 
     /// <summary>
@@ -140,8 +136,7 @@ namespace Nixill.Collections.Grid
     /// </summary>
     public static string ColumnNumberToName(int num)
     {
-      string name = NumberUtils.IntToLeadingZeroString(num, 26);
-      return ColNumToName.Apply(name);
+      return NumberConverter.Format(num + 1, 26);
     }
 
     public static explicit operator GridReference(string input) => new GridReference(input);

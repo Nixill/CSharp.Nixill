@@ -2,12 +2,16 @@ using System.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nixill.Serialization;
+using System.Text;
+using System.IO;
+using Nixill.Utils;
 
-namespace Nixill.Collections.Grid
+namespace Nixill.Collections
 {
   public class Grid<T> : IGrid<T>
   {
-    List<List<T>> BackingList = new List<List<T>>();
+    List<List<T?>> BackingList = new List<List<T?>>();
     int IntWidth = 0;
 
     /// <summary>
@@ -28,10 +32,10 @@ namespace Nixill.Collections.Grid
       {
         var newList = new List<T>(innerList);
         if (newList.Count > widest) widest = newList.Count;
-        BackingList.Add(new List<T>(innerList));
+        BackingList.Add(new List<T?>(innerList));
       }
 
-      foreach (IList<T> innerList in BackingList)
+      foreach (IList<T?> innerList in BackingList)
       {
         for (int i = innerList.Count; i < widest; i++)
         {
@@ -52,7 +56,7 @@ namespace Nixill.Collections.Grid
       IntWidth = width;
       foreach (int r in Enumerable.Range(0, height))
       {
-        List<T> innerList = new List<T>();
+        List<T?> innerList = new List<T?>();
         foreach (int c in Enumerable.Range(0, width))
         {
           innerList.Add(default(T));
@@ -61,7 +65,7 @@ namespace Nixill.Collections.Grid
       }
     }
 
-    public T this[GridReference gr]
+    public T? this[GridReference gr]
     {
       get => BackingList[gr.Row][gr.Column];
       set
@@ -70,7 +74,7 @@ namespace Nixill.Collections.Grid
       }
     }
 
-    public T this[int r, int c]
+    public T? this[int r, int c]
     {
       get => BackingList[r][c];
       set
@@ -79,7 +83,7 @@ namespace Nixill.Collections.Grid
       }
     }
 
-    public T this[string gr]
+    public T? this[string gr]
     {
       get => this[(GridReference)gr];
       set => this[(GridReference)gr] = value;
@@ -89,7 +93,7 @@ namespace Nixill.Collections.Grid
     public int Width => IntWidth;
     public int Size => Height * IntWidth;
 
-    public IEnumerable<IEnumerable<T>> Rows
+    public IEnumerable<IEnumerable<T?>> Rows
     {
       get
       {
@@ -100,7 +104,7 @@ namespace Nixill.Collections.Grid
       }
     }
 
-    IEnumerable<T> RowEnumerable(int index)
+    IEnumerable<T?> RowEnumerable(int index)
     {
       for (int i = 0; i < Width; i++)
       {
@@ -108,7 +112,7 @@ namespace Nixill.Collections.Grid
       }
     }
 
-    public IEnumerable<IEnumerable<T>> Columns
+    public IEnumerable<IEnumerable<T?>> Columns
     {
       get
       {
@@ -119,7 +123,7 @@ namespace Nixill.Collections.Grid
       }
     }
 
-    IEnumerable<T> ColumnEnumerable(int index)
+    IEnumerable<T?> ColumnEnumerable(int index)
     {
       for (int i = 0; i < Height; i++)
       {
@@ -130,23 +134,23 @@ namespace Nixill.Collections.Grid
     public void AddColumn()
     {
       IntWidth += 1;
-      foreach (List<T> innerList in BackingList)
+      foreach (List<T?> innerList in BackingList)
       {
         innerList.Add(default(T));
       }
     }
 
-    public void AddColumn<U>(IEnumerable<U> column) where U : T
+    public void AddColumn<U>(IEnumerable<U?> column) where U : T
     {
       // For columns, this immediate conversion ensures single enumeration.
-      List<T> colList = column.Select(x => (T)x).ToList();
+      List<T?> colList = column.Select(x => (T?)x).ToList();
 
       if (Height == 0 && Width == 0)
       {
         IntWidth += 1;
-        foreach (U item in column)
+        foreach (U? item in column)
         {
-          List<T> innerList = new List<T>();
+          List<T?> innerList = new List<T?>();
           innerList.Add(item);
           BackingList.Add(innerList);
         }
@@ -162,13 +166,13 @@ namespace Nixill.Collections.Grid
       }
     }
 
-    public void AddColumn(T columnItem) => AddColumn(Enumerable.Repeat(columnItem, Height).ToList());
-    public void AddColumn(Func<T> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(x => columnItemFunc()).ToList());
-    public void AddColumn(Func<int, T> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(columnItemFunc).ToList());
+    public void AddColumn(T? columnItem) => AddColumn(Enumerable.Repeat(columnItem, Height).ToList());
+    public void AddColumn(Func<T?> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(x => columnItemFunc()).ToList());
+    public void AddColumn(Func<int, T?> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(columnItemFunc).ToList());
 
     public void AddRow()
     {
-      List<T> innerList = new List<T>();
+      List<T?> innerList = new List<T?>();
       while (innerList.Count < IntWidth)
       {
         innerList.Add(default(T));
@@ -176,12 +180,12 @@ namespace Nixill.Collections.Grid
       BackingList.Add(innerList);
     }
 
-    public void AddRow<U>(IEnumerable<U> row) where U : T
+    public void AddRow<U>(IEnumerable<U?> row) where U : T
     {
       // For rows, this immediate conversion both ensures single
       // enumeration *and* creates the actual list that will be placed
       // into the grid.
-      List<T> rowList = row.Select(x => (T)x).ToList();
+      List<T?> rowList = row.Select(x => (T?)x).ToList();
 
       if (Height == 0 && Width == 0)
       {
@@ -195,9 +199,9 @@ namespace Nixill.Collections.Grid
       BackingList.Add(rowList);
     }
 
-    public void AddRow(T rowItem) => AddRow(Enumerable.Repeat(rowItem, Width).ToList());
-    public void AddRow(Func<T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
-    public void AddRow(Func<int, T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
+    public void AddRow(T? rowItem) => AddRow(Enumerable.Repeat(rowItem, Width).ToList());
+    public void AddRow(Func<T?> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
+    public void AddRow(Func<int, T?> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
 
     public void Clear()
     {
@@ -205,50 +209,50 @@ namespace Nixill.Collections.Grid
       IntWidth = 0;
     }
 
-    public bool Contains(T item)
+    public bool Contains(T? item)
     {
-      foreach (List<T> innerList in BackingList)
+      foreach (List<T?> innerList in BackingList)
       {
         if (innerList.Contains(item)) return true;
       }
       return false;
     }
 
-    public IList<T> GetColumn(int index)
+    public IList<T?> GetColumn(int index)
     {
-      return new List<T>(ColumnEnumerable(index));
+      return new List<T?>(ColumnEnumerable(index));
     }
 
-    public IEnumerator<IEnumerable<T>> GetColumnEnumerator() => Columns.GetEnumerator();
-    public IEnumerator<IEnumerable<T>> GetEnumerator() => Rows.GetEnumerator();
+    public IEnumerator<IEnumerable<T?>> GetColumnEnumerator() => Columns.GetEnumerator();
+    public IEnumerator<IEnumerable<T?>> GetEnumerator() => Rows.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public IList<T> GetRow(int index)
+    public IList<T?> GetRow(int index)
     {
-      return new List<T>(RowEnumerable(index));
+      return new List<T?>(RowEnumerable(index));
     }
 
-    public GridReference IndexOf(T item)
+    public GridReference? IndexOf(T? item)
     {
       for (int r = 0; r < Height; r++)
       {
-        List<T> innerList = BackingList[r];
+        List<T?> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
         if (index != 1) return new GridReference(index, r);
       }
       return null;
     }
 
-    public GridReference IndexOfTransposed(T item)
+    public GridReference? IndexOfTransposed(T? item)
     {
-      GridReference lowIndex = null;
+      GridReference? lowIndex = null;
       for (int r = 0; r < Height; r++)
       {
-        List<T> innerList = BackingList[r];
+        List<T?> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
         if (index == 0) return new GridReference(0, r);
-        if (index > 0 && (lowIndex == null || index < lowIndex.Column)) lowIndex = new GridReference(index, r);
+        if (index > 0 && (lowIndex! == null! || index < lowIndex.Column)) lowIndex = new GridReference(index, r);
       }
       return lowIndex;
     }
@@ -256,16 +260,16 @@ namespace Nixill.Collections.Grid
     public void InsertColumn(int before)
     {
       IntWidth += 1;
-      foreach (List<T> innerList in BackingList)
+      foreach (List<T?> innerList in BackingList)
       {
         innerList.Insert(before, default(T));
       }
     }
 
-    public void InsertColumn<U>(int before, IEnumerable<U> column) where U : T
+    public void InsertColumn<U>(int before, IEnumerable<U?> column) where U : T
     {
       IntWidth += 1;
-      List<U> colList = column.ToList();
+      List<U?> colList = column.ToList();
       if (Height != colList.Count) throw new ArgumentException("Column height must match grid height exactly.");
       for (int i = 0; i < Height; i++)
       {
@@ -273,13 +277,13 @@ namespace Nixill.Collections.Grid
       }
     }
 
-    public void InsertColumn(int before, T columnItem) => InsertColumn(before, Enumerable.Repeat(columnItem, Height).ToList());
-    public void InsertColumn(int before, Func<T> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(x => columnItemFunc()).ToList());
-    public void InsertColumn(int before, Func<int, T> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(columnItemFunc).ToList());
+    public void InsertColumn(int before, T? columnItem) => InsertColumn(before, Enumerable.Repeat(columnItem, Height).ToList());
+    public void InsertColumn(int before, Func<T?> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(x => columnItemFunc()).ToList());
+    public void InsertColumn(int before, Func<int, T?> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(columnItemFunc).ToList());
 
     public void InsertRow(int before)
     {
-      List<T> innerList = new List<T>();
+      List<T?> innerList = new List<T?>();
       for (int i = 0; i < IntWidth; i++)
       {
         innerList.Add(default(T));
@@ -287,16 +291,16 @@ namespace Nixill.Collections.Grid
       BackingList.Insert(before, innerList);
     }
 
-    public void InsertRow<U>(int before, IEnumerable<U> row) where U : T
+    public void InsertRow<U>(int before, IEnumerable<U?> row) where U : T
     {
-      List<T> rowList = row.Select(x => (T)x).ToList();
+      List<T?> rowList = row.Select(x => (T?)x).ToList();
       if (Width != rowList.Count) throw new ArgumentException("Row width must match grid width exactly.");
       BackingList.Insert(before, rowList);
     }
 
-    public void InsertRow(int before, T rowItem) => InsertRow(before, Enumerable.Repeat(rowItem, Width).ToList());
-    public void InsertRow(int before, Func<T> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
-    public void InsertRow(int before, Func<int, T> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
+    public void InsertRow(int before, T? rowItem) => InsertRow(before, Enumerable.Repeat(rowItem, Width).ToList());
+    public void InsertRow(int before, Func<T?> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
+    public void InsertRow(int before, Func<int, T?> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
 
     public void RemoveColumnAt(int col)
     {
@@ -312,6 +316,93 @@ namespace Nixill.Collections.Grid
     {
       if (row < 0 || row >= Height) throw new ArgumentOutOfRangeException("Can only remove existing rows.");
       BackingList.RemoveAt(row);
+    }
+
+    /// <summary>
+    /// Returns an enumeraor over each row of a grid as strings.
+    /// </summary>
+    /// <param name="input">The grid to output.</param>
+    public IEnumerable<string> GridToStringEnumerable()
+    {
+      foreach (IEnumerable<T?> line in this)
+      {
+        StringBuilder ret = new StringBuilder();
+        foreach (T? obj in line)
+        {
+          ret.Append("," + CSVParser.CSVEscape(obj?.ToString() ?? ""));
+        }
+        if (ret.Length > 0) ret.Remove(0, 1);
+        yield return ret.ToString();
+      }
+    }
+
+    /// <summary>
+    /// Converts a grid to a csv string.
+    /// </summary>
+    /// <param name="input">The grid to convert.</param>
+    public string Serialize()
+    {
+      StringBuilder ret = new StringBuilder();
+      foreach (string line in GridToStringEnumerable())
+      {
+        ret.Append('\n' + line);
+      }
+      if (ret.Length > 0) ret.Remove(0, 1);
+      return ret.ToString();
+    }
+
+    /// <summary>
+    /// Converts a grid to a csv string and writes it to a file.
+    /// </summary>
+    /// <param name="input">The grid to output.</param>
+    /// <param name="file">The file to write to.</param>
+    public void SerializeToFile(string file)
+    {
+      using (StreamWriter writer = new StreamWriter(file))
+      {
+        foreach (string line in GridToStringEnumerable())
+        {
+          writer.WriteLine(line);
+        }
+      }
+    }
+  }
+
+  public static class Grid
+  {
+    /// <summary>
+    /// Reads a CSV file into a Grid of strings.
+    /// </summary>
+    /// <param name="path">The path of the file to read.</param>
+    public static Grid<string> DeserializeFromFile(string path)
+    {
+      return Deserialize(FileUtils.FileCharEnumerator(path));
+    }
+
+    /// <summary>
+    /// Reads a CSV stream into a Grid of strings.
+    /// </summary>
+    /// <param name="reader">The StreamReader to read from.</param>
+    public static Grid<string> Deserialize(StreamReader reader)
+    {
+      return Deserialize(FileUtils.StreamCharEnumerator(reader));
+    }
+
+    /// <summary>
+    /// Reads a char enumerator and converts the streamed chars into a
+    /// Grid of strings.
+    /// </summary>
+    /// <param name="input">The input stream to read.</param>
+    public static Grid<string> Deserialize(IEnumerable<char> input)
+    {
+      List<IList<string>> backingList = new List<IList<string>>();
+
+      foreach (IList<string> innerList in CSVParser.EnumerableToRows(input))
+      {
+        backingList.Add(innerList);
+      }
+
+      return new Grid<string>(backingList);
     }
   }
 }
