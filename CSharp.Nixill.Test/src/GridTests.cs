@@ -66,7 +66,7 @@ namespace Nixill.Test
 
       testingGrid.SerializeToFile(file);
       toGrid = Grid.DeserializeFromFile(file);
-      toCSVAgain = toGrid.ToString();
+      toCSVAgain = toGrid.Serialize();
 
       Assert.AreEqual(toCSV, toCSVAgain);
     }
