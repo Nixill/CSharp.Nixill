@@ -39,24 +39,24 @@ namespace Nixill.Test
 
       Assert.AreEqual(testingGrid[new GridReference("R2C1")], "world");
 
-      string toCSV = testingGrid.GridToString();
+      string toCSV = testingGrid.Serialize();
 
       Assert.AreEqual("hello,there,beautiful\nworld,lovely,day", toCSV);
 
-      Grid<string> toGrid = Grid<string>.EnumerableToGrid(toCSV);
-      string toCSVAgain = toGrid.GridToString();
+      Grid<string> toGrid = Grid.Deserialize(toCSV);
+      string toCSVAgain = toGrid.Serialize();
 
       Assert.AreEqual(toCSV, toCSVAgain);
 
       testingGrid.AddRow(new List<string> { "add", "some", "values" });
       testingGrid.InsertColumn(2, new List<string> { "commas,", "\"quotes\"", "new\nlines" });
 
-      toCSV = testingGrid.GridToString();
+      toCSV = testingGrid.Serialize();
 
       Assert.AreEqual("hello,there,\"commas,\",beautiful\nworld,lovely,\"\"\"quotes\"\"\",day\nadd,some,\"new\nlines\",values", toCSV);
 
-      toGrid = Grid<string>.EnumerableToGrid(toCSV);
-      toCSVAgain = toGrid.GridToString();
+      toGrid = Grid.Deserialize(toCSV);
+      toCSVAgain = toGrid.Serialize();
 
       Assert.AreEqual(toCSV, toCSVAgain);
 
@@ -64,8 +64,8 @@ namespace Nixill.Test
       string tmp = Path.GetTempPath();
       string file = tmp + "test.csv";
 
-      testingGrid.GridToFile(file);
-      toGrid = Grid<string>.FileToGrid(file);
+      testingGrid.SerializeToFile(file);
+      toGrid = Grid.DeserializeFromFile(file);
       toCSVAgain = toGrid.ToString();
 
       Assert.AreEqual(toCSV, toCSVAgain);
