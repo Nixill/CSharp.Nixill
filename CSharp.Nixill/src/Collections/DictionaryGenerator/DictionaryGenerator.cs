@@ -26,7 +26,7 @@ namespace Nixill.Collections
     /// The <see cref="IDictionary&lt;TKey, TValue&gt;" /> contained by
     /// this <c>DictionaryGenerator</c>.
     /// </summary>
-    public IDictionary<K, V> Dict { get; }
+    public IDictionary<K, V> Dictionary { get; }
 
     /// <summary>
     /// Whether or not to store newly generated values when a key is not
@@ -38,7 +38,7 @@ namespace Nixill.Collections
     // The primary generator
     public DictionaryGenerator(IDictionary<K, V> dict, Generator<K, V> gen, bool storeValues = true)
     {
-      Dict = dict;
+      Dictionary = dict;
       Generator = gen;
       StoreGeneratedValues = storeValues;
     }
@@ -83,11 +83,11 @@ namespace Nixill.Collections
     {
       get
       {
-        if (Dict.ContainsKey(key)) return Dict[key];
+        if (Dictionary.ContainsKey(key)) return Dictionary[key];
         else if (StoreGeneratedValues) return Add(key);
         else return Generator.Generate(key);
       }
-      set => Dict[key] = value;
+      set => Dictionary[key] = value;
     }
 
     /// <summary>
@@ -102,14 +102,14 @@ namespace Nixill.Collections
       {
         throw new ArgumentNullException("Null keys cannot be added to GeneratorDictionaries.");
       }
-      else if (Dict.ContainsKey(key))
+      else if (Dictionary.ContainsKey(key))
       {
         throw new ArgumentException("Key " + key.ToString() + " already exists in the Dictionary.");
       }
       else
       {
         V val = Generator.Generate(key);
-        Dict[key] = val;
+        Dictionary[key] = val;
         return val;
       }
     }
@@ -117,7 +117,7 @@ namespace Nixill.Collections
     /// <summary>Adds the specified key and value to the dictionary.</summary>
     /// <param name="key">The key of the entry to add.</param>
     /// <param name="value">The value of the entry to add.</param>
-    public void Add(K key, V value) => Dict.Add(key, value);
+    public void Add(K key, V value) => Dictionary.Add(key, value);
 
     /// <summary>
     /// Whether or not any value can be generated for a key without
@@ -148,8 +148,8 @@ namespace Nixill.Collections
     /// <param name="value">The value to check for.</param>
     public bool? CanGenerateValue(V val) => Generator.CanGenerate(val);
 
-    public bool ContainsKey(K key) => Dict.ContainsKey(key);
-    public bool Remove(K key) => Dict.Remove(key);
+    public bool ContainsKey(K key) => Dictionary.ContainsKey(key);
+    public bool Remove(K key) => Dictionary.Remove(key);
     public bool TryGetValue(K key, out V value)
     {
       try
@@ -163,8 +163,8 @@ namespace Nixill.Collections
         return false;
       }
     }
-    public ICollection<K> Keys => Dict.Keys;
-    public ICollection<V> Values => Dict.Values;
+    public ICollection<K> Keys => Dictionary.Keys;
+    public ICollection<V> Values => Dictionary.Values;
 
     public void Add(KeyValuePair<K, V> entry)
     {
@@ -173,14 +173,14 @@ namespace Nixill.Collections
 
     public void Clear()
     {
-      Dict.Clear();
+      Dictionary.Clear();
     }
 
-    public bool Contains(KeyValuePair<K, V> entry) => Dict.ContainsKey(entry.Key) && (Dict[entry.Key]!.Equals(entry.Value));
+    public bool Contains(KeyValuePair<K, V> entry) => Dictionary.ContainsKey(entry.Key) && (Dictionary[entry.Key]!.Equals(entry.Value));
 
     public void CopyTo(KeyValuePair<K, V>[] array, int index)
     {
-      Dict.CopyTo(array, index);
+      Dictionary.CopyTo(array, index);
     }
 
     public bool Remove(KeyValuePair<K, V> entry)
@@ -189,10 +189,10 @@ namespace Nixill.Collections
       else return false;
     }
 
-    public int Count => Dict.Count;
-    public bool IsReadOnly => Dict.IsReadOnly;
-    public IEnumerator<KeyValuePair<K, V>> GetEnumerator() => Dict.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => Dict.GetEnumerator();
+    public int Count => Dictionary.Count;
+    public bool IsReadOnly => Dictionary.IsReadOnly;
+    public IEnumerator<KeyValuePair<K, V>> GetEnumerator() => Dictionary.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => Dictionary.GetEnumerator();
   }
 
   /// <summary>
