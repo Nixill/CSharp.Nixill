@@ -40,6 +40,52 @@ public static class SequenceExtensions
     if (list != null) yield return list;
   }
 
+  public static IEnumerable<T> ExceptElementAtFromEnd<T>(this IEnumerable<T> items, int index)
+  {
+    Buffer<T> buffer = new Buffer<T>(index);
+
+    foreach (T item in items)
+    {
+      (bool bumped, T bumpedItem) = buffer.Add(item);
+      if (bumped) yield return bumpedItem;
+    }
+
+    foreach (T item in buffer.Skip(1))
+    {
+      yield return item;
+    }
+  }
+
+  public static IEnumerable<T> ExceptElementAt<T>(this IEnumerable<T> items, Index index)
+  {
+    if (index.IsFromEnd) return ExceptElementAtFromEnd(items, index.Value);
+    else return ExceptElementAt(items, index.Value);
+  }
+
+  public static IEnumerable<T> ExceptElementAt<T>(this IEnumerable<T> items, int index)
+  {
+    foreach ((T item, int itemIndex) in items.WithIndex())
+    {
+      if (itemIndex != index) yield return item;
+    }
+  }
+
+  public static IEnumerable<T> ExceptElementAtFromEnd<T>(this IEnumerable<T> items, int index)
+  {
+    Buffer<T> buffer = new Buffer<T>(index);
+
+    foreach (T item in items)
+    {
+      (bool bumped, T bumpedItem) = buffer.Add(item);
+      if (bumped) yield return bumpedItem;
+    }
+
+    foreach (T item in buffer.Skip(1))
+    {
+      yield return item;
+    }
+  }
+
   static void MakeListAdd<T>(ref List<T>? list, T item)
   {
     if (list == null) list = new();
