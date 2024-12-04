@@ -42,6 +42,122 @@ public static class SequenceExtensions
     if (list != null) yield return list;
   }
 
+  public static IEnumerable<TSource> ElementsAt<TSource>(this IEnumerable<TSource> items, Range range)
+    => (!range.Start.IsFromEnd)
+      ? ((!range.End.IsFromEnd) ? ElementsAtPP(items, range) : ElementsAtPN(items, range))
+      : (ElementsAtNX(items, range));
+
+  static IEnumerable<T> ElementsAtPP<T>(IEnumerable<T> items, Range range)
+  {
+    int start = range.Start.Value;
+    int end = range.End.Value;
+
+    if (end <= start) yield break;
+
+    foreach ((T item, int index) in items.WithIndex())
+    {
+      if (index >= end) yield break;
+      if (index >= start) yield return item;
+    }
+  }
+
+  static IEnumerable<T> ElementsAtPN<T>(IEnumerable<T> items, Range range)
+  {
+    int start = range.Start.Value;
+    int end = range.End.Value;
+
+    Buffer<(T, int)> buffer = new(end);
+
+    foreach ((T item, int index) in items.WithIndex())
+    {
+      (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
+      if (bumped && bumpedIndex >= start) yield return bumpedItem;
+    }
+  }
+
+  static IEnumerable<T> ElementsAtNX<T>(IEnumerable<T> items, Range range)
+  {
+    int start = range.Start.Value;
+
+    Buffer<(T, int)> buffer = new(start);
+    int count = 0;
+
+    if (range.End.IsFromEnd)
+    {
+      foreach ((T item, int index) in items.WithIndex())
+      {
+        buffer.Add((item, index));
+        count = index;
+      }
+    }
+    else
+    {
+      foreach ((T item, int index) in items.WithIndex())
+      {
+        (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
+        count = index;
+        if (bumpedIndex >= range.End.Value) yield break;
+      }
+    }
+
+    int end = range.End.GetOffset(count);
+
+    foreach ((T item, int index) in buffer)
+    {
+      if (index >= end) yield break;
+      yield return item;
+    }
+  }
+
+  public static IEnumerable<T> ElementsAt<T>(this IEnumerable<T> items, params Index[] indices)
+  {
+    List<Index> indexes = [.. indices];
+    List<int> toStore = indices.Where(i => !i.IsFromEnd).Select(i => i.Value).Distinct().Order().ToList();
+    Dictionary<int, T> elementsAt = [];
+    Buffer<T> buffer = new Buffer<T>(indices.Where(i => i.IsFromEnd).Select(i => i.Value).DefaultIfEmpty(0).Max());
+
+    foreach ((T item, int index) in items.WithIndex())
+    {
+      buffer.Add(item);
+
+      if (index == toStore[0])
+      {
+        elementsAt[index] = item;
+        toStore.Pop();
+      }
+
+      while (!indexes[0].IsFromEnd && indexes[0].Value <= index)
+      {
+        yield return elementsAt[indexes.Pop().Value];
+        if (indexes.Count == 0) yield break;
+      }
+    }
+
+    List<int> toStoreNegative = indices
+      .Where(i => i.IsFromEnd)
+      .Select(i => i.Value)
+      .Distinct()
+      .Order()
+      .ToList();
+    Dictionary<int, T> elementsAtNegative = [];
+
+    foreach ((T item, int index) in buffer.Reverse().WithIndex())
+    {
+      if (index + 1 == toStoreNegative[0])
+      {
+        elementsAtNegative[index + 1] = item;
+        toStoreNegative.Pop();
+      }
+    }
+
+    while (indexes.Count > 0)
+    {
+      Index i = indexes.Pop();
+      if (i.IsFromEnd) yield return elementsAtNegative[i.Value];
+      else yield return elementsAt[i.Value];
+    }
+  }
+
   public static IEnumerable<T> ExceptElementAt<T>(this IEnumerable<T> items, Index index)
   {
     if (index.IsFromEnd) return ExceptElementAtFromEnd(items, index.Value);
@@ -70,6 +186,79 @@ public static class SequenceExtensions
     {
       yield return item;
     }
+  }
+
+  public static IEnumerable<T> ExceptElementsAt<T>(this IEnumerable<T> items, Range range)
+    => (!range.Start.IsFromEnd)
+      ? ((!range.End.IsFromEnd) ? ExceptElementsAtPP(items, range) : ExceptElementsAtPN(items, range))
+      : ((!range.End.IsFromEnd) ? ExceptElementsAtNP(items, range) : ExceptElementsAtNN(items, range));
+
+  static IEnumerable<T> ExceptElementsAtPP<T>(IEnumerable<T> items, Range range)
+  {
+    int start = range.Start.Value;
+    int end = range.End.Value;
+
+    foreach ((T item, int index) in items.WithIndex())
+    {
+      if (index < start || index >= end) yield return item;
+    }
+  }
+
+  static IEnumerable<T> ExceptElementsAtPN<T>(IEnumerable<T> items, Range range)
+  {
+    int start = range.Start.Value;
+    int end = range.End.Value;
+
+    Buffer<(T, int)> buffer = new(end);
+
+    foreach ((T item, int index) in items.WithIndex())
+    {
+      (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
+      if (bumped && bumpedIndex < start) yield return bumpedItem;
+    }
+
+    foreach ((T item, int index) in buffer)
+    {
+      yield return item;
+    }
+  }
+
+  static IEnumerable<T> ExceptElementsAtNP<T>(IEnumerable<T> items, Range range)
+  {
+    int start = range.Start.Value;
+    int end = range.End.Value;
+
+    Buffer<(T, int)> buffer = new(start);
+
+    foreach ((T item, int index) in items.WithIndex())
+    {
+      (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
+      if (bumped)
+      {
+        yield return bumpedItem;
+      }
+    }
+
+    foreach ((T item, int index) in buffer)
+    {
+      if (index >= end) yield return item;
+    }
+  }
+
+  static IEnumerable<T> ExceptElementsAtNN<T>(IEnumerable<T> items, Range range)
+  {
+    int start = range.Start.Value;
+    int end = range.End.Value;
+
+    Buffer<T> buffer = new(start);
+
+    foreach (T item in items)
+    {
+      (bool bumped, T bumpedItem) = buffer.Add(item);
+      if (bumped) yield return bumpedItem;
+    }
+
+    foreach (T item in buffer.Skip(start - end)) yield return item;
   }
 
   static void MakeListAdd<T>(ref List<T>? list, T item)
