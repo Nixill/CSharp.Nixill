@@ -267,6 +267,32 @@ public static class SequenceExtensions
     list.Add(item);
   }
 
+  public static T Middle<T>(this IEnumerable<T> sequence, bool singleEnumeration = false)
+  {
+    if (singleEnumeration) return MiddleSingle(sequence);
+    else return MiddleDouble(sequence);
+  }
+
+  static T MiddleDouble<T>(IEnumerable<T> sequence)
+  {
+    int count = sequence.Count();
+    return sequence.ElementAt(count / 2);
+  }
+
+  static T MiddleSingle<T>(IEnumerable<T> sequence)
+  {
+    List<T> buffer = [];
+
+    foreach (T[] pair in sequence.Chunk(2))
+    {
+      buffer.Add(pair[0]);
+      if (pair.Length == 1) return buffer[0];
+      buffer.RemoveAt(0);
+      buffer.Add(pair[1]);
+    }
+    return buffer[0];
+  }
+
   public static IEnumerable<(T, T)> Pairs<T>(this IEnumerable<T> sequence)
   {
     bool first = true;
