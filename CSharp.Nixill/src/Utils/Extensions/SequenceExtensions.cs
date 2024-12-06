@@ -267,6 +267,42 @@ public static class SequenceExtensions
     list.Add(item);
   }
 
+  static IEnumerable<T> ExceptElementsAt<T>(IEnumerable<T> items, params Index[] indices)
+  {
+    List<Index> positiveIndices = indices.Where(i => !i.IsFromEnd).OrderBy(i => i.Value).Distinct().ToList();
+    List<Index> negativeIndices = indices.Where(i => i.IsFromEnd).OrderByDescending(i => i.Value).Distinct().ToList();
+
+    Buffer<(T, int)> buffer = new(negativeIndices.Select(i => i.Value).FirstOrDefault());
+
+    foreach ((T item, int index) in items.WithIndex())
+    {
+      (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
+      if (bumped)
+      {
+        if (bumpedIndex == positiveIndices[0].Value)
+        {
+          positiveIndices.RemoveAt(0);
+        }
+        else
+        {
+          yield return bumpedItem;
+        }
+      }
+    }
+
+    foreach (((T item, int wrongIndex), int index) in buffer.WithIndex())
+    {
+      if (index == negativeIndices[0].GetOffset(buffer.BufferSize))
+      {
+        negativeIndices.Pop();
+      }
+      else
+      {
+        yield return item;
+      }
+    }
+  }
+
   public static T Middle<T>(this IEnumerable<T> sequence, bool singleEnumeration = false)
   {
     if (singleEnumeration) return MiddleSingle(sequence);
