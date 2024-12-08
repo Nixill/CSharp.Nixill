@@ -23,7 +23,7 @@ public readonly struct IntVector2
 
   public IntVector2 RotateLeft() => (this.Y, -this.X);
   public IntVector2 RotateAround() => -this;
-  public IntVector2 RotateRight() => (-this.X, this.Y);
+  public IntVector2 RotateRight() => (-this.Y, this.X);
 
   public IntVector2 RotateLeft(int times) => NumberUtils.NNMod(times, 4) switch
   {
