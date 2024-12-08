@@ -135,13 +135,13 @@ public static class SequenceExtensions
 
     List<int> toStoreNegative = indices
       .Where(i => i.IsFromEnd)
-      .Select(i => i.Value)
+      .Select(i => i.GetOffset(buffer.BufferSize))
       .Distinct()
       .Order()
       .ToList();
     Dictionary<int, T> elementsAtNegative = [];
 
-    foreach ((T item, int index) in buffer.Reverse().WithIndex())
+    foreach ((T item, int index) in buffer.WithIndex())
     {
       if (index + 1 == toStoreNegative[0])
       {
@@ -153,7 +153,7 @@ public static class SequenceExtensions
     while (indexes.Count > 0)
     {
       Index i = indexes.Pop();
-      if (i.IsFromEnd) yield return elementsAtNegative[i.Value];
+      if (i.IsFromEnd) yield return elementsAtNegative[i.GetOffset(buffer.BufferSize)];
       else yield return elementsAt[i.Value];
     }
   }
@@ -267,7 +267,7 @@ public static class SequenceExtensions
     list.Add(item);
   }
 
-  static IEnumerable<T> ExceptElementsAt<T>(IEnumerable<T> items, params Index[] indices)
+  public static IEnumerable<T> ExceptElementsAt<T>(this IEnumerable<T> items, params Index[] indices)
   {
     List<Index> positiveIndices = indices.Where(i => !i.IsFromEnd).OrderBy(i => i.Value).Distinct().ToList();
     List<Index> negativeIndices = indices.Where(i => i.IsFromEnd).OrderByDescending(i => i.Value).Distinct().ToList();
@@ -279,7 +279,7 @@ public static class SequenceExtensions
       (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
       if (bumped)
       {
-        if (bumpedIndex == positiveIndices[0].Value)
+        if (positiveIndices.Count != 0 && bumpedIndex == positiveIndices[0].Value)
         {
           positiveIndices.RemoveAt(0);
         }
@@ -292,7 +292,7 @@ public static class SequenceExtensions
 
     foreach (((T item, int wrongIndex), int index) in buffer.WithIndex())
     {
-      if (index == negativeIndices[0].GetOffset(buffer.BufferSize))
+      if (negativeIndices.Count != 0 && index == negativeIndices[0].GetOffset(buffer.BufferSize))
       {
         negativeIndices.Pop();
       }
