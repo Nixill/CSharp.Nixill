@@ -1,4 +1,5 @@
 using System.Numerics;
+using Nixill.Collections;
 using Nixill.Utils;
 
 public readonly struct IntVector2
@@ -11,9 +12,14 @@ public readonly struct IntVector2
   public static implicit operator IntVector2((int X, int Y) input) => new(input.X, input.Y);
   public static implicit operator (int X, int Y)(IntVector2 input) => (input.X, input.Y);
 
+  public static implicit operator IntVector2(GridReference input) => new(input.Column, input.Row);
+  public static implicit operator GridReference(IntVector2 input) => GridReference.XY(input.X, input.Y);
+
   public static IntVector2 operator +(IntVector2 left, IntVector2 right) => (left.X + right.X, left.Y + right.Y);
   public static IntVector2 operator -(IntVector2 left, IntVector2 right) => (left.X - right.X, left.Y - right.Y);
   public static IntVector2 operator -(IntVector2 input) => (-input.X, -input.Y);
+  public static IntVector2 operator *(IntVector2 left, int right) => (left.X * right, left.Y * right);
+  public static IntVector2 operator *(int left, IntVector2 right) => (left * right.X, left * right.Y);
 
   public static bool operator ==(IntVector2 left, IntVector2 right) => left.X == right.X && left.Y == right.Y;
   public static bool operator !=(IntVector2 left, IntVector2 right) => !(left == right);
@@ -31,7 +37,7 @@ public readonly struct IntVector2
     1 => RotateLeft(),
     2 => RotateAround(),
     3 => RotateRight(),
-    _ => throw new Exception("How the fuck did you get this? Please file an issue on GitHub!")
+    _ => throw new Exception("How did you get this? Please file an issue on GitHub!")
   };
   public IntVector2 RotateAround(int times) => (times % 2 == 0) ? this : RotateAround();
   public IntVector2 RotateRight(int times) => RotateLeft(-times);
