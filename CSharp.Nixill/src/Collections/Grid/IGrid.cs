@@ -146,6 +146,12 @@ namespace Nixill.Collections
     bool Contains(T item);
 
     /// <summary>
+    /// Returns the items and references within a grid as a
+    /// one-dimensional enumerable.
+    /// </summary>
+    IEnumerable<(T? Item, GridReference Reference)> Flatten();
+
+    /// <summary>
     /// Returns a single column as a subclass of IList.
     /// </summary>
     IList<T?> GetColumn(int which);

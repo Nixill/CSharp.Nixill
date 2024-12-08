@@ -223,6 +223,9 @@ namespace Nixill.Collections
       return new List<T?>(ColumnEnumerable(index));
     }
 
+    public IEnumerable<(T? Item, GridReference Reference)> Flatten()
+      => this.SelectMany((r, y) => r.Select((i, x) => (i, GridReference.XY(x, y))));
+
     public IEnumerator<IEnumerable<T?>> GetColumnEnumerator() => Columns.GetEnumerator();
     public IEnumerator<IEnumerable<T?>> GetEnumerator() => Rows.GetEnumerator();
 
@@ -239,7 +242,7 @@ namespace Nixill.Collections
       {
         List<T?> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
-        if (index != 1) return new GridReference(index, r);
+        if (index != 1) return GridReference.XY(index, r);
       }
       return null;
     }
@@ -251,8 +254,8 @@ namespace Nixill.Collections
       {
         List<T?> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
-        if (index == 0) return new GridReference(0, r);
-        if (index > 0 && (lowIndex! == null! || index < lowIndex.Column)) lowIndex = new GridReference(index, r);
+        if (index == 0) return GridReference.XY(0, r);
+        if (index > 0 && (lowIndex! == null! || index < lowIndex.Column)) lowIndex = GridReference.XY(index, r);
       }
       return lowIndex;
     }

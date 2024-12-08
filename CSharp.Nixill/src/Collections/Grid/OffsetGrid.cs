@@ -158,6 +158,10 @@ namespace Nixill.Collections
     }
 
     public bool Contains(T? item) => BackingGrid.Contains(item);
+
+    public IEnumerable<(T? Item, GridReference Reference)> Flatten()
+      => this.SelectMany((l, r) => l.Select((i, c) => (i, GridReference.XY(c - ColumnOffset, r - RowOffset))));
+
     public IList<T?> GetColumn(int index) => BackingGrid.GetColumn(index + ColumnOffset);
     public IEnumerator<IEnumerable<T?>> GetColumnEnumerator() => BackingGrid.GetColumnEnumerator();
     public IEnumerator<IEnumerable<T?>> GetEnumerator() => BackingGrid.GetEnumerator();
@@ -168,7 +172,7 @@ namespace Nixill.Collections
       GridReference? rfc = BackingGrid.IndexOf(item);
       if (rfc! != null!)
       {
-        return new GridReference(rfc.Column - ColumnOffset, rfc.Row - RowOffset);
+        return GridReference.XY(rfc.Column - ColumnOffset, rfc.Row - RowOffset);
       }
       return null;
     }
@@ -178,7 +182,7 @@ namespace Nixill.Collections
       GridReference? rfc = BackingGrid.IndexOfTransposed(item);
       if (rfc! != null!)
       {
-        return new GridReference(rfc.Column - ColumnOffset, rfc.Row - RowOffset);
+        return GridReference.XY(rfc.Column - ColumnOffset, rfc.Row - RowOffset);
       }
       return null;
     }

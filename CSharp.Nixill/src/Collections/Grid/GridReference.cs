@@ -11,26 +11,17 @@ namespace Nixill.Collections
     static Regex R1C1Form = new Regex("^[Rr](\\d+)[Cc](\\d+)$");
 
     /// <summary>The column of the referenced cell.</summary>
-    public int Column { get; }
+    public int Column { get; init; }
 
     /// <summary>The row of the referenced cell.</summary>
-    public int Row { get; }
+    public int Row { get; init; }
 
     /// <summary>
     /// This GridReference, transposed (Row and column swapped).
     /// </summary>
-    public GridReference Transposed { get => new GridReference(Row, Column); }
+    public GridReference Transposed { get => GridReference.RC(c: Row, r: Column); }
 
-    /// <summary>
-    /// Constructs a new GridReference given its individual coordinates.
-    /// </summary>
-    /// <param name="column">The column to use.</param>
-    /// <param name="row">The row to use.</param>
-    public GridReference(int col, int row)
-    {
-      Column = col;
-      Row = row;
-    }
+    private GridReference() { }
 
     /// <summary>
     /// Constructs a new GridReference given a string representation
@@ -139,11 +130,12 @@ namespace Nixill.Collections
       return NumberConverter.Format(num + 1, 26);
     }
 
+    public static GridReference XY(int x, int y) => new GridReference { Row = y, Column = x };
+    public static GridReference RC(int r, int c) => new GridReference { Row = r, Column = c };
+
     public static explicit operator GridReference(string input) => new GridReference(input);
-    public static explicit operator GridReference(Tuple<int, int> input) => new GridReference(input.Item1, input.Item2);
 
     public static implicit operator string(GridReference input) => input.ToString();
-    public static implicit operator Tuple<int, int>(GridReference input) => new Tuple<int, int>(input.Column, input.Row);
 
     public static bool operator ==(GridReference left, GridReference right) => left.Equals(right);
     public static bool operator !=(GridReference left, GridReference right) => !left.Equals(right);
