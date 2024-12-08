@@ -259,6 +259,9 @@ namespace Nixill.Collections
       RowOffset += 1;
     }
 
+    public bool IsWithinGrid(GridReference reference) => reference.Row >= -RowOffset && reference.Row < Height - RowOffset
+      && reference.Column >= -ColumnOffset && reference.Column <= Width - ColumnOffset;
+
     public void RemoveColumnAt(int col) => BackingGrid.RemoveColumnAt(col + ColumnOffset);
 
     public void RemoveColumnShiftRight(int col)

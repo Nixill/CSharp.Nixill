@@ -311,5 +311,7 @@ namespace Nixill.Collections
     /// every cell in the row.
     /// </param>
     void InsertRow(int before, Func<int, T?> rowItemFunc);
+
+    bool IsWithinGrid(GridReference reference);
   }
 }

@@ -304,6 +304,7 @@ namespace Nixill.Collections
     public void InsertRow(int before, T? rowItem) => InsertRow(before, Enumerable.Repeat(rowItem, Width).ToList());
     public void InsertRow(int before, Func<T?> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
     public void InsertRow(int before, Func<int, T?> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
+    public bool IsWithinGrid(GridReference reference) => reference.Row >= 0 && reference.Row < Height && reference.Column >= 0 && reference.Column <= Width;
 
     public void RemoveColumnAt(int col)
     {
