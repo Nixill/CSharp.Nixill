@@ -42,6 +42,26 @@ public static class SequenceExtensions
     if (list != null) yield return list;
   }
 
+  public static T ElementAtOr<T>(this IEnumerable<T> items, Index index, T or)
+    => (!index.IsFromEnd) ? items.ElementAtOr<T>(index.Value, or)
+      : items.ElementAtOrNegative<T>(index.Value, or);
+
+  public static T ElementAtOr<T>(this IEnumerable<T> items, int atIndex, T or)
+  {
+    foreach ((T item, int index) in items.WithIndex())
+    {
+      if (index == atIndex) return item;
+    }
+    return or;
+  }
+
+  static T ElementAtOrNegative<T>(this IEnumerable<T> items, int atNegativeIndex, T or)
+  {
+    Buffer<T> buffer = new(atNegativeIndex, items);
+    if (buffer.Count != buffer.BufferSize) return or;
+    else return buffer.First();
+  }
+
   public static IEnumerable<TSource> ElementsAt<TSource>(this IEnumerable<TSource> items, Range range)
     => (!range.Start.IsFromEnd)
       ? ((!range.End.IsFromEnd) ? ElementsAtPP(items, range) : ElementsAtPN(items, range))
