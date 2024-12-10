@@ -32,10 +32,10 @@ namespace Nixill.Test
       // please don't actually do this it makes me cry ;-;
       testingGrid["A1"] = "hello";
       testingGrid["r2c1"] = "world";
-      testingGrid[new GridReference(1, 0)] = "there";
+      testingGrid[GridReference.XY(1, 0)] = "there";
       testingGrid["c1"] = "beautiful";
       testingGrid[1, 1] = "lovely";
-      testingGrid[(GridReference)new Tuple<int, int>(2, 1)] = "day";
+      testingGrid[GridReference.XY(2, 1)] = "day";
 
       Assert.AreEqual(testingGrid[new GridReference("R2C1")], "world");
 
