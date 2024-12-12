@@ -160,7 +160,10 @@ namespace Nixill.Collections
     public bool Contains(T? item) => BackingGrid.Contains(item);
 
     public IEnumerable<(T? Item, GridReference Reference)> Flatten()
-      => this.SelectMany((l, r) => l.Select((i, c) => (i, GridReference.XY(c - ColumnOffset, r - RowOffset))));
+      => this.SelectMany((r, y) => r.Select((i, x) => (i, GridReference.XY(x - ColumnOffset, y - RowOffset))));
+
+    public IEnumerable<(T? Item, GridReference Reference)> FlattenTransposed()
+      => this.Columns.SelectMany((c, x) => c.Select((i, y) => (i, GridReference.XY(x - ColumnOffset, y - RowOffset))));
 
     public IList<T?> GetColumn(int index) => BackingGrid.GetColumn(index + ColumnOffset);
     public IEnumerator<IEnumerable<T?>> GetColumnEnumerator() => BackingGrid.GetColumnEnumerator();

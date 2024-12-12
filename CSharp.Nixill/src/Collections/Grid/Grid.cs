@@ -226,6 +226,9 @@ namespace Nixill.Collections
     public IEnumerable<(T? Item, GridReference Reference)> Flatten()
       => this.SelectMany((r, y) => r.Select((i, x) => (i, GridReference.XY(x, y))));
 
+    public IEnumerable<(T? Item, GridReference Reference)> FlattenTransposed()
+      => this.Columns.SelectMany((c, x) => c.Select((i, y) => (i, GridReference.XY(x, y))));
+
     public IEnumerator<IEnumerable<T?>> GetColumnEnumerator() => Columns.GetEnumerator();
     public IEnumerator<IEnumerable<T?>> GetEnumerator() => Rows.GetEnumerator();
 
