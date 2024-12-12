@@ -98,6 +98,9 @@ public static class GridExtensions
       }
     }
   }
+
+  public static IGrid<T> GetTransposedGrid<T>(this IGrid<T> grid)
+    => (grid is TransposedGrid<T> tGrid) ? tGrid.BackingGrid : new TransposedGrid<T>(grid);
 }
 
 public static class GridTransforms

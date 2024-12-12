@@ -152,12 +152,6 @@ namespace Nixill.Collections
     IEnumerable<(T? Item, GridReference Reference)> Flatten();
 
     /// <summary>
-    /// Returns the items and references within a grid as a
-    /// one-dimensional enumerable, columns-first.
-    /// </summary>
-    IEnumerable<(T? Item, GridReference Reference)> FlattenTransposed();
-
-    /// <summary>
     /// Returns a single column as a subclass of IList.
     /// </summary>
     IList<T?> GetColumn(int which);

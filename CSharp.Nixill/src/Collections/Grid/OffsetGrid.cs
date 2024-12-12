@@ -162,9 +162,6 @@ namespace Nixill.Collections
     public IEnumerable<(T? Item, GridReference Reference)> Flatten()
       => this.SelectMany((r, y) => r.Select((i, x) => (i, GridReference.XY(x - ColumnOffset, y - RowOffset))));
 
-    public IEnumerable<(T? Item, GridReference Reference)> FlattenTransposed()
-      => this.Columns.SelectMany((c, x) => c.Select((i, y) => (i, GridReference.XY(x - ColumnOffset, y - RowOffset))));
-
     public IList<T?> GetColumn(int index) => BackingGrid.GetColumn(index + ColumnOffset);
     public IEnumerator<IEnumerable<T?>> GetColumnEnumerator() => BackingGrid.GetColumnEnumerator();
     public IEnumerator<IEnumerable<T?>> GetEnumerator() => BackingGrid.GetEnumerator();
