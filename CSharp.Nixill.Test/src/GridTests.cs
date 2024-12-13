@@ -30,14 +30,14 @@ namespace Nixill.Test
       Assert.AreEqual(3, testingGrid.Width);
 
       // please don't actually do this it makes me cry ;-;
-      testingGrid["A1"] = "hello";
-      testingGrid["r2c1"] = "world";
-      testingGrid[GridReference.XY(1, 0)] = "there";
-      testingGrid["c1"] = "beautiful";
-      testingGrid[1, 1] = "lovely";
-      testingGrid[GridReference.XY(2, 1)] = "day";
+      testingGrid[GridRef.FromString("A1")] = "hello";
+      testingGrid[GridRef.FromString("r2c1")] = "world";
+      testingGrid[GridRef.XY(1, 0)] = "there";
+      testingGrid[GridRef.FromString("c1")] = "beautiful";
+      testingGrid[GridRef.RC(1, 1)] = "lovely";
+      testingGrid[GridRef.XY(2, 1)] = "day";
 
-      Assert.AreEqual(testingGrid[new GridReference("R2C1")], "world");
+      Assert.AreEqual(testingGrid[GridRef.FromString("R2C1")], "world");
 
       string toCSV = testingGrid.Serialize();
 
@@ -86,7 +86,7 @@ namespace Nixill.Test
       {
         foreach (int c in Enumerable.Range(0, 5))
         {
-          Assert.AreEqual(divisionTable[r, c], divisionTableTransposed[c, r]);
+          Assert.AreEqual(divisionTable[GridRef.RC(r, c)], divisionTableTransposed[GridRef.RC(c, r)]);
         }
       }
     }

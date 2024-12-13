@@ -5,6 +5,7 @@ using Nixill.Utils;
 
 namespace Nixill.Collections
 {
+  [Obsolete("Use IntVector2 (Nixill.Objects) or static GridRef methods instead.")]
   public class GridReference : IComparable<GridReference>
   {
     static Regex A1Form = new Regex("^([A-Za-z]+)(\\d+)$");
@@ -32,6 +33,7 @@ namespace Nixill.Collections
     /// notation for R1C1 (with <c>[]</c>).
     /// </summary>
     /// <param name="input">The string representation to use.</param>
+    [Obsolete("Use GridRef.FromString(input) instead.")]
     public GridReference(string input)
     {
       Match regMatch = A1Form.Match(input);
@@ -69,6 +71,7 @@ namespace Nixill.Collections
     /// It compares rows first, before columns; a GridReference is "less
     /// than" another GridReference lower and to the left.
     /// </summary>
+    [Obsolete("Use GridRef.Compare(this, other) instead.")]
     public int CompareTo(GridReference? other)
     {
       return Sequence.FirstNonZero(
@@ -81,6 +84,7 @@ namespace Nixill.Collections
     /// Returns a string representation of this GridReference in A1
     /// notation.
     /// </summary>
+    [Obsolete("Use the IntVector2 extension method ToA1String() instead.")]
     public string ToA1String()
     {
       return ColumnNumberToName(Column) + (Row + 1);
@@ -90,6 +94,7 @@ namespace Nixill.Collections
     /// Returns a string representation of this GridReference in R1C1
     /// notation.
     /// </summary>
+    [Obsolete("Use the IntVector2 extension method ToR1C1String() instead.")]
     public string ToR1C1String()
     {
       return "R" + (Row + 1) + "C" + (Column + 1);
@@ -116,6 +121,7 @@ namespace Nixill.Collections
     /// Changes a column name, as seen in several popular spreadsheet
     /// software, to a number. A becomes 0, B becomes 1, etc.
     /// </summary>
+    [Obsolete("Use GridRef.ColumnNameToNumber(name) instead.")]
     public static int ColumnNameToNumber(string name)
     {
       return NumberConverter.Parse<int>(name, 26, Digits.Alpha, bijective: true) - 1;
@@ -125,12 +131,15 @@ namespace Nixill.Collections
     /// Changes a column number to a name as seen in several popular
     /// spreadsheet software. 0 becomes A, 1 becomes B, etc.
     /// </summary>
+    [Obsolete("Use GridRef.ColumnNumberToName(num) instead.")]
     public static string ColumnNumberToName(int num)
     {
       return NumberConverter.Format(num + 1, 26);
     }
 
+    [Obsolete("Use GridRef.XY(x, y) instead.")]
     public static GridReference XY(int x, int y) => new GridReference { Row = y, Column = x };
+    [Obsolete("Use GridRef.RC(r, c) instead.")]
     public static GridReference RC(int r, int c) => new GridReference { Row = r, Column = c };
 
     public static explicit operator GridReference(string input) => new GridReference(input);

@@ -103,7 +103,7 @@ namespace Nixill.Collections
       }
     }
 
-    public Grid(int width, int height, Func<GridReference, T> filler)
+    public Grid(int width, int height, Func<IntVector2, T> filler)
     {
       IntWidth = width;
       foreach (int r in Enumerable.Range(0, height))
@@ -111,11 +111,18 @@ namespace Nixill.Collections
         List<T> innerList = [];
         foreach (int c in Enumerable.Range(0, width))
         {
-          innerList.Add(filler(GridReference.RC(r, c)));
+          innerList.Add(filler(GridRef.RC(r, c)));
         }
       }
     }
 
+    public T this[IntVector2 iv2]
+    {
+      get => BackingList[iv2.Y][iv2.X];
+      set => BackingList[iv2.Y][iv2.X] = value;
+    }
+
+    [Obsolete("Use IntVector2 instead.")]
     public T this[GridReference gr]
     {
       get => BackingList[gr.Row][gr.Column];
@@ -125,6 +132,7 @@ namespace Nixill.Collections
       }
     }
 
+    [Obsolete("Use GridRef.RC(r, c) instead.")]
     public T this[int r, int c]
     {
       get => BackingList[r][c];
@@ -134,6 +142,7 @@ namespace Nixill.Collections
       }
     }
 
+    [Obsolete("Use GridRef.FromString(str) instead.")]
     public T this[string gr]
     {
       get => this[(GridReference)gr];
@@ -159,7 +168,7 @@ namespace Nixill.Collections
     {
       for (int i = 0; i < Width; i++)
       {
-        yield return this[index, i];
+        yield return this[GridRef.RC(index, i)];
       }
     }
 
@@ -178,7 +187,7 @@ namespace Nixill.Collections
     {
       for (int i = 0; i < Height; i++)
       {
-        yield return this[i, index];
+        yield return this[GridRef.RC(i, index)];
       }
     }
 
@@ -274,8 +283,8 @@ namespace Nixill.Collections
       return ColumnEnumerable(index).ToList();
     }
 
-    public IEnumerable<(T Item, GridReference Reference)> Flatten()
-      => this.SelectMany((r, y) => r.Select((i, x) => (i, GridReference.XY(x, y))));
+    public IEnumerable<(T Item, IntVector2 Reference)> Flatten()
+      => this.SelectMany((r, y) => r.Select((i, x) => (i, new IntVector2(x, y))));
 
     public IEnumerator<IEnumerable<T>> GetColumnEnumerator() => Columns.GetEnumerator();
     public IEnumerator<IEnumerable<T>> GetEnumerator() => Rows.GetEnumerator();
@@ -287,26 +296,26 @@ namespace Nixill.Collections
       return RowEnumerable(index).ToList();
     }
 
-    public GridReference? IndexOf(T item)
+    public IntVector2? IndexOf(T item)
     {
       for (int r = 0; r < Height; r++)
       {
         List<T> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
-        if (index != 1) return GridReference.XY(index, r);
+        if (index != 1) return (index, r);
       }
       return null;
     }
 
-    public GridReference? IndexOfTransposed(T item)
+    public IntVector2? IndexOfTransposed(T item)
     {
-      GridReference? lowIndex = null;
+      IntVector2? lowIndex = null;
       for (int r = 0; r < Height; r++)
       {
         List<T> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
-        if (index == 0) return GridReference.XY(0, r);
-        if (index > 0 && (lowIndex! == null! || index < lowIndex.Column)) lowIndex = GridReference.XY(index, r);
+        if (index == 0) return new(0, r);
+        if (index > 0 && (lowIndex! == null! || index < lowIndex.Value.X)) lowIndex = new(index, r);
       }
       return lowIndex;
     }
@@ -358,7 +367,7 @@ namespace Nixill.Collections
     public void InsertRow(int before, Func<T> rowItemFunc) => InsertRow(before, Sequence.Repeat(rowItemFunc, Width));
     public void InsertRow(int before, Func<int, T> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(rowItemFunc));
 
-    public bool IsWithinGrid(GridReference reference) => reference.Row >= 0 && reference.Row < Height && reference.Column >= 0 && reference.Column < Width;
+    public bool IsWithinGrid(IntVector2 reference) => reference.Y >= 0 && reference.Y < Height && reference.X >= 0 && reference.X < Width;
 
     public void RemoveColumnAt(int col)
     {

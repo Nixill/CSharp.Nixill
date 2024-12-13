@@ -12,8 +12,19 @@ public readonly struct IntVector2
   public static implicit operator IntVector2((int X, int Y) input) => new(input.X, input.Y);
   public static implicit operator (int X, int Y)(IntVector2 input) => (input.X, input.Y);
 
-  public static implicit operator IntVector2(GridReference input) => new(input.Column, input.Row);
-  public static implicit operator GridReference(IntVector2 input) => GridReference.XY(input.X, input.Y);
+  // warning disable justification: cannot suppress by tagging the cast
+  [Obsolete]
+  public static implicit operator IntVector2(
+#pragma warning disable CS0618 // GridReference is obsolete
+    GridReference
+#pragma warning restore CS0618
+  input) => new(input.Column, input.Row);
+  [Obsolete]
+  public static implicit operator
+#pragma warning disable CS0618
+    GridReference
+#pragma warning restore CS0618
+    (IntVector2 input) => GridReference.XY(input.X, input.Y);
 
   public static IntVector2 operator +(IntVector2 left, IntVector2 right) => (left.X + right.X, left.Y + right.Y);
   public static IntVector2 operator -(IntVector2 left, IntVector2 right) => (left.X - right.X, left.Y - right.Y);

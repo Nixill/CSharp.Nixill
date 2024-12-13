@@ -11,8 +11,13 @@ internal class TransposedGrid<T> : IGrid<T>
     BackingGrid = grid;
   }
 
+  public T this[IntVector2 iv2] { get => BackingGrid[iv2.Transposed()]; set => BackingGrid[iv2.Transposed()] = value; }
+
+  [Obsolete("Use IntVector2 instead.")]
   public T this[GridReference gr] { get => BackingGrid[gr.Transposed]; set => BackingGrid[gr.Transposed] = value; }
+  [Obsolete("Use GridRef.FromString(str) instead.")]
   public T this[string gr] { get => BackingGrid[((GridReference)gr).Transposed]; set => BackingGrid[((GridReference)gr).Transposed] = value; }
+  [Obsolete("Use GridRef.RC(r, c) instead.")]
   public T this[int r, int c] { get => BackingGrid[c, r]; set => BackingGrid[c, r] = value; }
 
   public int Height => BackingGrid.Width;
@@ -39,12 +44,12 @@ internal class TransposedGrid<T> : IGrid<T>
   public void Clear() => BackingGrid.Clear();
   public bool Contains(T item) => BackingGrid.Contains(item);
 
-  public IEnumerable<(T Item, GridReference Reference)> Flatten()
+  public IEnumerable<(T Item, IntVector2 Reference)> Flatten()
     => BackingGrid
       .Flatten()
-      .OrderBy(t => t.Reference.Column)
-      .ThenBy(t => t.Reference.Row)
-      .Select(t => (t.Item, t.Reference.Transposed));
+      .OrderBy(t => t.Reference.X)
+      .ThenBy(t => t.Reference.Y)
+      .Select(t => (t.Item, t.Reference.Transposed()));
 
   public IList<T> GetColumn(int which) => BackingGrid.GetRow(which);
 
@@ -53,8 +58,8 @@ internal class TransposedGrid<T> : IGrid<T>
 
   public IList<T> GetRow(int which) => BackingGrid.GetColumn(which);
 
-  public GridReference? IndexOf(T item) => BackingGrid.IndexOfTransposed(item)?.Transposed;
-  public GridReference? IndexOfTransposed(T item) => BackingGrid.IndexOf(item)?.Transposed;
+  public IntVector2? IndexOf(T item) => BackingGrid.IndexOfTransposed(item)?.Transposed();
+  public IntVector2? IndexOfTransposed(T item) => BackingGrid.IndexOf(item)?.Transposed();
 
   [Obsolete("Will be removed because it violates nullability contracts. Use InsertColumn(before, default(T)) instead.")]
   public void InsertColumn(int before) => BackingGrid.InsertRow(before);
@@ -70,7 +75,7 @@ internal class TransposedGrid<T> : IGrid<T>
   public void InsertRow(int before, Func<T> rowItemFunc) => BackingGrid.InsertColumn(before, rowItemFunc);
   public void InsertRow(int before, Func<int, T> rowItemFunc) => BackingGrid.InsertColumn(before, rowItemFunc);
 
-  public bool IsWithinGrid(GridReference reference) => BackingGrid.IsWithinGrid(reference.Transposed);
+  public bool IsWithinGrid(IntVector2 reference) => BackingGrid.IsWithinGrid(reference.Transposed());
 
   IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

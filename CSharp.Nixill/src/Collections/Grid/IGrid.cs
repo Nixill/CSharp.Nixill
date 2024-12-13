@@ -35,14 +35,19 @@ namespace Nixill.Collections
     /// value.</param>
     /// <param name="c">The column of the cell for which to get a
     /// value.</param>
+    [Obsolete("Use GridRef.RC(r, c) instead.")]
     T this[int r, int c] { get; set; }
 
     /// <summary>The value of a single cell in the grid.</summary>
     /// <param name="gr">The cell for which to get a value.</param>
+    [Obsolete("Use IntVector2 instead.")]
     T this[GridReference gr] { get; set; }
+
+    T this[IntVector2 iv2] { get; set; }
 
     /// <summary>The value of a single cell in the grid.</summary>
     /// <param name="gr">The cell for which to get a value.</param>
+    [Obsolete("Use GridRef.FromString(str) instead.")]
     T this[string gr] { get; set; }
 
     /// <summary>Adds an empty column to the right of the grid.</summary>
@@ -151,7 +156,7 @@ namespace Nixill.Collections
     /// Returns the items and references within a grid as a
     /// one-dimensional enumerable, rows-first.
     /// </summary>
-    IEnumerable<(T Item, GridReference Reference)> Flatten();
+    IEnumerable<(T Item, IntVector2 Reference)> Flatten();
 
     /// <summary>
     /// Returns a single column as a subclass of IList.
@@ -175,7 +180,7 @@ namespace Nixill.Collections
     /// bottom.
     /// </summary>
     /// <param name="item">The item to check for location.</param>
-    GridReference? IndexOf(T item);
+    IntVector2? IndexOf(T item);
 
     /// <summary>
     /// Returns the first index of a particular item.
@@ -184,7 +189,7 @@ namespace Nixill.Collections
     /// to right.
     /// </summary>
     /// <param name="item">The item to check for location.</param>
-    GridReference? IndexOfTransposed(T item);
+    IntVector2? IndexOfTransposed(T item);
 
     /// <summary>
     /// Inserts an empty column in the middle of the grid.
@@ -316,6 +321,6 @@ namespace Nixill.Collections
     /// </param>
     void InsertRow(int before, Func<int, T> rowItemFunc);
 
-    bool IsWithinGrid(GridReference reference);
+    bool IsWithinGrid(IntVector2 reference);
   }
 }

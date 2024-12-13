@@ -80,29 +80,38 @@ namespace Nixill.Collections
       ColumnOffset = colOffset;
     }
 
-    public OffsetGrid(int width, int height, Func<GridReference, T> filler, int rowOffset = 0, int colOffset = 0)
+    public OffsetGrid(int width, int height, Func<IntVector2, T> filler, int rowOffset = 0, int colOffset = 0)
     {
       BackingGrid = new(width, height, filler);
       RowOffset = rowOffset;
       ColumnOffset = colOffset;
     }
 
+    public T this[IntVector2 gr]
+    {
+      get => BackingGrid[gr - (RowOffset, ColumnOffset)];
+      set => BackingGrid[gr - (RowOffset, ColumnOffset)] = value;
+    }
+
+    [Obsolete("Use IntVector2 instead.")]
     public T this[GridReference gr]
     {
-      get => this[gr.Row, gr.Column];
-      set => this[gr.Row, gr.Column] = value;
+      get => this[(IntVector2)gr];
+      set => this[(IntVector2)gr] = value;
     }
 
+    [Obsolete("Use GridRef.RC(r, c) instead.")]
     public T this[int r, int c]
     {
-      get => BackingGrid[r + RowOffset, c + ColumnOffset];
-      set => BackingGrid[r + RowOffset, c + ColumnOffset] = value;
+      get => this[GridRef.RC(r, c)];
+      set => this[GridRef.RC(r, c)] = value;
     }
 
+    [Obsolete("Use GridRef.FromString(str) intead.")]
     public T this[string gr]
     {
-      get => this[(GridReference)gr];
-      set => this[(GridReference)gr] = value;
+      get => this[GridRef.FromString(gr)];
+      set => this[GridRef.FromString(gr)] = value;
     }
 
     public int Height => BackingGrid.Height;
@@ -194,8 +203,8 @@ namespace Nixill.Collections
 
     public bool Contains(T item) => BackingGrid.Contains(item);
 
-    public IEnumerable<(T Item, GridReference Reference)> Flatten()
-      => this.SelectMany((r, y) => r.Select((i, x) => (i, GridReference.XY(x - ColumnOffset, y - RowOffset))));
+    public IEnumerable<(T Item, IntVector2 Reference)> Flatten()
+      => this.SelectMany((r, y) => r.Select((i, x) => (i, GridRef.XY(x - ColumnOffset, y - RowOffset))));
 
     public IList<T> GetColumn(int index) => BackingGrid.GetColumn(index + ColumnOffset);
     public IEnumerator<IEnumerable<T>> GetColumnEnumerator() => BackingGrid.GetColumnEnumerator();
@@ -203,22 +212,22 @@ namespace Nixill.Collections
     IEnumerator IEnumerable.GetEnumerator() => BackingGrid.GetEnumerator();
     public IList<T> GetRow(int index) => BackingGrid.GetRow(index + RowOffset);
 
-    public GridReference? IndexOf(T item)
+    public IntVector2? IndexOf(T item)
     {
-      GridReference? rfc = BackingGrid.IndexOf(item);
+      IntVector2? rfc = BackingGrid.IndexOf(item);
       if (rfc! != null!)
       {
-        return GridReference.XY(rfc.Column - ColumnOffset, rfc.Row - RowOffset);
+        return new(rfc.Value.X - ColumnOffset, rfc.Value.Y - RowOffset);
       }
       return null;
     }
 
-    public GridReference? IndexOfTransposed(T item)
+    public IntVector2? IndexOfTransposed(T item)
     {
-      GridReference? rfc = BackingGrid.IndexOfTransposed(item);
+      IntVector2? rfc = BackingGrid.IndexOfTransposed(item);
       if (rfc! != null!)
       {
-        return GridReference.XY(rfc.Column - ColumnOffset, rfc.Row - RowOffset);
+        return new(rfc.Value.X - ColumnOffset, rfc.Value.Y - RowOffset);
       }
       return null;
     }
@@ -299,8 +308,8 @@ namespace Nixill.Collections
       RowOffset += 1;
     }
 
-    public bool IsWithinGrid(GridReference reference) => reference.Row >= -RowOffset && reference.Row < Height - RowOffset
-      && reference.Column >= -ColumnOffset && reference.Column < Width - ColumnOffset;
+    public bool IsWithinGrid(IntVector2 reference) => reference.Y >= Top && reference.Y < Bottom
+      && reference.X >= Left && reference.X < Right;
 
     public void RemoveColumnAt(int col) => BackingGrid.RemoveColumnAt(col + ColumnOffset);
 
