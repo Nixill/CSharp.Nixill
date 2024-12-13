@@ -5,37 +5,49 @@ using System.Collections.Generic;
 namespace Nixill.Collections
 {
   /// <summary>
-  /// A class that wraps around an
-  /// <see cref="IDictionary&lt;TKey, TValue&gt;" />, adding automatic
-  /// generation of values from keys.
+  ///   A class that wraps around an
+  ///   <see cref="IDictionary&lt;TKey, TValue&gt;" />, adding automatic
+  ///   generation of values from keys.
   /// </summary>
   /// <typeparam name="K">
-  /// The type of the keys used in the dictionary.
+  ///   The type of the keys used in the dictionary.
   /// </typeparam>
   /// <typeparam name="V">
-  /// The type of the values used in the dictionary.
+  ///   The type of the values used in the dictionary.
   /// </typeparam>
   public class DictionaryGenerator<K, V> : IDictionary<K, V> where K : notnull
   {
     /// <summary>
-    /// The <see cref="Generator" /> used by this <c>DictionaryGenerator</c>.
+    ///   Get: The <see cref="Generator{K, V}" /> used by this 
+    ///   <see cref="DictionaryGenerator{K, V}"/>.
     /// </summary>
     public Generator<K, V> Generator { get; }
 
     /// <summary>
-    /// The <see cref="IDictionary&lt;TKey, TValue&gt;" /> contained by
-    /// this <c>DictionaryGenerator</c>.
+    ///   Get: The <see cref="IDictionary{K, V}" /> wrapped by this
+    ///   <see cref="DictionaryGenerator{K, V}"/>.
     /// </summary>
     public IDictionary<K, V> Dictionary { get; }
 
     /// <summary>
-    /// Whether or not to store newly generated values when a key is not
-    /// found in the dictionary during a get operation. Does not affect
-    /// previously generated values, whether they were or weren't stored.
+    ///   Get or set: Whether or not to store newly generated values when
+    ///   a key is not found in the dictionary during a get operation.
+    ///   Does not affect previously generated values, whether they were
+    ///   or weren't stored.
     /// </summary>
     public bool StoreGeneratedValues = true;
 
-    // The primary generator
+    /// <summary>
+    ///   Constructs a new <see cref="DictionaryGenerator{K, V}"/>,
+    ///   wrapping the given <see cref="IDictionary{TKey, TValue}"/> and
+    ///   using the given <see cref="Generator{K, V}"/> to generate values.
+    /// </summary>
+    /// <param name="dict">The dictionary to wrap.</param>
+    /// <param name="gen">The generator to use.</param>
+    /// <param name="storeValues">
+    ///   Whether or not newly generated values should be stored in the
+    ///   dictionary upon generation.
+    /// </param>
     public DictionaryGenerator(IDictionary<K, V> dict, Generator<K, V> gen, bool storeValues = true)
     {
       Dictionary = dict;
@@ -43,18 +55,57 @@ namespace Nixill.Collections
       StoreGeneratedValues = storeValues;
     }
 
+    /// <summary>
+    ///   Constructs a new <see cref="DictionaryGenerator{K, V}"/>,
+    ///   wrapping a new <see cref="Dictionary{K, V}"/> and using a
+    ///   <see cref="DefaultGenerator{K, V}"/> to generate values.
+    /// </summary>
+    /// <remarks>
+    ///   When using this constructor, newly generated values are stored
+    ///   in the dictionary upon generation.
+    /// </remarks>
     public DictionaryGenerator()
     : this(new Dictionary<K, V>(), new DefaultGenerator<K, V>(), true)
     { }
 
+    /// <summary>
+    ///   Constructs a new <see cref="DictionaryGenerator{K, V}"/>,
+    ///   wrapping a new <see cref="Dictionary{K, V}"/> and using a
+    ///   <see cref="DefaultGenerator{K, V}"/> to generate values.
+    /// </summary>
+    /// <param name="storeValues">
+    ///   Whether or not newly generated values should be stored in the
+    ///   dictionary upon generation.
+    /// </param>
     public DictionaryGenerator(bool storeValues)
     : this(new Dictionary<K, V>(), new DefaultGenerator<K, V>(), storeValues)
     { }
 
+    /// <summary>
+    ///   Constructs a new <see cref="DictionaryGenerator{K, V}"/>,
+    ///   wrapping a new <see cref="Dictionary{K, V}"/> and using the
+    ///   given <see cref="Generator{K, V}"/> to generate values.
+    /// </summary>
+    /// <param name="gen">The generator to use.</param>
+    /// <param name="storeValues">
+    ///   Whether or not newly generated values should be stored in the
+    ///   dictionary upon generation.
+    /// </param>
     public DictionaryGenerator(Generator<K, V> gen, bool storeValues = true)
     : this(new Dictionary<K, V>(), gen, storeValues)
     { }
 
+    /// <summary>
+    ///   Constructs a new <see cref="DictionaryGenerator{K, V}"/>,
+    ///   wrapping a new <see cref="Dictionary{K, V}"/> and using a
+    ///   <see cref="FuncGenerator{K, V}"/> powered by the given
+    ///   <see cref="Func{K, V}"/> to generate values.
+    /// </summary>
+    /// <param name="genFunc">The function that generates values.</param>
+    /// <param name="storeValues">
+    ///   Whether or not newly generated values should be stored in the
+    ///   dictionary upon generation.
+    /// </param>
     public DictionaryGenerator(Func<K, V> genFunc, bool storeValues = true)
     : this(new Dictionary<K, V>(), new FuncGenerator<K, V>(genFunc), storeValues)
     { }
