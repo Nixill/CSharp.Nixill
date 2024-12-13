@@ -14,16 +14,16 @@ namespace Nixill.Test
     {
       Grid<string> testingGrid = new Grid<string>();
 
-      testingGrid.AddColumn();
-      testingGrid.AddColumn();
-      testingGrid.AddColumn();
+      testingGrid.AddColumn(default(string));
+      testingGrid.AddColumn(default(string));
+      testingGrid.AddColumn(default(string));
 
       Assert.AreEqual(0, testingGrid.Size);
       Assert.AreEqual(0, testingGrid.Height);
       Assert.AreEqual(3, testingGrid.Width);
 
-      testingGrid.AddRow();
-      testingGrid.AddRow();
+      testingGrid.AddRow(default(string));
+      testingGrid.AddRow(default(string));
 
       Assert.AreEqual(6, testingGrid.Size);
       Assert.AreEqual(2, testingGrid.Height);

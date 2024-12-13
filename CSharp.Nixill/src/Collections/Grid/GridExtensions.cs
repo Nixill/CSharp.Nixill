@@ -48,19 +48,19 @@ public static class GridExtensions
     }
   }
 
-  public static IEnumerable<(T? Item, GridReference Reference)> OrthogonallyAdjacentCells<T>(this IGrid<T> grid,
+  public static IEnumerable<(T Item, GridReference Reference)> OrthogonallyAdjacentCells<T>(this IGrid<T> grid,
     GridReference from)
     => grid.NearbyCells(from, [(0, -1)], GridTransforms.Rotate90);
 
-  public static IEnumerable<(T? Item, GridReference Reference)> DiagonallyAdjacentCells<T>(this IGrid<T> grid,
+  public static IEnumerable<(T Item, GridReference Reference)> DiagonallyAdjacentCells<T>(this IGrid<T> grid,
     GridReference from)
     => grid.NearbyCells(from, [(1, -1)], GridTransforms.Rotate90);
 
-  public static IEnumerable<(T? Item, GridReference reference)> EightAdjacentCells<T>(this IGrid<T> grid,
+  public static IEnumerable<(T Item, GridReference reference)> EightAdjacentCells<T>(this IGrid<T> grid,
     GridReference from)
     => grid.NearbyCells(from, [(0, -1), (1, -1)], GridTransforms.Rotate90);
 
-  public static IEnumerable<(T? Item, GridReference reference)> NearbyCells<T>(this IGrid<T> grid, GridReference from,
+  public static IEnumerable<(T Item, GridReference reference)> NearbyCells<T>(this IGrid<T> grid, GridReference from,
     IEnumerable<IntVector2> offsets, IEnumerable<Func<IntVector2, IntVector2>> transforms = null!, bool distinct = true)
     => grid.NearbyRefs(from, offsets, transforms, distinct).Select(r => (grid[r], r));
 

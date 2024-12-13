@@ -11,7 +11,7 @@ namespace Nixill.Collections
 {
   public class Grid<T> : IGrid<T>
   {
-    List<List<T?>> BackingList = new List<List<T?>>();
+    List<List<T>> BackingList = new List<List<T>>();
     int IntWidth = 0;
 
     /// <summary>
@@ -20,30 +20,54 @@ namespace Nixill.Collections
     public Grid() { }
 
     /// <summary>
-    /// Creates a new grid from an existing list of lists.
+    /// Creates a new grid from an existing two-dimensional enumerable.
     ///
     /// The outer list is taken as rows, and the inner list as columns
     /// within the row.
     /// </summary>
-    public Grid(IEnumerable<IEnumerable<T>> list)
+    public Grid(IEnumerable<IEnumerable<T>> list, T filler)
     {
       int widest = 0;
+
       foreach (IEnumerable<T> innerList in list)
       {
         var newList = new List<T>(innerList);
         if (newList.Count > widest) widest = newList.Count;
-        BackingList.Add(new List<T?>(innerList));
+        BackingList.Add(new List<T>(innerList));
       }
 
-      foreach (IList<T?> innerList in BackingList)
+      foreach (IList<T> innerList in BackingList)
       {
         for (int i = innerList.Count; i < widest; i++)
         {
-          innerList.Add(default(T));
+          innerList.Add(filler);
         }
       }
 
       IntWidth = widest;
+    }
+
+    public Grid(IEnumerable<IEnumerable<T>> list)
+    {
+      IntWidth = 0;
+      bool first = true;
+
+      foreach (IEnumerable<T> innerList in list)
+      {
+        List<T> newList = [.. innerList];
+
+        if (first)
+        {
+          IntWidth = newList.Count;
+          first = false;
+        }
+        else
+        {
+          if (IntWidth != newList.Count) throw new ArgumentOutOfRangeException("All sub-enumerables must be the same size.");
+        }
+
+        BackingList.Add(newList);
+      }
     }
 
     /// <summary>
@@ -51,21 +75,48 @@ namespace Nixill.Collections
     ///
     /// All cells of the grid will be iniated to the default value for T.
     /// </summary>
-    public Grid(int width, int height)
+    public Grid(int width, int height, T filler)
     {
       IntWidth = width;
       foreach (int r in Enumerable.Range(0, height))
       {
-        List<T?> innerList = new List<T?>();
+        List<T> innerList = new List<T>();
         foreach (int c in Enumerable.Range(0, width))
         {
-          innerList.Add(default(T));
+          innerList.Add(filler);
         }
         BackingList.Add(innerList);
       }
     }
 
-    public T? this[GridReference gr]
+    public Grid(int width, int height, Func<T> filler)
+    {
+      IntWidth = width;
+      foreach (int r in Enumerable.Range(0, height))
+      {
+        List<T> innerList = [];
+        foreach (int c in Enumerable.Range(0, width))
+        {
+          innerList.Add(filler());
+        }
+        BackingList.Add(innerList);
+      }
+    }
+
+    public Grid(int width, int height, Func<GridReference, T> filler)
+    {
+      IntWidth = width;
+      foreach (int r in Enumerable.Range(0, height))
+      {
+        List<T> innerList = [];
+        foreach (int c in Enumerable.Range(0, width))
+        {
+          innerList.Add(filler(GridReference.RC(r, c)));
+        }
+      }
+    }
+
+    public T this[GridReference gr]
     {
       get => BackingList[gr.Row][gr.Column];
       set
@@ -74,7 +125,7 @@ namespace Nixill.Collections
       }
     }
 
-    public T? this[int r, int c]
+    public T this[int r, int c]
     {
       get => BackingList[r][c];
       set
@@ -83,7 +134,7 @@ namespace Nixill.Collections
       }
     }
 
-    public T? this[string gr]
+    public T this[string gr]
     {
       get => this[(GridReference)gr];
       set => this[(GridReference)gr] = value;
@@ -93,7 +144,7 @@ namespace Nixill.Collections
     public int Width => IntWidth;
     public int Size => Height * IntWidth;
 
-    public IEnumerable<IEnumerable<T?>> Rows
+    public IEnumerable<IEnumerable<T>> Rows
     {
       get
       {
@@ -104,7 +155,7 @@ namespace Nixill.Collections
       }
     }
 
-    IEnumerable<T?> RowEnumerable(int index)
+    IEnumerable<T> RowEnumerable(int index)
     {
       for (int i = 0; i < Width; i++)
       {
@@ -112,7 +163,7 @@ namespace Nixill.Collections
       }
     }
 
-    public IEnumerable<IEnumerable<T?>> Columns
+    public IEnumerable<IEnumerable<T>> Columns
     {
       get
       {
@@ -123,7 +174,7 @@ namespace Nixill.Collections
       }
     }
 
-    IEnumerable<T?> ColumnEnumerable(int index)
+    IEnumerable<T> ColumnEnumerable(int index)
     {
       for (int i = 0; i < Height; i++)
       {
@@ -131,28 +182,27 @@ namespace Nixill.Collections
       }
     }
 
+    [Obsolete("Will be removed because it violates nullability contracts. Use AddColumn(default(T)) instead.")]
     public void AddColumn()
     {
       IntWidth += 1;
-      foreach (List<T?> innerList in BackingList)
+      foreach (List<T> innerList in BackingList)
       {
-        innerList.Add(default(T));
+        innerList.Add(default(T)!);
       }
     }
 
-    public void AddColumn<U>(IEnumerable<U?> column) where U : T
+    public void AddColumn(IEnumerable<T> column)
     {
       // For columns, this immediate conversion ensures single enumeration.
-      List<T?> colList = column.Select(x => (T?)x).ToList();
+      List<T> colList = column.ToList();
 
       if (Height == 0 && Width == 0)
       {
         IntWidth += 1;
-        foreach (U? item in column)
+        foreach (T item in column)
         {
-          List<T?> innerList = new List<T?>();
-          innerList.Add(item);
-          BackingList.Add(innerList);
+          BackingList.Add([item]);
         }
       }
       else
@@ -166,26 +216,27 @@ namespace Nixill.Collections
       }
     }
 
-    public void AddColumn(T? columnItem) => AddColumn(Enumerable.Repeat(columnItem, Height).ToList());
-    public void AddColumn(Func<T?> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(x => columnItemFunc()).ToList());
-    public void AddColumn(Func<int, T?> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(columnItemFunc).ToList());
+    public void AddColumn(T columnItem) => AddColumn(Enumerable.Repeat(columnItem, Height));
+    public void AddColumn(Func<T> columnItemFunc) => AddColumn(Sequence.Repeat(columnItemFunc, Height));
+    public void AddColumn(Func<int, T> columnItemFunc) => AddColumn(Enumerable.Range(0, Height).Select(columnItemFunc));
 
+    [Obsolete("Will be removed because it violates nullability contracts. Use AddRow(default(T)) directly instead.")]
     public void AddRow()
     {
-      List<T?> innerList = new List<T?>();
+      List<T> innerList = new List<T>();
       while (innerList.Count < IntWidth)
       {
-        innerList.Add(default(T));
+        innerList.Add(default(T)!);
       }
       BackingList.Add(innerList);
     }
 
-    public void AddRow<U>(IEnumerable<U?> row) where U : T
+    public void AddRow(IEnumerable<T> row)
     {
       // For rows, this immediate conversion both ensures single
       // enumeration *and* creates the actual list that will be placed
       // into the grid.
-      List<T?> rowList = row.Select(x => (T?)x).ToList();
+      List<T> rowList = row.ToList();
 
       if (Height == 0 && Width == 0)
       {
@@ -199,9 +250,9 @@ namespace Nixill.Collections
       BackingList.Add(rowList);
     }
 
-    public void AddRow(T? rowItem) => AddRow(Enumerable.Repeat(rowItem, Width).ToList());
-    public void AddRow(Func<T?> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
-    public void AddRow(Func<int, T?> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
+    public void AddRow(T rowItem) => AddRow(Enumerable.Repeat(rowItem, Width));
+    public void AddRow(Func<T> rowItemFunc) => AddRow(Sequence.Repeat(rowItemFunc, Width));
+    public void AddRow(Func<int, T> rowItemFunc) => AddRow(Enumerable.Range(0, Width).Select(rowItemFunc));
 
     public void Clear()
     {
@@ -209,50 +260,50 @@ namespace Nixill.Collections
       IntWidth = 0;
     }
 
-    public bool Contains(T? item)
+    public bool Contains(T item)
     {
-      foreach (List<T?> innerList in BackingList)
+      foreach (List<T> innerList in BackingList)
       {
         if (innerList.Contains(item)) return true;
       }
       return false;
     }
 
-    public IList<T?> GetColumn(int index)
+    public IList<T> GetColumn(int index)
     {
-      return new List<T?>(ColumnEnumerable(index));
+      return ColumnEnumerable(index).ToList();
     }
 
-    public IEnumerable<(T? Item, GridReference Reference)> Flatten()
+    public IEnumerable<(T Item, GridReference Reference)> Flatten()
       => this.SelectMany((r, y) => r.Select((i, x) => (i, GridReference.XY(x, y))));
 
-    public IEnumerator<IEnumerable<T?>> GetColumnEnumerator() => Columns.GetEnumerator();
-    public IEnumerator<IEnumerable<T?>> GetEnumerator() => Rows.GetEnumerator();
+    public IEnumerator<IEnumerable<T>> GetColumnEnumerator() => Columns.GetEnumerator();
+    public IEnumerator<IEnumerable<T>> GetEnumerator() => Rows.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public IList<T?> GetRow(int index)
+    public IList<T> GetRow(int index)
     {
-      return new List<T?>(RowEnumerable(index));
+      return RowEnumerable(index).ToList();
     }
 
-    public GridReference? IndexOf(T? item)
+    public GridReference? IndexOf(T item)
     {
       for (int r = 0; r < Height; r++)
       {
-        List<T?> innerList = BackingList[r];
+        List<T> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
         if (index != 1) return GridReference.XY(index, r);
       }
       return null;
     }
 
-    public GridReference? IndexOfTransposed(T? item)
+    public GridReference? IndexOfTransposed(T item)
     {
       GridReference? lowIndex = null;
       for (int r = 0; r < Height; r++)
       {
-        List<T?> innerList = BackingList[r];
+        List<T> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
         if (index == 0) return GridReference.XY(0, r);
         if (index > 0 && (lowIndex! == null! || index < lowIndex.Column)) lowIndex = GridReference.XY(index, r);
@@ -260,19 +311,20 @@ namespace Nixill.Collections
       return lowIndex;
     }
 
+    [Obsolete("Will be removed because it violates nullability contracts. Use InsertColumn(before, default(T)) instead.")]
     public void InsertColumn(int before)
     {
       IntWidth += 1;
-      foreach (List<T?> innerList in BackingList)
+      foreach (List<T> innerList in BackingList)
       {
-        innerList.Insert(before, default(T));
+        innerList.Insert(before, default(T)!);
       }
     }
 
-    public void InsertColumn<U>(int before, IEnumerable<U?> column) where U : T
+    public void InsertColumn(int before, IEnumerable<T> column)
     {
       IntWidth += 1;
-      List<U?> colList = column.ToList();
+      List<T> colList = column.ToList();
       if (Height != colList.Count) throw new ArgumentException("Column height must match grid height exactly.");
       for (int i = 0; i < Height; i++)
       {
@@ -280,30 +332,32 @@ namespace Nixill.Collections
       }
     }
 
-    public void InsertColumn(int before, T? columnItem) => InsertColumn(before, Enumerable.Repeat(columnItem, Height).ToList());
-    public void InsertColumn(int before, Func<T?> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(x => columnItemFunc()).ToList());
-    public void InsertColumn(int before, Func<int, T?> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(columnItemFunc).ToList());
+    public void InsertColumn(int before, T columnItem) => InsertColumn(before, Enumerable.Repeat(columnItem, Height));
+    public void InsertColumn(int before, Func<T> columnItemFunc) => InsertColumn(before, Sequence.Repeat(columnItemFunc, Height));
+    public void InsertColumn(int before, Func<int, T> columnItemFunc) => InsertColumn(before, Enumerable.Range(0, Height).Select(columnItemFunc));
 
+    [Obsolete("Will be removed because it violates nullability contracts. Use InsertRow(before, default(T)) instead.")]
     public void InsertRow(int before)
     {
-      List<T?> innerList = new List<T?>();
+      List<T> innerList = new List<T>();
       for (int i = 0; i < IntWidth; i++)
       {
-        innerList.Add(default(T));
+        innerList.Add(default(T)!);
       }
       BackingList.Insert(before, innerList);
     }
 
-    public void InsertRow<U>(int before, IEnumerable<U?> row) where U : T
+    public void InsertRow(int before, IEnumerable<T> row)
     {
-      List<T?> rowList = row.Select(x => (T?)x).ToList();
+      List<T> rowList = row.ToList();
       if (Width != rowList.Count) throw new ArgumentException("Row width must match grid width exactly.");
       BackingList.Insert(before, rowList);
     }
 
-    public void InsertRow(int before, T? rowItem) => InsertRow(before, Enumerable.Repeat(rowItem, Width).ToList());
-    public void InsertRow(int before, Func<T?> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(x => rowItemFunc()).ToList());
-    public void InsertRow(int before, Func<int, T?> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(rowItemFunc).ToList());
+    public void InsertRow(int before, T rowItem) => InsertRow(before, Enumerable.Repeat(rowItem, Width));
+    public void InsertRow(int before, Func<T> rowItemFunc) => InsertRow(before, Sequence.Repeat(rowItemFunc, Width));
+    public void InsertRow(int before, Func<int, T> rowItemFunc) => InsertRow(before, Enumerable.Range(0, Width).Select(rowItemFunc));
+
     public bool IsWithinGrid(GridReference reference) => reference.Row >= 0 && reference.Row < Height && reference.Column >= 0 && reference.Column < Width;
 
     public void RemoveColumnAt(int col)
@@ -398,6 +452,7 @@ namespace Nixill.Collections
     /// </summary>
     /// <param name="input">The input stream to read.</param>
     public static Grid<string> Deserialize(IEnumerable<char> input)
+    // => new Grid<string>(CSVParser.EnumerableToRows(input));
     {
       List<IList<string>> backingList = new List<IList<string>>();
 
