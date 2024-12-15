@@ -35,7 +35,14 @@ namespace Nixill.Collections
 
     #region Properties
 
+    /// <summary>
+    ///   Get: The number of entries in this set.
+    /// </summary>
     public int Count { get; private set; }
+
+    /// <summary>
+    ///   Get: Whether or not this set is read-only (<c>false</c>).
+    /// </summary>
     public bool IsReadOnly => false;
 
     #endregion
@@ -43,9 +50,8 @@ namespace Nixill.Collections
     #region Ctor
 
     /// <summary>
-    ///   Initializes a new instance of the
-    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using the type's
-    ///   default <see cref="Comparer&lt;T&gt;"/>.
+    ///   Initializes a new instance of the <see cref="AVLTreeSet{T}"/>
+    ///   class, using the type's default <see cref="Comparer{T}"/>.
     /// </summary>
     /// <exception cref="InvalidOperationException">
     ///   The type isn't naturally comparable.
@@ -53,9 +59,8 @@ namespace Nixill.Collections
     public AVLTreeSet() : this([], GetComparer()) { }
 
     /// <summary>
-    ///   Initializes a new instance of the
-    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using a specified
-    ///   <see cref="IComparer&lt;T&gt;"/>.
+    ///   Initializes a new instance of the <see cref="AVLTreeSet{T}"/>
+    ///   class, using a specified <see cref="IComparer{T}"/>.
     /// </summary>
     /// <param name="comparer">
     ///   The comparer that compares the elements of the set.
@@ -63,9 +68,8 @@ namespace Nixill.Collections
     public AVLTreeSet(IComparer<T> comparer) : this([], comparer.Compare) { }
 
     /// <summary>
-    ///   Initializes a new instance of the
-    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using a specified
-    ///   comparison function.
+    ///   Initializes a new instance of the <see cref="AVLTreeSet{T}"/>
+    ///   class, using a specified comparison function.
     /// </summary>
     /// <param name="comparer">
     ///   The function that compares the elements of the set.
@@ -73,10 +77,9 @@ namespace Nixill.Collections
     public AVLTreeSet(Comparison<T> comparer) : this([], comparer) { }
 
     /// <summary>
-    ///   Initializes a new instance of the
-    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using the type's
-    ///   default <see cref="Comparer&lt;T&gt;"/> and a pre-existing set
-    ///   of elements.
+    ///   Initializes a new instance of the <see cref="AVLTreeSet{T}"/>
+    ///   class, using the type's default <see cref="Comparer{T}"/> and a
+    ///   pre-existing set of elements.
     /// </summary>
     /// <param name="elems">
     ///   The elements with which to pre-populate the set.
@@ -87,9 +90,9 @@ namespace Nixill.Collections
     public AVLTreeSet(IEnumerable<T> elems) : this(elems, GetComparer()) { }
 
     /// <summary>
-    ///   Initializes a new instance of the
-    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using a specified
-    ///   <see cref="IComparer&lt;T&gt;"/> and a pre-existing set of elements.
+    ///   Initializes a new instance of the <see cref="AVLTreeSet{T}"/>
+    ///   class, using a specified <see cref="IComparer{T}"/> and a
+    ///   pre-existing set of elements.
     /// </summary>
     /// <param name="elems">
     ///   The elements with which to pre-populate the set.
@@ -100,9 +103,9 @@ namespace Nixill.Collections
     public AVLTreeSet(IEnumerable<T> elems, IComparer<T> comparer) : this(elems, comparer.Compare) { }
 
     /// <summary>
-    ///   Initializes a new instance of the
-    ///   <see cref="AVLTreeSet&lt;T&gt;"/> class, using a specified
-    ///   comparison function and a pre-existing set of elements.
+    ///   Initializes a new instance of the <see cref="AVLTreeSet{T}"/>
+    ///   class, using a specified comparison function and a pre-existing
+    ///   set of elements.
     /// </summary>
     /// <param name="elems">
     ///   The elements with which to pre-populate the set.
@@ -137,24 +140,16 @@ namespace Nixill.Collections
 
     #endregion
 
-    #region Enums
-
-    public enum SplitOperationMode
-    {
-      IncludeSplitValueToLeftSubtree,
-      IncludeSplitValueToRightSubtree,
-      DoNotIncludeSplitValue
-    }
-
-    #endregion
-
     #region Public Methods
-
     /// <summary>
-    /// Adds the specified value argument. 
-    /// Complexity: O(log(N))
+    ///   Adds the specified item to the set.
     /// </summary>
-    /// <param name="arg">The arg.</param>
+    /// <param name="arg">The item to add.</param>
+    /// <returns>
+    ///   <c>true</c> if the item was successfully added, <c>false</c>
+    ///   otherwise (which may also indicate that the set already
+    ///   contained the element).
+    /// </returns>
     public bool Add(T arg)
     {
       bool wasAdded = false;
@@ -168,10 +163,14 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Deletes the specified value argument. 
-    /// Complexity: O(log(N))
+    ///   Removes the specified item from the set.
     /// </summary>
-    /// <param name="arg">The arg.</param>
+    /// <param name="arg">The item to remove.</param>
+    /// <returns>
+    ///   <c>true</c> if the item was successfully removed, <c>false</c>
+    ///   otherwise (which may also indicate that the set already
+    ///   contained the element).
+    /// </returns>
     public bool Delete(T arg)
     {
       bool wasSuccessful = false;
@@ -188,11 +187,16 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Gets the min value stored in the tree. 
-    /// Complexity: O(log(N))
+    ///   Attempts to get the lowest element in the set.
     /// </summary>
-    /// <param name="value">The location which upon return will store the min value in the tree.</param>
-    /// <returns>a boolean indicating success or failure</returns>
+    /// <param name="value">
+    ///   If this method returns <c>true</c>, this is the lowest element
+    ///   in the set. Otherwise, this is <c>default(T)</c>.
+    /// </param>
+    /// <returns>
+    ///   Whether or not there are any elements in the set.
+    /// </returns>
+    /// <seealso cref="LowestValue()"/>
     public bool GetMin(out T value)
     {
       if (this.Root != null)
@@ -210,11 +214,16 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Gets the max value stored in the tree. 
-    /// Complexity: O(log(N))
+    ///   Attempts to get the highest element in the set.
     /// </summary>
-    /// <param name="value">The location which upon return will store the max value in the tree.</param>
-    /// <returns>a boolean indicating success or failure</returns>
+    /// <param name="value">
+    ///   If this method returns <c>true</c>, this is the highest element
+    ///   in the set. Otherwise, this is <c>default(T)</c>.
+    /// </param>
+    /// <returns>
+    ///   Whether or not there are any elements in the set.
+    /// </returns>
+    /// <seealso cref="HighestValue()"/>
     public bool GetMax(out T value)
     {
       if (this.Root != null)
@@ -232,22 +241,22 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Determines whether the tree contains the specified argument value. 
-    /// Complexity: O(log(N))
+    ///   Returns whether or not the set contains the given element.
     /// </summary>
-    /// <param name="arg">The arg to test against.</param>
-    /// <returns>
-    ///   <c>true</c> if tree contains the specified arg; otherwise, <c>false</c>.
-    /// </returns>
+    /// <param name="arg">The element to find.</param>
+    /// <returns><c>true</c> iff the set contains <c>arg</c>.</returns>
     public bool Contains(T arg)
     {
       return this.Search(this.Root, arg) != null;
     }
 
     /// <summary>
-    /// Deletes the min. value in the tree. 
-    /// Complexity: O(log(N))
+    ///   Deletes the lowest value from the set.
     /// </summary>
+    /// <returns>
+    ///   Whether or not any value was deleted — a return value of
+    ///   <c>false</c> may indicate that the set was already empty.
+    /// </returns>
     public bool DeleteMin()
     {
       if (this.Root != null)
@@ -262,9 +271,12 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Deletes the max. value in the tree. 
-    /// Complexity: O(log(N))
+    ///   Deletes the highest value from the set.
     /// </summary>
+    /// <returns>
+    ///   Whether or not any value was deleted — a return value of
+    ///   <c>false</c> may indicate that the set was already empty.
+    /// </returns>
     public bool DeleteMax()
     {
       if (this.Root != null)
@@ -279,18 +291,16 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Returns the height of the tree. 
-    /// Complexity: O(log N).
+    ///   Returns the height of the tree. 
     /// </summary>
-    /// <returns>the avl tree height</returns>
+    /// <returns>The AVL tree height.</returns>
     public int GetHeightLogN()
     {
       return this.GetHeightLogN(this.Root);
     }
 
     /// <summary>
-    /// Clears this instance.
-    /// Complexity: O(1).
+    ///   Removes all values from this set.
     /// </summary>
     public void Clear()
     {
@@ -299,7 +309,7 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Prints this instance.
+    ///   Prints this instance to the console.
     /// </summary>
     public void Print()
     {
@@ -311,28 +321,34 @@ namespace Nixill.Collections
     }
 
     /// <summary>
-    /// Returns whether or not this AVLTreeSet is empty in O(1) time.
+    ///   Returns whether or not the set is empty.
     /// </summary>
+    /// <returns><c>true</c> iff the set contains no elements.</returns>
     public bool IsEmpty() => Root == null;
 
     /// <summary>
-    /// Returns the value requested if the collection contains it, as well
-    /// as the next higher and lower values.
+    ///   Returns a triplet with, if they exist in the set, the value
+    ///   equal to the given value, the highest value less than the given
+    ///   value, and the lowest value greater than the given value.
     /// </summary>
+    /// <param name="value">The value to search around.</param>
+    /// <returns>The triplet.</returns>
     public NodeTriplet<T> SearchAround(T value)
     {
       return new NodeTriplet<T>(SearchBounded(value));
     }
 
     /// <summary>
-    /// Replaces a single element without rebalancing the tree.
+    ///   Replaces a single element without rebalancing the tree.
     /// </summary>
+    /// <param name="oldValue">The value being replaced.</param>
+    /// <param name="newValue">The value to replace it with.</param>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// The <c>newValue</c> doesn't fall between the same surrounding
-    /// elements as the <c>oldValue</c>.
+    ///   The <c>newValue</c> doesn't fall between the same surrounding
+    ///   elements as the <c>oldValue</c>.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// The <c>oldValue</c> is not present within the set.
+    ///   The <c>oldValue</c> is not present within the set.
     /// </exception>
     public void ReplaceValue(T oldValue, T newValue)
     {
@@ -346,7 +362,16 @@ namespace Nixill.Collections
     #endregion
 
     #region Interface Implementations
-
+    /// <summary>
+    ///   Attempts to retrieve the highest value in the set that is less
+    ///   than the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <param name="value">
+    ///   If this method returns <c>true</c>, this parameter contains the
+    ///   value found. Otherwise, it contains the default value for the type.
+    /// </param>
+    /// <returns><c>true</c> iff a lower value exists.</returns>
     public bool TryGetLower(T from, out T value)
     {
       var nodes = SearchBounded(from);
@@ -364,8 +389,27 @@ namespace Nixill.Collections
       }
     }
 
+    /// <summary>
+    ///   Returns whether or not a value exists in the set that is less
+    ///   than the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <returns><c>true</c> iff a lower value exists.</returns>
     public bool ContainsLower(T from) => TryGetLower(from, out T placeholder);
 
+    /// <summary>
+    ///   Returns the highest value in the set that is less than the given
+    ///   value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <returns>The lower value.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///   The set is empty.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///   The set is not empty, but <c>from<c/> is less than or equal to
+    ///   the lowest value in the set.
+    /// </exception>
     public T Lower(T from)
     {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have lower values in an empty AVLTreeSet.");
@@ -376,6 +420,16 @@ namespace Nixill.Collections
       else throw new ArgumentOutOfRangeException("from", "There is no lower value in the AVLTreeSet.");
     }
 
+    /// <summary>
+    ///   Attempts to retrieve the highest value in the set that is less
+    ///   than or equal to the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <param name="value">
+    ///   If this method returns <c>true</c>, this parameter contains the
+    ///   value found. Otherwise, it contains the default value for the type.
+    /// </param>
+    /// <returns><c>true</c> iff a lower or equal value exists.</returns>
     public bool TryGetFloor(T from, out T value)
     {
       var nodes = SearchBounded(from);
@@ -393,8 +447,27 @@ namespace Nixill.Collections
       }
     }
 
+    /// <summary>
+    ///   Returns whether or not a value exists in the set that is less
+    ///   than or equal to the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <returns><c>true</c> iff a lower value exists.</returns>
     public bool ContainsFloor(T from) => TryGetFloor(from, out T placeholder);
 
+    /// <summary>
+    ///   Returns the highest value in the set that is less than or equal
+    ///   to the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <returns>The lower or equal value.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///   The set is empty.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///   The set is not empty, but <c>from<c/> is less than the lowest
+    ///   value in the set.
+    /// </exception>
     public T Floor(T from)
     {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have floor values in an empty AVLTreeSet.");
@@ -405,6 +478,16 @@ namespace Nixill.Collections
       else throw new ArgumentOutOfRangeException("from", "There is no floor value in the AVLTreeSet.");
     }
 
+    /// <summary>
+    ///   Attempts to retrieve the lowest value in the set that is greater
+    ///   than or equal to the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <param name="value">
+    ///   If this method returns <c>true</c>, this parameter contains the
+    ///   value found. Otherwise, it contains the default value for the type.
+    /// </param>
+    /// <returns><c>true</c> iff a higher or equal value exists.</returns>
     public bool TryGetCeiling(T from, out T value)
     {
       var nodes = SearchBounded(from);
@@ -422,8 +505,27 @@ namespace Nixill.Collections
       }
     }
 
+    /// <summary>
+    ///   Returns whether or not a value exists in the set that is greater
+    ///   than or equal to the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <returns><c>true</c> iff a higher or equal value exists.</returns>
     public bool ContainsCeiling(T from) => TryGetCeiling(from, out T placeholder);
 
+    /// <summary>
+    ///   Returns the lowest value in the set that is greater than the
+    ///   given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <returns>The higher or equal value.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///   The set is empty.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///   The set is not empty, but <c>from<c/> is greater than the
+    ///   highest value in the set.
+    /// </exception>
     public T Ceiling(T from)
     {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have ceiling values in an empty AVLTreeSet.");
@@ -434,6 +536,16 @@ namespace Nixill.Collections
       else throw new ArgumentOutOfRangeException("from", "There is no ceiling value in the AVLTreeSet.");
     }
 
+    /// <summary>
+    ///   Attempts to retrieve the lowest value in the set that is greater
+    ///   than the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <param name="value">
+    ///   If this method returns <c>true</c>, this parameter contains the
+    ///   value found. Otherwise, it contains the default value for the type.
+    /// </param>
+    /// <returns><c>true</c> iff a higher value exists.</returns>
     public bool TryGetHigher(T from, out T value)
     {
       var nodes = SearchBounded(from);
@@ -451,8 +563,27 @@ namespace Nixill.Collections
       }
     }
 
+    /// <summary>
+    ///   Returns whether or not a value exists in the set that is greater
+    ///   than the given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <returns><c>true</c> iff a higher value exists.</returns>
     public bool ContainsHigher(T from) => TryGetHigher(from, out T placeholder);
 
+    /// <summary>
+    ///   Returns the lowest value in the set that is greater than the
+    ///   given value.
+    /// </summary>
+    /// <param name="from">The value to find a value near.</param>
+    /// <returns>The higher value.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///   The set is empty.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    ///   The set is not empty, but <c>from<c/> is greater than or equal
+    ///   to the highest value in the set.
+    /// </exception>
     public T Higher(T from)
     {
       if (IsEmpty()) throw new InvalidOperationException("Cannot have higher values in an empty AVLTreeSet.");
@@ -463,6 +594,13 @@ namespace Nixill.Collections
       else throw new ArgumentOutOfRangeException("from", "There is no higher value in the AVLTreeSet.");
     }
 
+    /// <summary>
+    ///   Returns the lowest value in the set.
+    /// </summary>
+    /// <returns>The lowest value.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///   The set is empty.
+    /// </exception>
     public T LowestValue()
     {
       if (IsEmpty()) throw new InvalidOperationException("Cannot get the lowest value of an empty AVLTreeSet.");
@@ -470,6 +608,13 @@ namespace Nixill.Collections
       return val;
     }
 
+    /// <summary>
+    ///   Returns the highest value in the set.
+    /// </summary>
+    /// <returns>The highest value.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///   The set is empty.
+    /// </exception>
     public T HighestValue()
     {
       if (IsEmpty()) throw new InvalidOperationException("Cannot get the highest value of an empty AVLTreeSet.");
@@ -477,35 +622,151 @@ namespace Nixill.Collections
       return val;
     }
 
+    /// <summary>
+    ///   Removes all elements in <c>elems</c> from this set.
+    /// </summary>
+    /// <param name="elems">The elements to remove.</param>
     public void ExceptWith(IEnumerable<T> elems)
     {
       Root = new AVLTreeSet<T>(this.Except(elems), Comparer).Root;
     }
 
+    /// <summary>
+    ///   Removes all elements from this set except those in <c>elems</c>.
+    /// </summary>
+    /// <param name="elems">The elements to keep.</param>
     public void IntersectWith(IEnumerable<T> elems)
     {
       Root = new AVLTreeSet<T>(this.Intersect(elems), Comparer).Root;
     }
 
+    /// <summary>
+    ///   Adds all elements to this set from <c>elems</c>, except those
+    ///   which are already in this set, which are instead removed.
+    /// </summary>
+    /// <param name="elems">The elements to exclusive-or.</param>
     public void SymmetricExceptWith(IEnumerable<T> elems)
     {
       Root = new AVLTreeSet<T>(this.Except(elems).Union(elems.Except(this)), Comparer).Root;
     }
 
+    /// <summary>
+    ///   Adds all elements to this set from <c>elems</c> that are not
+    ///   already a part of it.
+    /// </summary>
+    /// <param name="elems">The elements to add.</param>
     public void UnionWith(IEnumerable<T> elems)
     {
       Root = new AVLTreeSet<T>(this.Union(elems), Comparer).Root;
     }
 
+    /// <summary>
+    ///   Returns whether this set is a strict subset of <c>elems</c>.
+    /// </summary>
+    /// <remarks>
+    ///   "strict subset" means that this set contains some, but not all,
+    ///   of the elements in <c>elems</c>, and this set does not contain
+    ///   any elements that <c>elems</c> does not contain.
+    ///   <para/>
+    ///   An empty set is a strict subset of a non-empty set. It is not,
+    ///   however, a strict subset of another empty set.
+    /// </remarks>
+    /// <param name="elems">The other set to check.</param>
+    /// <returns>
+    ///   <c>true</c> iff this set is a strict subset of <c>elems</c>.
+    /// </returns>
     public bool IsProperSubsetOf(IEnumerable<T> elems) => elems.Except(this).Any();
-    public bool IsProperSupersetOf(IEnumerable<T> elems) => this.Except(elems).Any();
-    public bool IsSubsetOf(IEnumerable<T> elems) => !this.Except(elems).Any();
-    public bool IsSupersetOf(IEnumerable<T> elems) => !elems.Except(this).Any();
-    public bool Overlaps(IEnumerable<T> elems) => elems.Intersect(this).Any();
-    public bool SetEquals(IEnumerable<T> elems) => IsSubsetOf(elems) && IsSupersetOf(elems);
 
+    /// <summary>
+    ///   Returns whether this set is a strict superset of <c>elems</c>.
+    /// </summary>
+    /// <remarks>
+    ///   "strict superset" means that this set contains all elements of
+    ///   <c>elems</c>, and at least one element that <c>elems</c> does
+    ///   not contain.
+    ///   <para/>
+    ///   A non-empty set is a strict superset of an empty set. Another
+    ///   empty set, however, is not a strict superset of an empty set.
+    /// </remarks>
+    /// <param name="elems">The other set to check.</param>
+    /// <returns>
+    ///   <c>true</c> iff this set is a strict superset of <c>elems</c>.
+    /// </returns>
+    public bool IsProperSupersetOf(IEnumerable<T> elems) => this.Except(elems).Any();
+
+    /// <summary>
+    ///   Returns whether this set is a subset of <c>elems</c>.
+    /// </summary>
+    /// <remarks>
+    ///   "subset" means that this set contains some or all of the
+    ///   elements of <c>elems</c>, and does not contain any elements that
+    ///   <c>elems</c> does not.
+    ///   <para/>
+    ///   An empty set is a subset of any other set, even another empty set.
+    /// </remarks>
+    /// <param name="elems">The other set to check.</param>
+    /// <returns>
+    ///   <c>true</c> iff this set is a subset of <c>elems</c>.
+    /// </returns>
+    public bool IsSubsetOf(IEnumerable<T> elems) => !this.Except(elems).Any();
+
+    /// <summary>
+    ///   Returns whether this set is a superset of <c>elems</c>.
+    /// </summary>
+    /// <remarks>
+    ///   "superset" means that this set contains all of the elements of
+    ///   <c>elems</c>, regardless of whether or not this set also
+    ///   contains elements that <c>elems</c> does not.
+    ///   <para/>
+    ///   Any set, including an empty set, is a superset of an empty set.
+    /// </remarks>
+    /// <param name="elems">The other set to check.</param>
+    /// <returns>
+    ///   <c>true</c> iff this set is a superset of <c>elems</c>.
+    /// </returns>
+    public bool IsSupersetOf(IEnumerable<T> elems) => !elems.Except(this).Any();
+
+    /// <summary>
+    ///   Returns whether this set overlaps <c>elems</c>.
+    /// </summary>
+    /// <remarks>
+    ///   "overlaps" means the two sets have at least one element in common.
+    ///   <para/>
+    ///   An empty set does not overlap any other set, even another empty set.
+    /// </remarks>
+    /// <param name="elems">The other set to check.</param>
+    /// <returns>
+    ///   <c>true</c> iff this set overlaps <c>elems</c>.
+    /// </returns>
+    public bool Overlaps(IEnumerable<T> elems) => elems.Intersect(this).Any();
+
+    /// <summary>
+    ///   Returns whether this set is equal to <c>elems</c>.
+    /// </summary>
+    /// <remarks>
+    ///   "equals" means the two sets both contain the same elements -
+    ///   neither set has any elements that the other does not.
+    ///   <para/>
+    ///   An empty set equals itself, and no other set.
+    /// </remarks>
+    /// <param name="elems">The other set to check.</param>
+    /// <returns>
+    ///   <c>true</c> iff this set is equal to <c>elems</c>.
+    /// </returns>
+    public bool SetEquals(IEnumerable<T> elems) => elems.Intersect(this).Count() == Count;
+
+    /// <inheritdoc/>
     void ICollection<T>.Add(T item) { Add(item); }
 
+    /// <summary>
+    ///   Copies this set to a one-dimensional array.
+    /// </summary>
+    /// <param name="array">
+    ///   The array elements will be copied to.
+    /// </param>
+    /// <param name="index">
+    ///   The index within the array at which to begin copying.
+    /// </param>
     public void CopyTo(T[] array, int index)
     {
       foreach (T item in this)
@@ -514,9 +775,27 @@ namespace Nixill.Collections
       }
     }
 
+    /// <summary>
+    ///   Removes an item from the set.
+    /// </summary>
+    /// <param name="item">The item to remove.</param>
+    /// <returns>
+    ///   <c>true</c> if the item was successfully removed, <c>false</c>
+    ///   otherwise (which may indicate that the item was not in the set
+    ///   in the first place).
+    /// </returns>
     public bool Remove(T item) => Delete(item);
 
+    /// <summary>
+    ///   Returns an enumerator over the elements of the set.
+    /// </summary>
+    /// <remarks>
+    ///   Elements are enumerated in sequential order.
+    /// </remarks>
+    /// <returns>The enumerator.</returns>
     public IEnumerator<T> GetEnumerator() => RecursiveEnumerate(Root).GetEnumerator();
+
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
@@ -1241,16 +1520,38 @@ namespace Nixill.Collections
     #endregion
   }
 
+  /// <summary>
+  ///   Represents a triplet of values as a search result around a
+  ///   specific value.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of items contained in this set.
+  /// </typeparam>
   public class NodeTriplet<T>
   {
     internal readonly NodeValue? Lesser;
     internal readonly NodeValue? Equal;
     internal readonly NodeValue? Greater;
 
+    /// <summary>
+    ///   Get: Whether or not this triplet has a value less than the original.
+    /// </summary>
     public bool HasLesserValue => Lesser != null;
+
+    /// <summary>
+    ///   Get: Whether or not this triplet has a value equal to the original.
+    /// </summary>
     public bool HasEqualValue => Equal != null;
+
+    /// <summary>
+    ///   Get: Whether or not this triplet has a value greater than the
+    ///   original.
+    /// </summary>
     public bool HasGreaterValue => Greater != null;
 
+    /// <summary>
+    ///   Get: The value that's less than the original.
+    /// </summary>
     public T LesserValue
     {
       get
@@ -1260,6 +1561,9 @@ namespace Nixill.Collections
       }
     }
 
+    /// <summary>
+    ///   Get: The value that's equal to the original.
+    /// </summary>
     public T EqualValue
     {
       get
@@ -1269,6 +1573,9 @@ namespace Nixill.Collections
       }
     }
 
+    /// <summary>
+    ///   Get: The value that's greater than the original.
+    /// </summary>
     public T GreaterValue
     {
       get
