@@ -9,15 +9,15 @@ namespace Nixill.Objects
   /// </summary>
   public class SemVer : IComparable<SemVer>
   {
-    /// <value>The major version number, as defined by spec rule 8.</value>
+    /// <summary>The major version number, as defined by spec rule 8.</summary>
     public readonly int Major;
-    /// <value>The minor version number, as defined by spec rule 7.</value>
+    /// <summary>The minor version number, as defined by spec rule 7.</summary>
     public readonly int Minor;
-    /// <value>The patch number, as defined by spec rule 6.</value>
+    /// <summary>The patch number, as defined by spec rule 6.</summary>
     public readonly int Patch;
-    /// <value>The pre-release tag, as defined by spec rule 9.</value>
+    /// <summary>The pre-release tag, as defined by spec rule 9.</summary>
     public readonly string? PreRelease = null;
-    /// <value>The build metadata, as defined by spec rule 10.</value>
+    /// <summary>The build metadata, as defined by spec rule 10.</summary>
     public readonly string? BuildMetadata = null;
 
     private static readonly Regex PreReleaseRegex = new Regex("^(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*$");
