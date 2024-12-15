@@ -534,7 +534,7 @@ namespace Nixill.Collections
       {
         List<T> innerList = BackingList[r];
         int index = innerList.IndexOf(item);
-        if (index != 1) return (index, r);
+        if (index != -1) return (index, r);
       }
       return null;
     }
