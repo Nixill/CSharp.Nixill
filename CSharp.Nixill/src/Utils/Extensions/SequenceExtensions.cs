@@ -366,11 +366,21 @@ public static class SequenceExtensions
   {
     foreach (TIn item in items)
     {
-      try
-      {
-        yield return selector(item);
-      }
-      finally { }
+      if (TryRun(item, selector, out var selected)) yield return selected;
+    }
+  }
+
+  static bool TryRun<TIn, TOut>(TIn item, Func<TIn, TOut> selector, out TOut selected)
+  {
+    try
+    {
+      selected = selector(item);
+      return true;
+    }
+    catch (Exception)
+    {
+      selected = default(TOut)!;
+      return false;
     }
   }
 
