@@ -2,8 +2,25 @@ using System.Text.Json.Nodes;
 
 namespace Nixill.Utils.Extensions;
 
+/// <summary>
+///   Extensions that run on <see cref="JsonNode"/>s.
+/// </summary>
 public static class JsonExtensions
 {
+  /// <summary>
+  ///   Reads a JSON node from a given path in another node.
+  /// </summary>
+  /// <remarks>
+  ///   Returns null if at any point the path is not found.
+  /// </remarks>
+  /// <param name="root">The root node.</param>
+  /// <param name="pathElements">
+  ///   <c>string</c>s or <c>int</s> delineating which way to go.
+  /// </param>
+  /// <returns>The found JSON element, if any.</returns>
+  /// <exception cref="JsonPathElementException">
+  ///   An item in <c>pathElements</c> is not a <c>string</c> or <c>int</c>.
+  /// </exception>
   public static JsonNode? ReadPath(this JsonNode root, params object[] pathElements)
   {
     JsonNode node = root;
@@ -30,6 +47,20 @@ public static class JsonExtensions
     return node;
   }
 
+  /// <summary>
+  ///   Writes a JSON node to a given path in another node.
+  /// </summary>
+  /// <remarks>
+  ///   Creates objects and arrays along the way if needed.
+  /// </remarks>
+  /// <param name="root">The root node.</param>
+  /// <param name="value">The value to write.</param>
+  /// <param name="pathElements">
+  ///   <c>string</c>s or <c>int</s> delineating which way to go.
+  /// </param>
+  /// <exception cref="JsonPathElementException">
+  ///   An item in <c>pathElements</c> is not a <c>string</c> or <c>int</c>.
+  /// </exception>
   public static void WritePath(this JsonNode root, JsonNode value, params object[] pathElements)
   {
     JsonNode node = root;
@@ -78,6 +109,11 @@ public static class JsonExtensions
   }
 }
 
+/// <summary>
+///   Thrown when a path element in <see cref="JsonExtensions.ReadPath(JsonNode, object[])"/>
+///   or <see cref="JsonExtensions.WritePath(JsonNode, JsonNode, object[])"/>
+///   is not a <see cref="string"/> or <see cref="int"/>.
+/// </summary>
 public class JsonPathElementException : ArgumentException
 {
   public JsonPathElementException(string message) : base(message) { }

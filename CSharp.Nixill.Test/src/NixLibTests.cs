@@ -84,20 +84,20 @@ namespace Nixill.Test
       TestValues(set.SearchAround(16), 14, 16, 18);
     }
 
-    [Test]
-    public void ChunkWhileTest()
-    {
-      string[] words = Sequence
-        .Of('a', 'b', 'c', ' ', 'd', 'e', ' ', 'f')
-        .ChunkWhile(chr => chr != ' ')
-        .Select(chunk => chunk.FormString())
-        .ToArray();
+    // [Test]
+    // public void ChunkWhileTest()
+    // {
+    //   string[] words = Sequence
+    //     .Of('a', 'b', 'c', ' ', 'd', 'e', ' ', 'f')
+    //     .ChunkWhile(chr => chr != ' ')
+    //     .Select(chunk => chunk.FormString())
+    //     .ToArray();
 
-      Assert.AreEqual(words.Length, 3);
-      Assert.AreEqual(words[0], "abc");
-      Assert.AreEqual(words[1], "de");
-      Assert.AreEqual(words[2], "f");
-    }
+    //   Assert.AreEqual(words.Length, 3);
+    //   Assert.AreEqual(words[0], "abc");
+    //   Assert.AreEqual(words[1], "de");
+    //   Assert.AreEqual(words[2], "f");
+    // }
 
     public void TestValues(NodeTriplet<int> ints, int? lower, int? equal, int? higher)
     {

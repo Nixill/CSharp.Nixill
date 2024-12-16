@@ -2,12 +2,67 @@ using Nixill.Collections;
 
 namespace Nixill.Utils.Extensions;
 
+/// <summary>
+///   Extension methods good for sequences.
+/// </summary>
 public static class SequenceExtensions
 {
-  public static IEnumerable<IEnumerable<TSource?>> ChunkWhile<TSource>(this IEnumerable<TSource?> items,
-    Func<TSource?, bool> predicate, bool appendFails = false, bool prependFails = false, bool skipEmpty = false)
+  /// <summary>
+  ///   Returns groups of consecutive items that meet a condition.
+  /// </summary>
+  /// <remarks>
+  ///   This is due for a rewrite.
+  /// </remarks>
+  /// <typeparam name="TSource">
+  ///   The type of items in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="predicate">The condition.</param>
+  /// <param name="appendFails">
+  ///   Whether or not items that fail the condition should be appended to
+  ///   the end of the group.
+  /// </param>
+  /// <param name="prependFails">
+  ///   Whether or not items that fail the condition should be prepended
+  ///   to the start of the next group.
+  /// </param>
+  /// <param name="skipEmpty">
+  ///   Whether or not empty groups should be skipped.
+  /// </param>
+  /// <returns>The sequence of sequences.</returns>
+  [Obsolete("To be rewritten soon; functionality may change at that point.")]
+  public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
+    Func<TSource, bool> predicate, bool appendFails = false, bool prependFails = false, bool skipEmpty = false)
     => items.ChunkWhile((_, i) => predicate(i), default(TSource), appendFails, prependFails, skipEmpty);
 
+  /// <summary>
+  ///   Returns groups of consecutive items that meet a condition.
+  /// </summary>
+  /// <remarks>
+  ///   This is due for a rewrite.
+  /// </remarks>
+  /// <typeparam name="TSource">
+  ///   The type of items in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="predicate">The condition.</param>
+  /// <param name="firstComparison">
+  ///   The item to which the first item in the sequence should be
+  ///   compared.
+  /// </param>
+  /// <param name="appendFails">
+  ///   Whether or not items that fail the condition should be appended to
+  ///   the end of the group.
+  /// </param>
+  /// <param name="prependFails">
+  ///   Whether or not items that fail the condition should be prepended
+  ///   to the start of the next group.
+  /// </param>
+  /// <param name="skipEmpty">
+  ///   Whether or not empty groups should be skipped.
+  /// </param>
+  /// <returns>The sequence of sequences.</returns>
+  [Obsolete("To be rewritten soon; functionality may change at that point.")]
   public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
       Func<TSource, TSource, bool> predicate, TSource? firstComparison = default(TSource), bool appendFails = false,
       bool prependFails = false, bool skipEmpty = false)
@@ -42,10 +97,38 @@ public static class SequenceExtensions
     if (list != null) yield return list;
   }
 
+  /// <summary>
+  ///   Returns the element at the given index in the list, or a
+  ///   predetermined element if the list is not long enough to reach the
+  ///   given index.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="index">The index at which to find an item.</param>
+  /// <param name="or">The fallback item.</param>
+  /// <returns>
+  ///   The item at the given position in the sequence, or the fallback item.
+  /// </returns>
   public static T ElementAtOr<T>(this IEnumerable<T> items, Index index, T or)
     => (!index.IsFromEnd) ? items.ElementAtOr<T>(index.Value, or)
       : items.ElementAtOrNegative<T>(index.Value, or);
 
+  /// <summary>
+  ///   Returns the element at the given index in the list, or a
+  ///   predetermined element if the list is not long enough to reach the
+  ///   given index.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="atIndex">The index at which to find an item.</param>
+  /// <param name="or">The fallback item.</param>
+  /// <returns>
+  ///   The item at the given position in the sequence, or the fallback item.
+  /// </returns>
   public static T ElementAtOr<T>(this IEnumerable<T> items, int atIndex, T or)
   {
     foreach ((T item, int index) in items.WithIndex())
@@ -62,6 +145,19 @@ public static class SequenceExtensions
     else return buffer.First();
   }
 
+  /// <summary>
+  ///   Returns a slice of a sequence with a given range.
+  /// </summary>
+  /// <remarks>
+  ///   If the <c>end</c> comes at or after the <c>start</c>, an empty
+  ///   sequence is returned.
+  /// </remarks>
+  /// <typeparam name="TSource">
+  ///   The teype of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="range">The range from which to return items.</param>
+  /// <returns></returns>
   public static IEnumerable<TSource> ElementsAt<TSource>(this IEnumerable<TSource> items, Range range)
     => (!range.Start.IsFromEnd)
       ? ((!range.End.IsFromEnd) ? ElementsAtPP(items, range) : ElementsAtPN(items, range))
@@ -129,6 +225,17 @@ public static class SequenceExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns elements at the given indices within the sequence.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="indices">
+  ///   The indices; this is also the order of returns.
+  /// </param>
+  /// <returns>The elements at those indices.</returns>
   public static IEnumerable<T> ElementsAt<T>(this IEnumerable<T> items, params Index[] indices)
   {
     List<Index> indexes = [.. indices];
@@ -178,12 +285,30 @@ public static class SequenceExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns the sequence except with one element skipped.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="index">The index to skip.</param>
+  /// <returns>The sequence, less the skipped item.</returns>
   public static IEnumerable<T> ExceptElementAt<T>(this IEnumerable<T> items, Index index)
   {
     if (index.IsFromEnd) return ExceptElementAtFromEnd(items, index.Value);
     else return ExceptElementAt(items, index.Value);
   }
 
+  /// <summary>
+  ///   Returns the sequence except with one element skipped.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="index">The index to skip.</param>
+  /// <returns>The sequence, less the skipped item.</returns>
   public static IEnumerable<T> ExceptElementAt<T>(this IEnumerable<T> items, int index)
   {
     foreach ((T item, int itemIndex) in items.WithIndex())
@@ -192,6 +317,17 @@ public static class SequenceExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns the sequence except with one element skipped.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="index">
+  ///   The index to skip, counting from the end.
+  /// </param>
+  /// <returns>The sequence, less the skipped item.</returns>
   public static IEnumerable<T> ExceptElementAtFromEnd<T>(this IEnumerable<T> items, int index)
   {
     Buffer<T> buffer = new Buffer<T>(index);
@@ -208,6 +344,15 @@ public static class SequenceExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns the sequence with a ranged slice removed.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="range">The range to remove.</param>
+  /// <returns>The sequence, less the specified range.</returns>
   public static IEnumerable<T> ExceptElementsAt<T>(this IEnumerable<T> items, Range range)
     => (!range.Start.IsFromEnd)
       ? ((!range.End.IsFromEnd) ? ExceptElementsAtPP(items, range) : ExceptElementsAtPN(items, range))
@@ -287,6 +432,15 @@ public static class SequenceExtensions
     list.Add(item);
   }
 
+  /// <summary>
+  ///   Returns the sequence with multiple items removed.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="indices">The indices at which to skip.</param>
+  /// <returns>The sequence, less the specified elements.</returns>
   public static IEnumerable<T> ExceptElementsAt<T>(this IEnumerable<T> items, params Index[] indices)
   {
     List<Index> positiveIndices = indices.Where(i => !i.IsFromEnd).OrderBy(i => i.Value).Distinct().ToList();
@@ -323,6 +477,27 @@ public static class SequenceExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns the element in the middle of the sequence.
+  /// </summary>
+  /// <remarks>
+  ///   If the sequence contains an even number of elements, the first of
+  ///   the two middle elements is returned.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">The sequence.</param>
+  /// <param name="singleEnumeration">
+  ///   Whether or not the single enumeration method should be used.
+  ///   <para/>
+  ///   If <c>true</c>, the sequence will only be enumerated once. The
+  ///   single enumeration method is slower and uses more memory. If
+  ///   <c>false</c> or unspecified, the sequence will be enumerated one
+  ///   and a half times to retrieve the middle element, but no major
+  ///   memory use is required.
+  /// </param>
+  /// <returns></returns>
   public static T Middle<T>(this IEnumerable<T> sequence, bool singleEnumeration = false)
   {
     if (singleEnumeration) return MiddleSingle(sequence);
@@ -349,6 +524,18 @@ public static class SequenceExtensions
     return buffer[0];
   }
 
+  /// <summary>
+  ///   Returns every consecutive pair of elements in the sequence.
+  /// </summary>
+  /// <remarks>
+  ///   For example, the pairs of the sequence <c>[1, 2, 3, 4, 5]<c/> are
+  ///   <c>(1, 2)</c>, <c>(2, 3)</c>, <c>(3, 4)</c>, and <c>(4, 5)</c>.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">The sequence.</param>
+  /// <returns>The pairs.</returns>
   public static IEnumerable<(T, T)> Pairs<T>(this IEnumerable<T> sequence)
   {
     bool first = true;
@@ -362,6 +549,70 @@ public static class SequenceExtensions
     }
   }
 
+  /// <summary>
+  ///   Repeats a sequence a number of times.
+  /// </summary>
+  /// <remarks>
+  ///   <c>seq</c> is enumerated from scratch each time it is repeated.
+  ///   Exercise caution when using with sequences where multiple
+  ///   enumeration changes the results (you may wish to `ToArray()` first).
+  /// </remarks>
+  /// <typeparam name="T">The type of items in the sequence.</typeparam>
+  /// <param name="seq">The sequence.</param>
+  /// <param name="count">The number of times to repeat it.</param>
+  /// <returns>The repeated sequence.</returns>
+  public static IEnumerable<T> Repeat<T>(this IEnumerable<T> seq, int count)
+  {
+    foreach (int i in Enumerable.Range(0, count))
+    {
+      foreach (T item in seq)
+      {
+        yield return item;
+      }
+    }
+  }
+
+  /// <summary>
+  ///   Repeats a sequence infinitely.
+  /// </summary>
+  /// <remarks>
+  ///   <c>seq</c> is enumerated from scratch each time it is repeated.
+  ///   Exercise caution when using with sequences where multiple
+  ///   enumeration changes the results (you may wish to `ToArray()` first).
+  ///   <para/>
+  ///   When the input <c>seq</c> is empty, this method will hang.
+  ///   <para/>
+  ///   This method produces a sequence of infinite length. Methods that
+  ///   expect to wholly enumerate a sequence before returning anything
+  ///   will hang when this sequence is used as input.
+  /// </remarks>
+  /// <typeparam name="T">The type of items in the sequence.</typeparam>
+  /// <param name="seq">The sequence.</param>
+  /// <returns>The infinitely repeated sequence.</returns>
+  public static IEnumerable<T> RepeatInfinite<T>(this IEnumerable<T> seq)
+  {
+    while (true)
+    {
+      foreach (T item in seq)
+      {
+        yield return item;
+      }
+    }
+  }
+
+  /// <summary>
+  ///   Applies a transformation function to the elements of a sequence,
+  ///   ignoring and discarding errors.
+  /// </summary>
+  /// <typeparam name="TIn">
+  ///   The original type of elements in the sequence.
+  /// </typeparam>
+  /// <typeparam name="TOut">
+  ///   The transformed type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="selector">The transformation function.</param>
+  /// <returns>The transformed items.</returns>
   public static IEnumerable<TOut> SelectUnerrored<TIn, TOut>(this IEnumerable<TIn> items, Func<TIn, TOut> selector)
   {
     foreach (TIn item in items)
@@ -384,6 +635,29 @@ public static class SequenceExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns elements from a sequence that are already in order by a
+  ///   specific key, discarding the ones that break that order.
+  /// </summary>
+  /// <typeparam name="TSource">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <typeparam name="TKey">
+  ///   The type of keys being compared.
+  /// </typeparam>
+  /// <param name="sequence">The sequence.</param>
+  /// <param name="mutator">The selector of keys for comparison.</param>
+  /// <param name="comparer">The comparer of keys.</param>
+  /// <param name="desc">
+  ///   If <c>true</c>, elements' keys are expected to be in descending
+  ///   order. Otherwise, elements are expected to be in ascending order.
+  /// </param>
+  /// <param name="distinctly">
+  ///   If <c>true</c>, elements' keys must change for each returned
+  ///   value. Otherwise, keys can be unchanged between returns, so long
+  ///   as they don't change in the wrong direction.
+  /// </param>
+  /// <returns>A sequence of ordered elements.</returns>
   public static IEnumerable<TSource> WhereOrderedBy<TSource, TKey>(this IEnumerable<TSource> sequence,
   Func<TSource, TKey> mutator, IComparer<TKey> comparer, bool desc = false, bool distinctly = false)
   {
@@ -412,16 +686,86 @@ public static class SequenceExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns elements from a sequence that are already in order by a
+  ///   specific key, discarding the ones that break that order.
+  /// </summary>
+  /// <typeparam name="TSource">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <typeparam name="TKey">
+  ///   The type of keys being compared, which must be naturally
+  ///   comparable.
+  /// </typeparam>
+  /// <param name="sequence">The sequence.</param>
+  /// <param name="mutator">The selector of keys for comparison.</param>
+  /// <param name="desc">
+  ///   If <c>true</c>, elements' keys are expected to be in descending
+  ///   order. Otherwise, elements are expected to be in ascending order.
+  /// </param>
+  /// <param name="distinctly">
+  ///   If <c>true</c>, elements' keys must change for each returned
+  ///   value. Otherwise, keys can be unchanged between returns, so long
+  ///   as they don't change in the wrong direction.
+  /// </param>
+  /// <returns>A sequence of ordered elements.</returns>
   public static IEnumerable<TSource> WhereOrderedBy<TSource, TKey>(this IEnumerable<TSource> sequence,
     Func<TSource, TKey> mutator, bool desc = false, bool distinctly = false)
       => sequence.WhereOrderedBy(mutator, Comparer<TKey>.Default, desc, distinctly);
 
+  /// <summary>
+  ///   Returns elements from a sequence that are already in order,
+  ///   discarding the ones that break that order.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">The sequence.</param>
+  /// <param name="comparer">The comparer of keys.</param>
+  /// <param name="desc">
+  ///   If <c>true</c>, elements' keys are expected to be in descending
+  ///   order. Otherwise, elements are expected to be in ascending order.
+  /// </param>
+  /// <param name="distinctly">
+  ///   If <c>true</c>, elements' keys must change for each returned
+  ///   value. Otherwise, keys can be unchanged between returns, so long
+  ///   as they don't change in the wrong direction.
+  /// </param>
+  /// <returns>A sequence of ordered elements.</returns>
   public static IEnumerable<T> WhereOrdered<T>(this IEnumerable<T> sequence, IComparer<T> comparer, bool desc = false,
     bool distinctly = false) => sequence.WhereOrderedBy(x => x, comparer, desc, distinctly);
 
+  /// <summary>
+  ///   Returns elements from a sequence that are already in order,
+  ///   discarding the ones that break that order.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence, which must be naturally
+  ///   comparable.
+  /// </typeparam>
+  /// <param name="sequence">The sequence.</param>
+  /// <param name="desc">
+  ///   If <c>true</c>, elements' keys are expected to be in descending
+  ///   order. Otherwise, elements are expected to be in ascending order.
+  /// </param>
+  /// <param name="distinctly">
+  ///   If <c>true</c>, elements' keys must change for each returned
+  ///   value. Otherwise, keys can be unchanged between returns, so long
+  ///   as they don't change in the wrong direction.
+  /// </param>
+  /// <returns>A sequence of ordered elements.</returns>
   public static IEnumerable<T> WhereOrdered<T>(this IEnumerable<T> sequence, bool desc = false, bool distinctly = false)
     => sequence.WhereOrderedBy(x => x, Comparer<T>.Default, desc, distinctly);
 
+  /// <summary>
+  ///   Returns each element of a sequence in a tuple with its index in
+  ///   the sequence.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="original">The original sequence.</param>
+  /// <returns>The sequence of tuples.</returns>
   public static IEnumerable<(T Item, int Index)> WithIndex<T>(this IEnumerable<T> original)
   {
     return original.Select((x, i) => (x, i));

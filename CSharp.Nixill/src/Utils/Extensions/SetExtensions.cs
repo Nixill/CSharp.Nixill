@@ -1,12 +1,30 @@
 namespace Nixill.Utils.Extensions;
 
+/// <summary>
+///   Extension methods dealing with sets.
+/// </summary>
 public static class SetExtensions
 {
-  // "limit" is non-optional here because 0 would just reutrn basically
-  // the original list.
-  //
-  // Also, this immediately enumerates everything because otherwise it
-  // would carry a risk of multiple enumeration.
+  /// <summary>
+  ///   Returns all the combinations of <c>limit</c> of the elements in
+  ///   the sequence, with items kept in their original sequence order.
+  /// </summary>
+  /// <remarks>
+  ///   Distinctness of items, and therefore combinations, is not checked.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="elems">The sequence.</param>
+  /// <param name="limit">
+  ///   The number of items to select for each combination.
+  ///   <para/>
+  ///   If less than or equal to 0, it is interpreted as "all but this many".
+  ///   <para/>
+  ///   If greater than the number of elements, the original list is
+  ///   returned as the only item of the outer enumerable.
+  /// </param>
+  /// <returns>The combinations.</returns>
   public static IEnumerable<IEnumerable<T>> Combinations<T>(this IEnumerable<T> elems, int limit)
   {
     T[] elemArray = elems.ToArray();
@@ -40,13 +58,70 @@ public static class SetExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns items that are in the first sequence, except those with a
+  ///   matching key in the second sequence.
+  /// </summary>
+  /// <remarks>
+  ///   This method differs from <see cref="Enumerable.ExceptBy{TSource,
+  ///     TKey}(IEnumerable{TSource}, IEnumerable{TKey}, Func{TSource,
+  ///     TKey})"/> in that this method applies the mutator to both
+  ///   sequences, whereas that method applies it only to the first.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequences.
+  /// </typeparam>
+  /// <typeparam name="K">
+  ///   The type of keys being compared, which must be naturally equatable.
+  /// </typeparam>
+  /// <param name="first">The first sequence.</param>
+  /// <param name="second">The second sequence.</param>
+  /// <param name="keySelector">The key selector.</param>
+  /// <returns>The limited sequence.</returns>
   public static IEnumerable<T> ExceptDualBy<T, K>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, K> keySelector)
     => first.ExceptBy(second.Select(keySelector), keySelector);
 
+  /// <summary>
+  ///   Returns items that are in the first sequence, except those with a
+  ///   matching key in the second sequence.
+  /// </summary>
+  /// <remarks>
+  ///   This method differs from <see cref="Enumerable.ExceptBy{TSource,
+  ///     TKey}(IEnumerable{TSource}, IEnumerable{TKey}, Func{TSource,
+  ///     TKey}, IEqualityComparer{TKey}?)"/> in that this method applies
+  ///   the mutator to both sequences, whereas that method applies it only
+  ///   to the first.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequences.
+  /// </typeparam>
+  /// <typeparam name="K">
+  ///   The type of keys being compared.
+  /// </typeparam>
+  /// <param name="first">The first sequence.</param>
+  /// <param name="second">The second sequence.</param>
+  /// <param name="keySelector">The key selector.</param>
+  /// <param name="comparer">The comparer.</param>
+  /// <returns>The limited sequence.</returns>
   public static IEnumerable<T> ExceptDualBy<T, K>(this IEnumerable<T> first, IEnumerable<T> second,
       Func<T, K> keySelector, IEqualityComparer<K> comparer)
     => first.ExceptBy(second.Select(keySelector), keySelector, comparer);
 
+  /// <summary>
+  ///   Returns items that are in the first sequence but not the second,
+  ///   treating each occurrence of the item as a distinct item.
+  /// </summary>
+  /// <remarks>
+  ///   For example, <c>"ARBITRARY"</c> except-instances
+  ///   <c>"REMARKABLE"</c> is <c>"ITRY"</c>; note that one of the three
+  ///   <c>R</c>'s stayed.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequences.
+  /// </typeparam>
+  /// <param name="first">The first sequence.</param>
+  /// <param name="second">The second sequence.</param>
+  /// <returns>The limited sequence.</returns>
   public static IEnumerable<T> ExceptInstances<T>(this IEnumerable<T> first, IEnumerable<T> second)
     where T : notnull
   {
@@ -65,14 +140,75 @@ public static class SetExtensions
     }
   }
 
+
+  /// <summary>
+  ///   Returns items that are in the first sequence, as long as they have
+  ///   a matching key in the second sequence.
+  /// </summary>
+  /// <remarks>
+  ///   This method differs from <see
+  ///     cref="Enumerable.IntersectBy{TSource,
+  ///     TKey}(IEnumerable{TSource}, IEnumerable{TKey}, Func{TSource,
+  ///     TKey})"/> in that this method applies the mutator to both
+  ///   sequences, whereas that method applies it only to the first.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequences.
+  /// </typeparam>
+  /// <typeparam name="K">
+  ///   The type of keys being compared, which must be naturally equatable.
+  /// </typeparam>
+  /// <param name="first">The first sequence.</param>
+  /// <param name="second">The second sequence.</param>
+  /// <param name="keySelector">The key selector.</param>
+  /// <returns>The limited sequence.</returns>
   public static IEnumerable<T> IntersectDualBy<T, K>(this IEnumerable<T> first, IEnumerable<T> second,
     Func<T, K> keySelector)
     => first.IntersectBy(second.Select(keySelector), keySelector);
 
+
+  /// <summary>
+  ///   Returns items that are in the first sequence, as long as they have
+  ///   a matching key in the second sequence.
+  /// </summary>
+  /// <remarks>
+  ///   This method differs from <see
+  ///     cref="Enumerable.IntersectBy{TSource,
+  ///     TKey}(IEnumerable{TSource}, IEnumerable{TKey}, Func{TSource,
+  ///     TKey}, IEqualityComparer{TKey}?)"/> in that this method applies
+  ///   the mutator to both sequences, whereas that method applies it only
+  ///   to the first.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequences.
+  /// </typeparam>
+  /// <typeparam name="K">
+  ///   The type of keys being compared.
+  /// </typeparam>
+  /// <param name="first">The first sequence.</param>
+  /// <param name="second">The second sequence.</param>
+  /// <param name="keySelector">The key selector.</param>
+  /// <param name="comparer">The comparer.</param>
+  /// <returns>The limited sequence.</returns>
   public static IEnumerable<T> IntersectDualBy<T, K>(this IEnumerable<T> first, IEnumerable<T> second,
       Func<T, K> keySelector, IEqualityComparer<K> comparer)
     => first.IntersectBy(second.Select(keySelector), keySelector, comparer);
 
+  /// <summary>
+  ///   Returns items from the first sequence that are also in the second,
+  ///   treating each occurrence of the item as a distinct item.
+  /// </summary>
+  /// <remarks>
+  ///   For example, <c>"ARBITRARY"</c> intersect-instances
+  ///   <c>"REMARKABLE"</c> is <c>"ARBRA"</c>; note that two of the three
+  ///   <c>R</c>'s stayed.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequences.
+  /// </typeparam>
+  /// <param name="first">The first sequence.</param>
+  /// <param name="second">The second sequence.</param>
+  /// <returns>The limited sequence.</returns>
   public static IEnumerable<T> IntersectInstances<T>(this IEnumerable<T> first, IEnumerable<T> second)
     where T : notnull
   {
@@ -88,6 +224,20 @@ public static class SetExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns all the permutations of <c>limit</c> elements from the
+  ///   sequence.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="elems">The sequence.</param>
+  /// <param name="limit">
+  ///   The number of elements to retrieve.
+  ///   <para/>
+  ///   If this is zero or negative, it is interpreted as "all but this many".
+  /// </param>
+  /// <returns>The permutations.</returns>
   public static IEnumerable<IEnumerable<T>> Permutations<T>(this IEnumerable<T> elems, int limit = 0)
   {
     List<T> elemList = elems.ToList();
@@ -121,6 +271,20 @@ public static class SetExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns all the distinct permutations of <c>limit</c> elements
+  ///   from the sequence.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="elems">The sequence.</param>
+  /// <param name="limit">
+  ///   The number of elements to retrieve.
+  ///   <para/>
+  ///   If this is zero or negative, it is interpreted as "all but this many".
+  /// </param>
+  /// <returns>The distinct permutations.</returns>
   public static IEnumerable<IEnumerable<T>> PermutationsDistinct<T>(this IEnumerable<T> elems, int limit = 0)
   {
     List<T> elemList = elems.ToList();
@@ -161,12 +325,56 @@ public static class SetExtensions
     }
   }
 
+  /// <summary>
+  ///   Returns the Cartesian product of two sequences, transformed by a
+  ///   function into a third type.
+  /// </summary>
+  /// <typeparam name="TLeft">
+  ///   The type of elements in the first sequence.
+  /// </typeparam>
+  /// <typeparam name="TRight">
+  ///   The type of elements in the second sequence.
+  /// </typeparam>
+  /// <typeparam name="TResult">
+  ///   The type of results of the transformation function.
+  /// </typeparam>
+  /// <param name="left">The first sequence.</param>
+  /// <param name="right">The second sequence.</param>
+  /// <param name="func">
+  ///   The transformation function that takes both products and returns
+  ///   a result.
+  /// </param>
+  /// <returns>The Cartesian product.</returns>
   public static IEnumerable<TResult> Product<TLeft, TRight, TResult>(this IEnumerable<TLeft> left, IEnumerable<TRight> right, Func<TLeft, TRight, TResult> func) =>
     left.Join(right, x => 1, y => 1, func);
 
+  /// <summary>
+  ///   Returns the Cartesian product of two sequences as tuples of an
+  ///   element from each sequence.
+  /// </summary>
+  /// <typeparam name="TLeft">
+  ///   The type of elements in the first sequence.
+  /// </typeparam>
+  /// <typeparam name="TRight">
+  ///   The type of elements in the second sequence.
+  /// </typeparam>
+  /// <param name="left">The first sequence.</param>
+  /// <param name="right">The second sequence.</param>
+  /// <returns>The Cartesian product.</returns>
   public static IEnumerable<(TLeft, TRight)> Product<TLeft, TRight>(this IEnumerable<TLeft> left, IEnumerable<TRight> right) =>
     left.Join(right, x => 1, y => 1, (left, right) => (left, right));
 
+  /// <summary>
+  ///   Returns all elements in one sequence or the other, but not both.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequences.
+  /// </typeparam>
+  /// <param name="first">The first sequence.</param>
+  /// <param name="second">The second sequence.</param>
+  /// <returns>
+  ///   Elements that are in exactly one of the sequences.
+  /// </returns>
   public static IEnumerable<T> SymmetricExcept<T>(this IEnumerable<T> first, IEnumerable<T> second)
   {
     var set = first.ToHashSet();
@@ -174,6 +382,18 @@ public static class SetExtensions
     return set;
   }
 
+  /// <summary>
+  ///   Returns all elements in one sequence or the other, but not both.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequences.
+  /// </typeparam>
+  /// <param name="first">The first sequence.</param>
+  /// <param name="second">The second sequence.</param>
+  /// <param name="comparer">Equality comparer to check items.</param>
+  /// <returns>
+  ///   Elements that are in exactly one of the sequences.
+  /// </returns>
   public static IEnumerable<T> SymmetricExcept<T>(this IEnumerable<T> first, IEnumerable<T> second,
     IEqualityComparer<T> comparer)
   {

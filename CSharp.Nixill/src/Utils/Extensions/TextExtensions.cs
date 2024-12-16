@@ -2,8 +2,25 @@ using System.Text;
 
 namespace Nixill.Utils.Extensions;
 
+/// <summary>
+///   Extension methods dealing with text.
+/// </summary>
 public static class TextExtensions
 {
+  /// <summary>
+  ///   Joins elements of a sequence together into multiple
+  ///   character-limited strings.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="seq">The sequence.</param>
+  /// <param name="sep">The separator between items.</param>
+  /// <param name="limit">Character limit per returned string.</param>
+  /// <returns>The strings.</returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   <c>limit</c> is less than 1.
+  /// </exception>
   public static IEnumerable<string> CharLimitedJoin<T>(this IEnumerable<T> seq, string sep, int limit)
   {
     if (limit < 1) throw new ArgumentOutOfRangeException("limit must be at least 1");
@@ -54,8 +71,22 @@ public static class TextExtensions
     }
   }
 
+  /// <summary>
+  ///   Creates a string from a char enumerable.
+  /// </summary>
+  /// <param name="chars">The char enumerable.</param>
+  /// <returns>The string.</returns>
   public static string FormString(this IEnumerable<char> chars) => new string(chars.ToArray());
 
+  /// <summary>
+  ///   Joins objects to a string.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="objects">The sequence.</param>
+  /// <param name="with">The separator.</param>
+  /// <returns>The string.</returns>
   public static string StringJoin<T>(this IEnumerable<T> objects, string with)
     => string.Join(with, objects);
 }
