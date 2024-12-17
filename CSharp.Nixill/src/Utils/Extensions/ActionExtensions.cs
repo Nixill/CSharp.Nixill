@@ -35,6 +35,22 @@ public static class ActionExtensions
   }
 
   /// <summary>
+  ///   Performs every action in a sequence of actions.
+  /// </summary>
+  /// <param name="actions">The actions to perform.</param>
+  public static void Do(this IEnumerable<Action> actions)
+    => actions.Do(a => a());
+
+  /// <summary>
+  ///   Performs every action in a sequence of actions on one parameter.
+  /// </summary>
+  /// <typeparam name="T">The type of parameter.</typeparam>
+  /// <param name="actions">The actions to perform.</param>
+  /// <param name="on">The parameter to those actions.</param>
+  public static void DoOn<T>(this IEnumerable<Action<T>> actions, T on)
+    => actions.Do(a => a(on));
+
+  /// <summary>
   ///   Performs a series of tasks concurrently, without waiting for any
   ///   return values.
   /// </summary>
