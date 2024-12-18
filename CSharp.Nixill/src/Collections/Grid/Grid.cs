@@ -162,6 +162,7 @@ namespace Nixill.Collections
         {
           innerList.Add(filler(GridRef.RC(r, c)));
         }
+        BackingList.Add(innerList);
       }
     }
 
