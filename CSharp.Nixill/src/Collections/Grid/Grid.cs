@@ -166,6 +166,39 @@ namespace Nixill.Collections
     }
 
     /// <summary>
+    ///   Constructs a new grid of a specified size with a given value in
+    ///   every cell.
+    /// </summary>
+    /// <param name="size">The size of the grid.</param>
+    /// <param name="filler">
+    ///   The contents of every cell of the grid.
+    /// </param>
+    public Grid(IntVector2 size, T filler) : this(size.X, size.Y, filler) { }
+
+    /// <summary>
+    ///   Constructs a new grid of a specified size, with a given function
+    ///   generating a value for every cell.
+    /// </summary>
+    /// <param name="size">The size of the grid.</param>
+    /// <param name="filler">
+    ///   A function evaluated for every cell in the grid, which returns
+    ///   the value that should be inserted into that cell.
+    /// </param>
+    public Grid(IntVector2 size, Func<T> filler) : this(size.X, size.Y, filler) { }
+
+    /// <summary>
+    ///   Constructs a new grid of a specified size, with a given function
+    ///   turning a cell's position into a value for every cell.
+    /// </summary>
+    /// <param name="size">The size of the grid.</param>
+    /// <param name="filler">
+    ///   A function evaluated for every cell in the grid, which receives
+    ///   that cell's position and returns the value that should be
+    ///   inserted into that cell.
+    /// </param>
+    public Grid(IntVector2 size, Func<IntVector2, T> filler) : this(size.X, size.Y, filler) { }
+
+    /// <summary>
     ///   Get or set: The value at a specified cell.
     /// </summary>
     /// <param name="iv2">The cell to get or set.</param>
