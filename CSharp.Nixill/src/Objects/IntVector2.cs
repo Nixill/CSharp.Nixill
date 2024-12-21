@@ -178,6 +178,12 @@ public readonly struct IntVector2
   /// <returns>The rotated IntVector2.</returns>
   public IntVector2 RotateRight(int times) => RotateLeft(-times);
 
+  /// <inheritdoc/>
+  public override string ToString()
+  {
+    return $"(X: {X}, Y: {Y})";
+  }
+
   /// <summary>
   ///   Read-only: The IntVector2 <c>(0, -1)</c>, representing up.
   /// </summary>
