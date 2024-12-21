@@ -8,6 +8,10 @@ using Nixill.Utils.Extensions;
 namespace Nixill.Utils;
 
 #region NumberConverter
+/// <summary>
+///   A class with methods to convert between arbitrary numeric data types
+///   and string representations of numbers.
+/// </summary>
 public static class NumberConverter
 {
   static Dictionary<Type, INumberCache> CachedNumbers = new();
@@ -20,7 +24,28 @@ public static class NumberConverter
     return (NumberCache<T>)CachedNumbers[t];
   }
 
-  #region ├ Parsing / DigitArray
+  #region ├ Parsing
+  /// <summary>
+  ///   Converts a string to an array of single digits in the same base.
+  /// </summary>
+  /// <remarks>
+  ///   The base doesn't need to be known to use this method, as for any
+  ///   given <see cref="Digits"/>, the same character will always become
+  ///   the same value for any base of at least that value plus one. For
+  ///   example, using <see cref="Digits.Base36"/>, <c>B</c> in base 12 is
+  ///   11, <c>B</c> in base 16 is 11, and <c>B</c> in base 36 is 11.
+  /// </remarks>
+  /// <param name="str">
+  ///   The string to convert.
+  /// </param>
+  /// <param name="digits">
+  ///   The digit set to use.
+  ///   <para/>
+  ///   Defaults to <see cref="Digits.Base36"/>.
+  /// </param>
+  /// <returns>
+  ///   The <see cref="DigitArray"/> represented by this string.
+  /// </returns>
   public static DigitArray ParseToDigitArray(string str, Digits? digits = null)
   {
     digits ??= Digits.Base36; // default
@@ -62,18 +87,183 @@ public static class NumberConverter
     return new DigitArray(wholePart, fracPart, isNegative);
   }
 
+  /// <summary>
+  ///   Converts an array of digits to a number in a specific base.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type to which this should be converted. This type must:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       have an <see cref="IAdditiveIdentity{T, T}">additive
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IAdditionOperators{T, T, T}">addable</see> to
+  ///       itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="ISubtractionOperators{T, T, T}">subtractible</see>
+  ///       from itself,
+  ///     </item>
+  ///     <item>
+  ///       have a <see cref="IMultiplicativeIdentity{T, T}">multiplicative
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IMultiplyOperators{T, T, T}">multipliable</see>
+  ///       with itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IDivisionOperators{T, T, T}">divisible</see> by
+  ///       itself, and
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IComparable{T}">comparable</see> with itself
+  ///     </item>
+  ///   </list>
+  /// </typeparam>
+  /// <param name="whole">
+  ///   The whole part of the number, as digits given in order of most to
+  ///   least significant.
+  /// </param>
+  /// <param name="numberBase">
+  ///   The numeric base to which this number should be interpreted.
+  /// </param>
+  /// <param name="isNegative">
+  ///   Whether or not this number is negative.
+  /// </param>
+  /// <param name="bijective">
+  ///   Whether or not this number is
+  ///   <see href="https://en.wikipedia.org/wiki/Bijective_numeration">bijective</see>.
+  /// </param>
+  /// <returns>
+  ///   The number parsed.
+  /// </returns>
   public static T Parse<T>(IEnumerable<int> whole, int numberBase, bool isNegative = false, bool bijective = false)
     where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplyOperators<T, T, T>,
       IMultiplicativeIdentity<T, T>, IComparable<T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>
     // IEqualityOperators<T, T, bool>
     => Parse<T>(new DigitArray(whole, [], isNegative), numberBase, bijective);
 
+  /// <summary>
+  ///   Converts a pair of arrays of digits to a number in a specific base.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type to which this should be converted. This type must:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       have an <see cref="IAdditiveIdentity{T, T}">additive
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IAdditionOperators{T, T, T}">addable</see> to
+  ///       itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="ISubtractionOperators{T, T, T}">subtractible</see>
+  ///       from itself,
+  ///     </item>
+  ///     <item>
+  ///       have a <see cref="IMultiplicativeIdentity{T, T}">multiplicative
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IMultiplyOperators{T, T, T}">multipliable</see>
+  ///       with itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IDivisionOperators{T, T, T}">divisible</see> by
+  ///       itself, and
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IComparable{T}">comparable</see> with itself
+  ///     </item>
+  ///   </list>
+  /// </typeparam>
+  /// <param name="whole">
+  ///   The whole part of the number, as digits given in order of most to
+  ///   least significant.
+  /// </param>
+  /// <param name="frac">
+  ///   The fractional part of the number, as digits given in order of
+  ///   most to least significant.
+  /// </param>
+  /// <param name="numberBase">
+  ///   The numeric base from which this number should be parsed.
+  /// </param>
+  /// <param name="isNegative">
+  ///   Whether or not this number is negative.
+  /// </param>
+  /// <returns>
+  ///   The number parsed.
+  /// </returns>
   public static T Parse<T>(IEnumerable<int> whole, IEnumerable<int> frac, int numberBase, bool isNegative = false)
     where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplyOperators<T, T, T>,
       IMultiplicativeIdentity<T, T>, IComparable<T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>
     // IEqualityOperators<T, T, bool>
     => Parse<T>(new DigitArray(whole, frac, isNegative), numberBase, false);
 
+  /// <summary>
+  ///   Converts a <see cref="DigitArray">digit array</see> to a number in
+  ///   a specific base.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type to which this should be converted. This type must:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       have an <see cref="IAdditiveIdentity{T, T}">additive
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IAdditionOperators{T, T, T}">addable</see> to
+  ///       itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="ISubtractionOperators{T, T, T}">subtractible</see>
+  ///       from itself,
+  ///     </item>
+  ///     <item>
+  ///       have a <see cref="IMultiplicativeIdentity{T, T}">multiplicative
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IMultiplyOperators{T, T, T}">multipliable</see>
+  ///       with itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IDivisionOperators{T, T, T}">divisible</see> by
+  ///       itself, and
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IComparable{T}">comparable</see> with itself
+  ///     </item>
+  ///   </list>
+  /// </typeparam>
+  /// <param name="arr">The digit array.</param>
+  /// <param name="numberBase">
+  ///   The numeric base from which this number should be parsed.
+  /// </param>
+  /// <param name="bijective">
+  ///   Whether or not this number is
+  ///   <see href="https://en.wikipedia.org/wiki/Bijective_numeration">bijective</see>.
+  /// </param>
+  /// <returns>
+  ///   The number parsed.
+  /// </returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   The base is less than 1.
+  ///   <para/>
+  ///   <em>Or</em>, the number is non-bijective and the base is 1.
+  /// </exception>
+  /// <exception cref="InvalidOperationException">
+  ///   The number is being parsed as bijective, but has a decimal part.
+  /// </exception>
+  /// <exception cref="NumberParsingException">
+  ///   A digit in the array had a value greater than the base.
+  ///   <para/>
+  ///   Or, a digit in the array had a value equal to the base, and the
+  ///   number is non-bijective.
+  /// </exception>
   public static T Parse<T>(DigitArray arr, int numberBase, bool bijective = false)
     where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplyOperators<T, T, T>,
       IMultiplicativeIdentity<T, T>, IComparable<T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>
@@ -137,6 +327,78 @@ public static class NumberConverter
     else return ret;
   }
 
+  /// <summary>
+  ///   Converts a string representation of a number to a number in a
+  ///   specific base.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type to which this should be converted. This type must:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       have an <see cref="IAdditiveIdentity{T, T}">additive
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IAdditionOperators{T, T, T}">addable</see> to
+  ///       itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="ISubtractionOperators{T, T, T}">subtractible</see>
+  ///       from itself,
+  ///     </item>
+  ///     <item>
+  ///       have a <see cref="IMultiplicativeIdentity{T, T}">multiplicative
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IMultiplyOperators{T, T, T}">multipliable</see>
+  ///       with itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IDivisionOperators{T, T, T}">divisible</see> by
+  ///       itself, and
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IComparable{T}">comparable</see> with itself
+  ///     </item>
+  ///   </list>
+  /// </typeparam>
+  /// <param name="str">The string representation of the number.</param>
+  /// <param name="numberBase">
+  ///   The numeric base from which this number should be parsed.
+  /// </param>
+  /// <param name="digits">
+  ///   The digit set to use.
+  ///   <para/>
+  ///   Defaults to <see cref="Digits.Base36"/>.
+  /// </param>
+  /// <param name="bijective">
+  ///   Whether or not this number is
+  ///   <see href="https://en.wikipedia.org/wiki/Bijective_numeration">bijective</see>.
+  /// </param>
+  /// <returns>
+  ///   The number parsed.
+  /// </returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   The base is less than 1.
+  ///   <para/>
+  ///   Or, the number is non-bijective and the base is 1.
+  ///   <para/>
+  ///   Or, the base is greater than the highest supported base of the
+  ///   digit set.
+  ///   <para/>
+  ///   Or, the number is bijective and the base is equal to the highest
+  ///   supported base of the digit set.
+  /// </exception>
+  /// <exception cref="InvalidOperationException">
+  ///   The number is being parsed as bijective, but has a decimal part.
+  /// </exception>
+  /// <exception cref="NumberParsingException">
+  ///   A digit in the array had a value greater than the base.
+  ///   <para/>
+  ///   Or, a digit in the array had a value equal to the base, and the
+  ///   number is non-bijective.
+  /// </exception>
   public static T Parse<T>(string str, int numberBase, Digits? digits = null, bool bijective = false)
     where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplyOperators<T, T, T>,
       IMultiplicativeIdentity<T, T>, IComparable<T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>
@@ -164,6 +426,64 @@ public static class NumberConverter
   #endregion
 
   #region └ Formatting
+  /// <summary>
+  ///   Converts a number to a <see cref="DigitArray">digit array</see>
+  ///   via a specific base.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type to which this should be converted. This type must:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       have an <see cref="IAdditiveIdentity{T, T}">additive
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IAdditionOperators{T, T, T}">addable</see> to
+  ///       itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="ISubtractionOperators{T, T, T}">subtractible</see>
+  ///       from itself,
+  ///     </item>
+  ///     <item>
+  ///       have a <see cref="IMultiplicativeIdentity{T, T}">multiplicative
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IMultiplyOperators{T, T, T}">multipliable</see>
+  ///       with itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IDivisionOperators{T, T, T}">divisible</see> by
+  ///       itself, and
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IModulusOperators{T, T, T}">modulable</see> by
+  ///       itself, and
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IComparable{T}">comparable</see> with itself
+  ///     </item>
+  ///   </list>
+  /// </typeparam>
+  /// <param name="value">The number to convert.</param>
+  /// <param name="numberBase">
+  ///   The numeric base to which this number should be formatted.
+  /// </param>
+  /// <param name="bijective">
+  ///   Whether or not this number is
+  ///   <see href="https://en.wikipedia.org/wiki/Bijective_numeration">bijective</see>.
+  /// </param>
+  /// <param name="maxDecimals">
+  ///   The maximum number of decimal places to which the number should be
+  ///   formatted.
+  /// </param>
+  /// <returns>The digit array.</returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   The base is less than 1.
+  ///   <para/>
+  ///   Or, the number is non-bijective and the base is 1.
+  /// </exception>
   public static DigitArray FormatToDigitArray<T>(T value, int numberBase, bool bijective = false, int maxDecimals = 10)
     where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IComparable<T>,
       IModulusOperators<T, T, T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>,
@@ -239,6 +559,30 @@ public static class NumberConverter
     return new DigitArray(wholeInts, decimalInts, isNegative);
   }
 
+  /// <summary>
+  ///   Formats a digit array to a string represenation of the number.
+  /// </summary>
+  /// <param name="arr">
+  ///   The digit array to format.
+  /// </param>
+  /// <param name="digits">
+  ///   The digit set to use.
+  /// </param>
+  /// <returns>
+  ///   The string representation of the number.
+  /// </returns>
+  /// <exception cref="NumberFormattingException">
+  ///   The number is negative, but the digit set does not have a negative
+  ///   sign.
+  ///   <para/>
+  ///   Or, the number has a decimal part, but the digit set does not have
+  ///   a decimal point.
+  /// </exception>
+  /// <exception cref="FormatException">
+  ///   There are not enough digits to reach the specified numeric value.
+  ///   <para/>
+  ///   Or, the specified numeric value is negative.
+  /// </exception>
   public static string Format(DigitArray arr, Digits? digits = null)
   {
     digits ??= Digits.Base36;
@@ -271,6 +615,81 @@ public static class NumberConverter
     return builder.ToString();
   }
 
+  /// <summary>
+  ///   Returns the string representation of a number in a given base.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type to which this should be converted. This type must:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       have an <see cref="IAdditiveIdentity{T, T}">additive
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IAdditionOperators{T, T, T}">addable</see> to
+  ///       itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="ISubtractionOperators{T, T, T}">subtractible</see>
+  ///       from itself,
+  ///     </item>
+  ///     <item>
+  ///       have a <see cref="IMultiplicativeIdentity{T, T}">multiplicative
+  ///       identity</see> of itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IMultiplyOperators{T, T, T}">multipliable</see>
+  ///       with itself,
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IDivisionOperators{T, T, T}">divisible</see> by
+  ///       itself, and
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IModulusOperators{T, T, T}">modulable</see> by
+  ///       itself, and
+  ///     </item>
+  ///     <item>
+  ///       be <see cref="IComparable{T}">comparable</see> with itself
+  ///     </item>
+  ///   </list>
+  /// </typeparam>
+  /// <param name="value">The number to convert.</param>
+  /// <param name="numberBase">
+  ///   The numeric base to which this number should be formatted.
+  /// </param>
+  /// <param name="digits">
+  ///   The digit set to use.
+  /// </param>
+  /// <param name="bijective">
+  ///   Whether or not this number is
+  ///   <see href="https://en.wikipedia.org/wiki/Bijective_numeration">bijective</see>.
+  /// </param>
+  /// <param name="maxDecimals">
+  ///   The maximum number of decimal places to which the number should be
+  ///   formatted.
+  /// </param>
+  /// <returns></returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   The base is less than 1.
+  ///   <para/>
+  ///   Or, the number is non-bijective and the base is 1.
+  ///   <para/>
+  ///   Or, the base is greater than the highest supported base of the
+  ///   digit set.
+  ///   <para/>
+  ///   Or, the number is bijective and the base is equal to the highest
+  ///   supported base of the digit set.
+  /// </exception>
+  /// <exception cref="InvalidOperationException">
+  ///   The number is being parsed as bijective, but has a decimal part.
+  /// </exception>
+  /// <exception cref="NumberParsingException">
+  ///   A digit in the array had a value greater than the base.
+  ///   <para/>
+  ///   Or, a digit in the array had a value equal to the base, and the
+  ///   number is non-bijective.
+  /// </exception>
   public static string Format<T>(T value, int numberBase, Digits? digits = null, bool bijective = false,
     int maxDecimals = 10) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>,
       IComparable<T>, IModulusOperators<T, T, T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>,
@@ -362,18 +781,50 @@ internal class NumberCache<T> : INumberCache where T : IAdditionOperators<T, T, 
 #endregion
 
 #region DigitArray
+/// <summary>
+///   A representation of an array of "digits" of a single number in an
+///   arbitrary base.
+/// </summary>
 public readonly struct DigitArray
 {
+  /// <summary>
+  ///   Read-only: The whole part of the number. For example, 25 in base 5
+  ///   is <c>[1, 0, 0]</c>.
+  /// </summary>
   public readonly ReadOnlyCollection<int> WholePart { get; init; }
+
+  /// <summary>
+  ///   Read-only: The decimal part of the number. For example, 0.375 in
+  ///   base 2 is <c>[0, 1, 1]</c>.
+  /// </summary>
   public readonly ReadOnlyCollection<int> DecimalPart { get; init; } = Array.Empty<int>().AsReadOnly();
+
+  /// <summary>
+  ///   Read-only: Whether or not the represented number is negative.
+  /// </summary>
   public readonly bool IsNegative { get; init; } = false;
 
+  /// <summary>
+  ///   Constructs a digit array with the given whole part.
+  /// </summary>
+  /// <param name="wholePart">The whole part.</param>
+  /// <param name="negative">
+  ///   Whether or not the number is negative.
+  /// </param>
   public DigitArray(IEnumerable<int> wholePart, bool negative = false)
   {
     WholePart = wholePart.ToArray().AsReadOnly();
     IsNegative = negative;
   }
 
+  /// <summary>
+  ///   Constructs a digit array with the given whole and decimal parts.
+  /// </summary>
+  /// <param name="wholePart">The whole part.</param>
+  /// <param name="decimalPart">The decimal part.</param>
+  /// <param name="negative">
+  ///   Whether or not the number is negative.
+  /// </param>
   public DigitArray(IEnumerable<int> wholePart, IEnumerable<int> decimalPart, bool negative = false)
   {
     WholePart = wholePart.ToArray().AsReadOnly();
@@ -384,30 +835,78 @@ public readonly struct DigitArray
 #endregion
 
 #region NumberConversionException
+/// <summary>
+///   Represents an exception thrown during
+///   <see cref="NumberConverter.Parse{T}(DigitArray, int, bool)">number
+///   parsing</see>.
+/// </summary>
 public class NumberParsingException : Exception
 {
+  /// <summary>
+  ///   Get or init: Which digit couldn't be parsed?
+  /// </summary>
   public int WhichDigit { get; init; }
 
+  /// <summary>
+  ///   Constructs a new NumberParsingException.
+  /// </summary>
+  /// <param name="which">Which digit couldn't be parsed?</param>
   public NumberParsingException(int which) : base()
   {
     WhichDigit = which;
   }
 
+  /// <summary>
+  ///   Constructs a new NumberParsingException with a given message.
+  /// </summary>
+  /// <param name="message">Message to include.</param>
+  /// <param name="which">Which digit couldn't be parsed?</param>
   public NumberParsingException(string message, int which) : base(message)
   {
     WhichDigit = which;
   }
 
+  /// <summary>
+  ///   Constructs a new NumberParsingException with a given message and
+  ///   inner exception.
+  /// </summary>
+  /// <param name="message">Message to include.</param>
+  /// <param name="innerException">
+  ///   Inner exception that caused this exception.
+  /// </param>
+  /// <param name="which">Which digit couldn't be parsed?</param>
   public NumberParsingException(string message, Exception innerException, int which) : base(message, innerException)
   {
     WhichDigit = which;
   }
 }
 
+/// <summary>
+///   Represents an exception thrown during
+///   <see cref="NumberConverter.Format(DigitArray, Digits?)">number
+///   formatting</see>.
+/// </summary>
 public class NumberFormattingException : Exception
 {
+  /// <summary>
+  ///   Constructs a new NumberFormattingException.
+  /// </summary>
   public NumberFormattingException() : base() { }
+
+  /// <summary>
+  ///   Constructs a new NumberFormattingException with a given message.
+  /// </summary>
+  /// <param name="message">Message to include.</param>
   public NumberFormattingException(string message) : base(message) { }
+
+  /// <summary>
+  ///   Constructs a new NumberFormattingException with a given message
+  ///   and inner exception.
+  /// </summary>
+  /// <param name="message">Message to include.</param>
+  /// <param name="innerException">
+  ///   Inner exception that caused this exception.
+  /// </param>
   public NumberFormattingException(string message, Exception innerException) : base(message, innerException) { }
 }
 #endregion

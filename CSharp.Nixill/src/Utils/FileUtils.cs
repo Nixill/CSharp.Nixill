@@ -3,10 +3,13 @@ using System.Collections.Generic;
 
 namespace Nixill.Utils;
 
+/// <summary>
+///   Utilities for dealing with file reading and writing.
+/// </summary>
 public static class FileUtils
 {
   /// <summary>
-  /// An iterator for characters within a file.
+  ///   An iterator for characters within a file.
   /// </summary>
   /// <param name="path">The path of the file to read.</param>
   public static IEnumerable<char> FileCharEnumerator(string path)
@@ -20,7 +23,7 @@ public static class FileUtils
   }
 
   /// <summary>
-  /// An iterator for characters from a stream.
+  ///   An iterator for characters from a stream.
   /// </summary>
   /// <param name="reader">The stream to read.</param>
   public static IEnumerable<char> StreamCharEnumerator(StreamReader reader)
@@ -32,6 +35,22 @@ public static class FileUtils
     }
   }
 
+  /// <summary>
+  ///   Copy the files in one directory to another.
+  /// </summary>
+  /// <param name="sourceDir">The source directory.</param>
+  /// <param name="destinationDir">
+  ///   The destination directory. This includes the name of the copy of
+  ///   the source directory. For example, <c>sourceDir/test.txt</c>
+  ///   is copied to <c>destinationDir/test.txt</c>, not
+  ///   <c>destinationDir/sourceDir/test.txt</c>.
+  /// </param>
+  /// <param name="recursive">
+  ///   Whether subfolders should also be copied.
+  /// </param>
+  /// <exception cref="DirectoryNotFoundException">
+  ///   The source directory does not exist.
+  /// </exception>
   public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive = true)
   {
     // Get information about the source directory
