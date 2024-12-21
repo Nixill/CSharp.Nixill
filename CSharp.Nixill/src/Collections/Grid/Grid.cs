@@ -285,6 +285,11 @@ namespace Nixill.Collections
     public int Size => Height * IntWidth;
 
     /// <summary>
+    ///   Get: The size of the grid as an IntVector2.
+    /// </summary>
+    public IntVector2 SizeVector => (Width, Height);
+
+    /// <summary>
     ///   Get: A collection of the rows, from top to bottom, each of which
     ///   is itself a collection of the values in that row from left to right.
     /// </summary>
