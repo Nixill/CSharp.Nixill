@@ -6,6 +6,37 @@ namespace Nixill.Utils.Extensions;
 public static class CollectionExtensions
 {
   /// <summary>
+  ///   Adds all of the given entries to the dictionary. Key collisions
+  ///   are resolved in favor of existing entries.
+  /// </summary>
+  /// <typeparam name="K">The type of keys in the dictionary.</typeparam>
+  /// <typeparam name="V">
+  ///   The type of values in the dictionary.
+  /// </typeparam>
+  /// <param name="dictionary">The dictionary.</param>
+  /// <param name="items">The items to add.</param>
+  public static void AddMissing<K, V>(this IDictionary<K, V> dictionary, IEnumerable<(K Key, V Value)> items)
+    => dictionary.AddMissing(items.Select(i => new KeyValuePair<K, V>(i.Key, i.Value)));
+
+  /// <summary>
+  ///   Adds all of the given entries to the dictionary. Key collisions
+  ///   are resolved in favor of existing entries.
+  /// </summary>
+  /// <typeparam name="K">The type of keys in the dictionary.</typeparam>
+  /// <typeparam name="V">
+  ///   The type of values in the dictionary.
+  /// </typeparam>
+  /// <param name="dictionary">The dictionary.</param>
+  /// <param name="items">The items to add.</param>
+  public static void AddMissing<K, V>(this IDictionary<K, V> dictionary, IEnumerable<KeyValuePair<K, V>> items)
+  {
+    foreach (var item in items)
+    {
+      dictionary.GetOrSet(item.Key, item.Value);
+    }
+  }
+
+  /// <summary>
   ///   Returns a value associated with a given key from the dictionary,
   ///   or saves a new association and returns it if the given key isn't
   ///   already found.
@@ -73,6 +104,37 @@ public static class CollectionExtensions
     T value = list[0];
     list.RemoveAt(0);
     return value;
+  }
+
+  /// <summary>
+  ///   Sets all of the given entries in the dictionary. Key collisions
+  ///   are resolved in favor of new entries.
+  /// </summary>
+  /// <typeparam name="K">The type of keys in the dictionary.</typeparam>
+  /// <typeparam name="V">
+  ///   The type of values in the dictionary.
+  /// </typeparam>
+  /// <param name="dictionary">The dictionary.</param>
+  /// <param name="items">The items to add.</param>
+  public static void SetAll<K, V>(this IDictionary<K, V> dictionary, IEnumerable<(K Key, V Value)> items)
+    => dictionary.SetAll(items.Select(i => new KeyValuePair<K, V>(i.Key, i.Value)));
+
+  /// <summary>
+  ///   Sets all of the given entries in the dictionary. Key collisions
+  ///   are resolved in favor of new entries.
+  /// </summary>
+  /// <typeparam name="K">The type of keys in the dictionary.</typeparam>
+  /// <typeparam name="V">
+  ///   The type of values in the dictionary.
+  /// </typeparam>
+  /// <param name="dictionary">The dictionary.</param>
+  /// <param name="items">The items to add.</param>
+  public static void SetAll<K, V>(this IDictionary<K, V> dictionary, IEnumerable<KeyValuePair<K, V>> items)
+  {
+    foreach (var item in items)
+    {
+      dictionary[item.Key] = item.Value;
+    }
   }
 
   /// <summary>
