@@ -149,7 +149,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   public AVLTreeDictionary(IEnumerable<KeyValuePair<K, V>> elems, Comparison<K> comparer)
   {
     this.KeyComparer = comparer;
-    BackingSet = new AVLTreeSet<KeyValuePair<K, V>>((left, right) => KeyComparer(left.Key, right.Key));
+    BackingSet = new AVLTreeSet<KeyValuePair<K, V>>(elems, (left, right) => KeyComparer(left.Key, right.Key));
   }
   #endregion
 
