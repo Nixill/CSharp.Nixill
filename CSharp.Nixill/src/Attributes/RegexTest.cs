@@ -29,6 +29,20 @@ public class RegexTestAttribute : Attribute
   }
 
   /// <summary>
+  ///   Constructs a new RegexTestAttribute with the given pattern,
+  ///   options, and timeout.
+  /// </summary>
+  /// <param name="pattern">The regex pattern for this test.</param>
+  /// <param name="regexTimeoutMilliseconds">
+  ///   The timeout for matches in this test.
+  /// </param>
+  /// <param name="options">The regex options for this test.</param>
+  public RegexTestAttribute(string pattern, double regexTimeoutMilliseconds, RegexOptions options = RegexOptions.None)
+  {
+    UsedRegex = new Regex(pattern, options, TimeSpan.FromMilliseconds(regexTimeoutMilliseconds));
+  }
+
+  /// <summary>
   ///   Tests a string against the regexes of a given enum.
   /// </summary>
   /// <typeparam name="T">The enum type to test against.</typeparam>
@@ -53,8 +67,12 @@ public class RegexTestAttribute : Attribute
     foreach (var test in EnumUtils.ValuesWithAttribute<T, RegexTestAttribute>().OrderBy(t => t.Value))
     {
       Regex regex = test.Attribute.UsedRegex;
-      Match match = regex.Match(input);
-      if (match.Success) return (test.Value, match);
+      try
+      {
+        Match match = regex.Match(input);
+        if (match.Success) return (test.Value, match);
+      }
+      catch (RegexMatchTimeoutException) { /* do nothing */ }
     }
 
     return (default(T), null);
