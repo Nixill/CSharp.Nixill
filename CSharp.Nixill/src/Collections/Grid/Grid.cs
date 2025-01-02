@@ -6,6 +6,7 @@ using Nixill.Serialization;
 using System.Text;
 using System.IO;
 using Nixill.Utils;
+using Nixill.Objects;
 
 namespace Nixill.Collections;
 

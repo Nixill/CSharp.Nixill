@@ -2,6 +2,7 @@ using System.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nixill.Objects;
 
 namespace Nixill.Collections;
 

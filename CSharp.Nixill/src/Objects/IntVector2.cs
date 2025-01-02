@@ -2,6 +2,8 @@ using System.Numerics;
 using Nixill.Collections;
 using Nixill.Utils;
 
+namespace Nixill.Objects;
+
 /// <summary>
 ///   A vector of two ints.
 /// </summary>

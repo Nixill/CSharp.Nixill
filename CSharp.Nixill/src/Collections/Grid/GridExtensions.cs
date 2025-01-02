@@ -1,4 +1,5 @@
 using Nixill.Utils.Extensions;
+using Nixill.Objects;
 
 namespace Nixill.Collections;
 
