@@ -94,6 +94,18 @@ public static class CollectionExtensions
   }
 
   /// <summary>
+  ///   Returns an int enumerable over the indices of a collection (from
+  ///   0, inclusive, to the collection's size, exclusive).
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the collection.
+  /// </typeparam>
+  /// <param name="input">The collection.</param>
+  /// <returns>The enumerable.</returns>
+  public static IEnumerable<int> Indices<T>(this ICollection<T> input)
+    => Enumerable.Range(0, input.Count);
+
+  /// <summary>
   ///   Removes the first item from an <see cref="IList{T}"/> and returns it.
   /// </summary>
   /// <typeparam name="T">The type of items in the list.</typeparam>

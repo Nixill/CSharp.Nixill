@@ -450,6 +450,23 @@ public static class SetExtensions
     left.Join(right, x => 1, y => 1, (left, right) => (left, right));
 
   /// <summary>
+  ///   For each element in a sequence, returns that element paired with
+  ///   the remainder of the sequence after it.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="input">The sequence.</param>
+  /// <returns>The elements and remainders.</returns>
+  public static IEnumerable<(T, IEnumerable<T>)> Remainders<T>(this IEnumerable<T> input)
+  {
+    T[] array = input.ToArray();
+
+    foreach (int index in array.Indices())
+      yield return (array[index], array[(index + 1)..]);
+  }
+
+  /// <summary>
   ///   Returns all elements in one sequence or the other, but not both.
   /// </summary>
   /// <typeparam name="T">
