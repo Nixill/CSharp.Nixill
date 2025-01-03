@@ -37,15 +37,8 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   {
     get
     {
-      NodeTriplet<KeyValuePair<K, V>> nodes = BackingSet.SearchAround(new KeyValuePair<K, V>(key, DefaultValue));
-      if (nodes.HasEqualValue)
-      {
-        return nodes.EqualValue.Value;
-      }
-      else
-      {
-        throw new KeyNotFoundException("The specified key was not found in the dictionary.");
-      }
+      BoxTriplet<KeyValuePair<K, V>> nodes = BackingSet.SearchAround(PairUp(key));
+      return (nodes.Exact ?? throw new KeyNotFoundException("The specified key was not found in the dictionary.")).Value.Value;
     }
     set
     {
@@ -173,7 +166,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// </remarks>
   /// <param name="from">The value to search near.</param>
   /// <returns>The triplet.</returns>
-  public NodeTriplet<KeyValuePair<K, V>> EntriesAround(K from) => BackingSet.SearchAround(new KeyValuePair<K, V>(from, default(V)!));
+  public BoxTriplet<KeyValuePair<K, V>> EntriesAround(K from) => BackingSet.SearchAround(PairUp(from));
 
   /// <summary>
   ///   Gets the keys "near" a given key.
@@ -186,14 +179,9 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// </remarks>
   /// <param name="from">The value to search near.</param>
   /// <returns>The triplet.</returns>
-  public NodeTriplet<K> KeysAround(K from)
-  {
-    var entries = EntriesAround(from);
-    var lesser = (entries.HasLesserValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.LesserValue.Key } : null;
-    var equal = (entries.HasEqualValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.EqualValue.Key } : null;
-    var greater = (entries.HasGreaterValue) ? new AVLTreeSet<K>.Node<K> { Data = entries.GreaterValue.Key } : null;
-    return new NodeTriplet<K>((lesser, equal, greater));
-  }
+  public BoxTriplet<K> KeysAround(K from)
+    => EntriesAround(from).Select(kvp => kvp.Key);
+
   #endregion
 
   #region Interface Implementations
@@ -204,7 +192,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// </summary>
   /// <param name="from">The value to find a key near.</param>
   /// <returns><c>true</c> iff any lower entry exists.</returns>
-  public bool ContainsLower(K from) => TryGetLowerEntry(from, out var placeholder);
+  public bool ContainsLower(K from) => BackingSet.ContainsLower(PairUp(from));
 
   /// <summary>
   ///   Attempts to retrieve the entry with the highest key less than
@@ -217,7 +205,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// </param>
   /// <returns><c>true</c> iff a lower entry exists.</returns>
   public bool TryGetLowerEntry(K from, out KeyValuePair<K, V> entry) =>
-    BackingSet.TryGetLower(new KeyValuePair<K, V>(from, DefaultValue), out entry);
+    BackingSet.TryGetLower(PairUp(from), out entry);
 
   /// <summary>
   ///   Attempts to retrieve the highest key less than the given value.
@@ -230,7 +218,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <returns><c>true</c> iff a lower key exists.</returns>
   public bool TryGetLowerKey(K from, out K key)
   {
-    bool res = BackingSet.TryGetLower(new KeyValuePair<K, V>(from, DefaultValue), out var entry);
+    bool res = BackingSet.TryGetLower(PairUp(from), out var entry);
     key = entry.Key;
     return res;
   }
@@ -287,7 +275,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <returns>
   ///   <c>true</c> iff any lower or equal entry exists.
   /// </returns>
-  public bool ContainsFloor(K from) => TryGetFloorEntry(from, out var placeholder);
+  public bool ContainsFloor(K from) => BackingSet.ContainsFloor(PairUp(from));
 
   /// <summary>
   ///   Attempts to retrieve the entry with the highest key less than or
@@ -302,7 +290,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   ///   <c>true</c> iff any lower or equal entry exists.
   /// </returns>
   public bool TryGetFloorEntry(K from, out KeyValuePair<K, V> entry) =>
-    BackingSet.TryGetFloor(new KeyValuePair<K, V>(from, DefaultValue), out entry);
+    BackingSet.TryGetFloor(PairUp(from), out entry);
 
   /// <summary>
   ///   Attempts to retrieve the highest key less than or equal to the
@@ -316,7 +304,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <returns><c>true</c> iff any lower or equal key exists.</returns>
   public bool TryGetFloorKey(K from, out K key)
   {
-    bool res = BackingSet.TryGetFloor(new KeyValuePair<K, V>(from, DefaultValue), out var entry);
+    bool res = BackingSet.TryGetFloor(PairUp(from), out var entry);
     key = entry.Key;
     return res;
   }
@@ -374,7 +362,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <returns>
   ///   <c>true</c> iff any higher or equal entry exists.
   /// </returns>
-  public bool ContainsCeiling(K from) => TryGetCeilingEntry(from, out var placeholder);
+  public bool ContainsCeiling(K from) => BackingSet.ContainsCeiling(PairUp(from));
 
   /// <summary>
   ///   Attempts to retrieve the entry with the lowest key greater than
@@ -389,7 +377,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   ///   <c>true</c> iff any higher or equal entry exists.
   /// </returns>
   public bool TryGetCeilingEntry(K from, out KeyValuePair<K, V> entry) =>
-    BackingSet.TryGetCeiling(new KeyValuePair<K, V>(from, DefaultValue), out entry);
+    BackingSet.TryGetCeiling(PairUp(from), out entry);
 
   /// <summary>
   ///   Attempts to retrieve the lowest key greater than or equal to the
@@ -403,7 +391,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <returns><c>true</c> iff any higher or equal key exists.</returns>
   public bool TryGetCeilingKey(K from, out K key)
   {
-    bool res = BackingSet.TryGetCeiling(new KeyValuePair<K, V>(from, DefaultValue), out var entry);
+    bool res = BackingSet.TryGetCeiling(PairUp(from), out var entry);
     key = entry.Key;
     return res;
   }
@@ -458,7 +446,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// </summary>
   /// <param name="from">The value to find a key near.</param>
   /// <returns><c>true</c> iff any higher entry exists.</returns>
-  public bool ContainsHigher(K from) => TryGetHigherEntry(from, out var placeholder);
+  public bool ContainsHigher(K from) => BackingSet.ContainsHigher(PairUp(from));
 
   /// <summary>
   ///   Attempts to retrieve the entry with the lowest key greater than
@@ -471,7 +459,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// </param>
   /// <returns><c>true</c> iff any higher entry exists.</returns>
   public bool TryGetHigherEntry(K from, out KeyValuePair<K, V> entry) =>
-    BackingSet.TryGetHigher(new KeyValuePair<K, V>(from, DefaultValue), out entry);
+    BackingSet.TryGetHigher(PairUp(from), out entry);
 
   /// <summary>
   ///   Attempts to retrieve the lowest key greater than the given value.
@@ -484,7 +472,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <returns><c>true</c> iff any higher key exists.</returns>
   public bool TryGetHigherKey(K from, out K key)
   {
-    bool res = BackingSet.TryGetHigher(new KeyValuePair<K, V>(from, DefaultValue), out var entry);
+    bool res = BackingSet.TryGetHigher(PairUp(from), out var entry);
     key = entry.Key;
     return res;
   }
@@ -588,7 +576,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <returns>
   ///   <c>true</c> iff the key was found in the dictionary.
   /// </returns>
-  public bool ContainsKey(K key) => BackingSet.Contains(new KeyValuePair<K, V>(key, DefaultValue));
+  public bool ContainsKey(K key) => BackingSet.Contains(PairUp(key));
 
   /// <summary>
   ///   Removes the given key from the dictionary.
@@ -599,7 +587,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   ///   otherwise <c>false</c> (which may indicate that the key was not
   ///   present to begin with).
   /// </returns>
-  public bool Remove(K key) => BackingSet.Remove(new KeyValuePair<K, V>(key, DefaultValue));
+  public bool Remove(K key) => BackingSet.Remove(PairUp(key));
 
   /// <summary>
   ///   Attempts to retrieve the value for the given key.
@@ -612,10 +600,10 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <returns>Whether or not the key was found.</returns>
   public bool TryGetValue(K key, out V value)
   {
-    NodeTriplet<KeyValuePair<K, V>> nodes = BackingSet.SearchAround(new KeyValuePair<K, V>(key, DefaultValue));
-    if (nodes.HasEqualValue)
+    BoxTriplet<KeyValuePair<K, V>> nodes = BackingSet.SearchAround(PairUp(key));
+    if (nodes.Exact != null)
     {
-      value = nodes.EqualValue.Value;
+      value = nodes.Exact.Value.Value;
       return true;
     }
     else
@@ -666,7 +654,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   public bool Contains(KeyValuePair<K, V> entry)
   {
     var nodes = BackingSet.SearchAround(entry);
-    return (nodes.HasEqualValue && nodes.EqualValue.Value!.Equals(entry.Value));
+    return nodes.Exact != null && object.Equals(nodes.Exact.Value.Value, entry.Value);
   }
 
   /// <summary>
@@ -717,5 +705,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
       throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "The type {0} cannot be compared. It must implement IComparable<T> or IComparable interface", typeof(K).FullName));
     }
   }
+
+  private KeyValuePair<K, V> PairUp(K key) => new KeyValuePair<K, V>(key, default(V)!);
   #endregion
 }

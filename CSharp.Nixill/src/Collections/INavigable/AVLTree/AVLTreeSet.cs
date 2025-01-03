@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 
@@ -333,10 +334,15 @@ public class AVLTreeSet<T> : INavigableSet<T>
   /// </summary>
   /// <param name="value">The value to search around.</param>
   /// <returns>The triplet.</returns>
-  public NodeTriplet<T> SearchAround(T value)
-  {
-    return new NodeTriplet<T>(SearchBounded(value));
-  }
+  public BoxTriplet<T> SearchAround(T value)
+    => BoxNodes(SearchBounded(value));
+
+  private BoxTriplet<T> BoxNodes((Node<T>? Lower, Node<T>? Exact, Node<T>? Higher) nodes)
+    => new(
+      Box<T>.Enbox(nodes.Lower),
+      Box<T>.Enbox(nodes.Exact),
+      Box<T>.Enbox(nodes.Higher)
+    );
 
   /// <summary>
   ///   Replaces a single element without rebalancing the tree.
@@ -395,7 +401,11 @@ public class AVLTreeSet<T> : INavigableSet<T>
   /// </summary>
   /// <param name="from">The value to find a value near.</param>
   /// <returns><c>true</c> iff a lower value exists.</returns>
-  public bool ContainsLower(T from) => TryGetLower(from, out T placeholder);
+  public bool ContainsLower(T from)
+  {
+    var triplet = ContainsBounded(from, (true, false));
+    return triplet.Lower == true;
+  }
 
   /// <summary>
   ///   Returns the highest value in the set that is less than the given
@@ -453,7 +463,11 @@ public class AVLTreeSet<T> : INavigableSet<T>
   /// </summary>
   /// <param name="from">The value to find a value near.</param>
   /// <returns><c>true</c> iff a lower value exists.</returns>
-  public bool ContainsFloor(T from) => TryGetFloor(from, out T placeholder);
+  public bool ContainsFloor(T from)
+  {
+    var triplet = ContainsBounded(from, (true, false));
+    return (triplet.Lower | triplet.Exact) == true;
+  }
 
   /// <summary>
   ///   Returns the highest value in the set that is less than or equal
@@ -511,7 +525,11 @@ public class AVLTreeSet<T> : INavigableSet<T>
   /// </summary>
   /// <param name="from">The value to find a value near.</param>
   /// <returns><c>true</c> iff a higher or equal value exists.</returns>
-  public bool ContainsCeiling(T from) => TryGetCeiling(from, out T placeholder);
+  public bool ContainsCeiling(T from)
+  {
+    var triplet = ContainsBounded(from, (false, true));
+    return (triplet.Exact | triplet.Higher) == true;
+  }
 
   /// <summary>
   ///   Returns the lowest value in the set that is greater than the
@@ -569,7 +587,11 @@ public class AVLTreeSet<T> : INavigableSet<T>
   /// </summary>
   /// <param name="from">The value to find a value near.</param>
   /// <returns><c>true</c> iff a higher value exists.</returns>
-  public bool ContainsHigher(T from) => TryGetHigher(from, out T placeholder);
+  public bool ContainsHigher(T from)
+  {
+    var triplet = ContainsBounded(from, (false, true));
+    return triplet.Higher == true;
+  }
 
   /// <summary>
   ///   Returns the lowest value in the set that is greater than the
@@ -1414,6 +1436,46 @@ public class AVLTreeSet<T> : INavigableSet<T>
     return left;
   }
 
+  private (bool? Lower, bool? Exact, bool? Higher) ContainsBounded(T value, (bool Lower, bool Higher) stopOn)
+  {
+    if (Root == null) return (null, null, null);
+
+    Node<T> current = Root;
+
+    bool? foundLower = null;
+    bool? foundExact = null;
+    bool? foundHigher = null;
+
+    while (true)
+    {
+      int comp = Comparer(value, current.Data);
+
+      if (comp == 0)
+      {
+        foundExact = true;
+        foundLower = foundLower == true || current.Left != null;
+        foundHigher = foundHigher == true || current.Right != null;
+        break;
+      }
+
+      else if (comp < 0)
+      {
+        foundHigher = true;
+        if (stopOn.Higher || current.Left == null) break;
+        current = current.Left;
+      }
+
+      else if (comp > 0)
+      {
+        foundLower = true;
+        if (stopOn.Lower || current.Right == null) break;
+        current = current.Right;
+      }
+    }
+
+    return (foundLower, foundExact, foundHigher);
+  }
+
   /// <summary>
   ///   Searches down the tree.
   /// </summary>
@@ -1521,12 +1583,86 @@ public class AVLTreeSet<T> : INavigableSet<T>
 }
 
 /// <summary>
+///   A box representing a value from a collection, which exists even if
+///   the value is null, but does not exist if the collection doesn't
+///   contain a value there at all.
+/// </summary>
+/// <typeparam name="T">The type of value in the box.</typeparam>
+public class Box<T>
+{
+  /// <summary>
+  ///   Get: The value in the box.
+  /// </summary>
+  public T Value { get; }
+
+  /// <summary>
+  ///   Creates a box with the given value.
+  /// </summary>
+  /// <param name="value">The value in the box.</param>
+  public Box(T value) => Value = value;
+
+  internal static Box<T>? Enbox(AVLTreeSet<T>.Node<T>? input)
+    => input == null ? null : new Box<T>(input.Data);
+}
+
+/// <summary>
+///   A triplet of boxes, representing a possible value lower than the
+///   given value, a value exactly the given value, and a value higher
+///   than the given value.
+/// </summary>
+/// <typeparam name="T">The type of values in the boxes.</typeparam>
+public class BoxTriplet<T>
+{
+  /// <summary>
+  ///   Get: The lower value, or lack thereof, in the BoxTriplet.
+  /// </summary>
+  public Box<T>? Lower { get; }
+
+  /// <summary>
+  ///   Get: The exact value, or lack thereof, in the BoxTriplet.
+  /// </summary>
+  public Box<T>? Exact { get; }
+
+  /// <summary>
+  ///   Get: The higher value, or lack thereof, in the BoxTriplet.
+  /// </summary>
+  public Box<T>? Higher { get; }
+
+  /// <summary>
+  ///   Creates a box triplet with the given boxes.
+  /// </summary>
+  /// <param name="lower">The lower box, or lack thereof.</param>
+  /// <param name="exact">The exact box, or lack thereof.</param>
+  /// <param name="higher">The higher box, or lack thereof.</param>
+  public BoxTriplet(Box<T>? lower, Box<T>? exact, Box<T>? higher)
+    => (Lower, Exact, Higher) = (lower, exact, higher);
+
+  /// <summary>
+  ///   Converts boxed values to other boxed values.
+  /// </summary>
+  /// <typeparam name="TOut">
+  ///   The type of values to which the boxed values are being converted.
+  /// </typeparam>
+  /// <param name="selector">
+  ///   The function that converts boxed values.
+  /// </param>
+  /// <returns>The converted boxed values.</returns>
+  public BoxTriplet<TOut> Select<TOut>(Func<T, TOut> selector)
+    => new(
+      Lower == null ? null : new Box<TOut>(selector(Lower.Value)),
+      Exact == null ? null : new Box<TOut>(selector(Exact.Value)),
+      Higher == null ? null : new Box<TOut>(selector(Higher.Value))
+    );
+}
+
+/// <summary>
 ///   Represents a triplet of values as a search result around a
 ///   specific value.
 /// </summary>
 /// <typeparam name="T">
 ///   The type of items contained in this set.
 /// </typeparam>
+[Obsolete("Use BoxTriplet<T> instead.")]
 public class NodeTriplet<T>
 {
   internal readonly NodeValue? Lesser;
