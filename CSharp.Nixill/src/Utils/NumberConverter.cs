@@ -568,6 +568,11 @@ public static class NumberConverter
   /// <param name="digits">
   ///   The digit set to use.
   /// </param>
+  /// <param name="formatOption">
+  ///   Which case to use for the output. Has no effect if either itself
+  ///   or <c>digits</c>' <see cref="Digits.CaseSetting"/> is set to
+  ///   <see cref="CaseOption.CaseSensitive"/>.
+  /// </param>
   /// <returns>
   ///   The string representation of the number.
   /// </returns>
@@ -580,12 +585,13 @@ public static class NumberConverter
   /// </exception>
   /// <exception cref="FormatException">
   ///   There are not enough digits to reach the specified numeric value.
-  ///   <para/>
-  ///   Or, the specified numeric value is negative.
   /// </exception>
-  public static string Format(DigitArray arr, Digits? digits = null)
+  public static string Format(DigitArray arr, Digits? digits = null,
+    CaseOption formatOption = CaseOption.FormatAsEntered)
   {
     digits ??= Digits.Base36;
+
+    if (digits.CaseSetting == CaseOption.CaseSensitive) formatOption = CaseOption.CaseSensitive;
 
     StringBuilder builder = new();
 
@@ -609,7 +615,7 @@ public static class NumberConverter
         else throw new NumberFormattingException("Cannot make decimals with the given set of digits");
         pointed = true;
       }
-      builder.Append(digits.Format(i));
+      builder.Append(digits.Format(i, formatOption));
     }
 
     return builder.ToString();
@@ -669,6 +675,11 @@ public static class NumberConverter
   ///   The maximum number of decimal places to which the number should be
   ///   formatted.
   /// </param>
+  /// <param name="formatOption">
+  ///   Which case to use for the output. Has no effect if either itself
+  ///   or <c>digits</c>' <see cref="Digits.CaseSetting"/> is set to
+  ///   <see cref="CaseOption.CaseSensitive"/>.
+  /// </param>
   /// <returns></returns>
   /// <exception cref="ArgumentOutOfRangeException">
   ///   The base is less than 1.
@@ -691,9 +702,9 @@ public static class NumberConverter
   ///   number is non-bijective.
   /// </exception>
   public static string Format<T>(T value, int numberBase, Digits? digits = null, bool bijective = false,
-    int maxDecimals = 10) where T : IAdditionOperators<T, T, T>, IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>,
-      IComparable<T>, IModulusOperators<T, T, T>, ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>,
-      IMultiplyOperators<T, T, T>
+    int maxDecimals = 10, CaseOption formatOption = CaseOption.FormatAsEntered) where T : IAdditionOperators<T, T, T>,
+      IAdditiveIdentity<T, T>, IMultiplicativeIdentity<T, T>, IComparable<T>, IModulusOperators<T, T, T>,
+      ISubtractionOperators<T, T, T>, IDivisionOperators<T, T, T>, IMultiplyOperators<T, T, T>
   {
     digits ??= Digits.Base36;
 
@@ -705,7 +716,7 @@ public static class NumberConverter
     else if (numberBase < 2 || numberBase > digits.HighestSupportedBase)
       throw new ArgumentOutOfRangeException($"Non-bijective parse only accepts bases 2 to {digits.HighestSupportedBase}.");
 
-    return Format(FormatToDigitArray(value, numberBase, bijective, maxDecimals), digits);
+    return Format(FormatToDigitArray(value, numberBase, bijective, maxDecimals), digits, formatOption);
   }
   #endregion
 }
