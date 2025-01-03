@@ -99,37 +99,11 @@ namespace Nixill.Test
     //   Assert.AreEqual(words[2], "f");
     // }
 
-    public void TestValues(NodeTriplet<int> ints, int? lower, int? equal, int? higher)
+    public void TestValues(BoxTriplet<int> ints, int? lower, int? equal, int? higher)
     {
-      if (lower.HasValue)
-      {
-        Assert.True(ints.HasLesserValue);
-        Assert.AreEqual(ints.LesserValue, lower.Value);
-      }
-      else
-      {
-        Assert.False(ints.HasLesserValue);
-      }
-
-      if (equal.HasValue)
-      {
-        Assert.True(ints.HasEqualValue);
-        Assert.AreEqual(ints.EqualValue, equal.Value);
-      }
-      else
-      {
-        Assert.False(ints.HasEqualValue);
-      }
-
-      if (higher.HasValue)
-      {
-        Assert.True(ints.HasGreaterValue);
-        Assert.AreEqual(ints.GreaterValue, higher.Value);
-      }
-      else
-      {
-        Assert.False(ints.HasGreaterValue);
-      }
+      Assert.AreEqual(ints.Lower, lower);
+      Assert.AreEqual(ints.Exact, equal);
+      Assert.AreEqual(ints.Higher, higher);
     }
   }
 }
