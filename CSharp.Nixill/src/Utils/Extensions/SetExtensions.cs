@@ -59,6 +59,91 @@ public static class SetExtensions
   }
 
   /// <summary>
+  ///   Returns all the distinct combinations of <c>limit</c> of the
+  ///   elements in the sequence, with items kept in their original
+  ///   sequence order.
+  /// </summary>
+  /// <remarks>
+  ///   Elements are checked for equality using their default equality
+  ///   comparer.
+  /// </remarks>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="elems">The sequence.</param>
+  /// <param name="limit">
+  ///   The number of items to select for each combination.
+  ///   <para/>
+  ///   If less than or equal to 0, it is interpreted as "all but this many".
+  ///   <para/>
+  ///   If greater than the number of elements, the original list is
+  ///   returned as the only item of the outer enumerable.
+  /// </param>
+  /// <returns>The combinations.</returns>
+  public static IEnumerable<IEnumerable<T>> CombinationsDistinct<T>(this IEnumerable<T> elems, int limit)
+    => elems.CombinationsDistinct(limit, EqualityComparer<T>.Default);
+
+  /// <summary>
+  ///   Returns all the distinct combinations of <c>limit</c> of the
+  ///   elements in the sequence, with items kept in their original
+  ///   sequence order.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="elems">The sequence.</param>
+  /// <param name="limit">
+  ///   The number of items to select for each combination.
+  ///   <para/>
+  ///   If less than or equal to 0, it is interpreted as "all but this many".
+  ///   <para/>
+  ///   If greater than the number of elements, the original list is
+  ///   returned as the only item of the outer enumerable.
+  /// </param>
+  /// <param name="comparer">
+  ///   The comparer checking equality between elements.
+  /// </param>
+  /// <returns>The combinations.</returns>
+  public static IEnumerable<IEnumerable<T>> CombinationsDistinct<T>(this IEnumerable<T> elems, int limit,
+    IEqualityComparer<T> comparer)
+  {
+    T[] elemArray = elems.ToArray();
+
+    if (limit <= 0) limit += elemArray.Length;
+    if (limit < 0) return Enumerable.Empty<IEnumerable<T>>();
+    if (limit >= elemArray.Length) return [elems];
+
+    return CombsDistinct(elemArray, limit, comparer);
+  }
+
+  static IEnumerable<IEnumerable<T>> CombsDistinct<T>(T[] elemList, int keep, IEqualityComparer<T> comparer)
+  {
+    HashSet<T> given = new HashSet<T>(comparer);
+
+    int skips = elemList.Length - keep;
+    if (skips == 0)
+    {
+      yield return elemList;
+      yield break;
+    }
+
+    foreach ((T elem, int i) in elemList.Take(skips + 1).WithIndex())
+    {
+      if (given.Contains(elem)) continue;
+      given.Add(elem);
+
+      if (keep == 1) yield return [elem];
+      else
+      {
+        foreach (IEnumerable<T> comb in CombsDistinct(elemList[(i + 1)..], keep - 1, comparer))
+        {
+          yield return comb.Prepend(elem);
+        }
+      }
+    }
+  }
+
+  /// <summary>
   ///   Returns items that are in the first sequence, except those with a
   ///   matching key in the second sequence.
   /// </summary>
