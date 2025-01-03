@@ -22,8 +22,25 @@ public static class SequenceExtensions
   ///   The item at the given position in the sequence, or the fallback item.
   /// </returns>
   public static T ElementAtOr<T>(this IEnumerable<T> items, Index index, T or)
-    => (!index.IsFromEnd) ? items.ElementAtOr<T>(index.Value, or)
-      : items.ElementAtOrNegative<T>(index.Value, or);
+    => items.ElementAtOr(index, () => or);
+
+  /// <summary>
+  ///   Returns the element at the given index in the list, or a
+  ///   calculated element if the list is not long enough to reach the
+  ///   given index.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="index">The index at which to find an item.</param>
+  /// <param name="or">The function to generate the fallback item.</param>
+  /// <returns>
+  ///   The item at the given position in the sequence, or the fallback item.
+  /// </returns>
+  public static T ElementAtOr<T>(this IEnumerable<T> items, Index index, Func<T> or)
+    => (!index.IsFromEnd) ? items.ElementAtOr(index.Value, or)
+      : items.ElementAtOrNegative(index.Value, or);
 
   /// <summary>
   ///   Returns the element at the given index in the list, or a
@@ -40,18 +57,35 @@ public static class SequenceExtensions
   ///   The item at the given position in the sequence, or the fallback item.
   /// </returns>
   public static T ElementAtOr<T>(this IEnumerable<T> items, int atIndex, T or)
+    => items.ElementAtOr(atIndex, () => or);
+
+  /// <summary>
+  ///   Returns the element at the given index in the list, or a
+  ///   calculated element if the list is not long enough to reach the
+  ///   given index.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="items">The sequence.</param>
+  /// <param name="atIndex">The index at which to find an item.</param>
+  /// <param name="or">The function to generate the fallback item.</param>
+  /// <returns>
+  ///   The item at the given position in the sequence, or the fallback item.
+  /// </returns>
+  public static T ElementAtOr<T>(this IEnumerable<T> items, int atIndex, Func<T> or)
   {
     foreach ((T item, int index) in items.WithIndex())
     {
       if (index == atIndex) return item;
     }
-    return or;
+    return or();
   }
 
-  static T ElementAtOrNegative<T>(this IEnumerable<T> items, int atNegativeIndex, T or)
+  static T ElementAtOrNegative<T>(this IEnumerable<T> items, int atNegativeIndex, Func<T> or)
   {
     Buffer<T> buffer = new(atNegativeIndex, items);
-    if (buffer.Count != buffer.BufferSize) return or;
+    if (buffer.Count != buffer.BufferSize) return or();
     else return buffer.First();
   }
 
