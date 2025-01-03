@@ -153,4 +153,52 @@ public static class TupleExtensions
   /// <returns>The flattened tuple.</returns>
   public static (A A, B B, C C, D D) Flatten<A, B, C, D>(this (A A, B B, (C C, D D) CD) input)
     => (input.A, input.B, input.CD.C, input.CD.D);
+
+  /// <summary>
+  ///   Flattens a bumpy tuple of four elements.
+  /// </summary>
+  /// <typeparam name="A">The type of the first element.</typeparam>
+  /// <typeparam name="B">The type of the second element.</typeparam>
+  /// <typeparam name="C">The type of the third element.</typeparam>
+  /// <typeparam name="D">The type of the fourth element.</typeparam>
+  /// <param name="input">The bumpy tuple.</param>
+  /// <returns>The flattened tuple.</returns>
+  public static (A A, B B, C C, D D) Flatten<A, B, C, D>(this (((A A, B B) AB, C C) ABC, D D) input)
+    => (input.ABC.AB.A, input.ABC.AB.B, input.ABC.C, input.D);
+
+  /// <summary>
+  ///   Flattens a bumpy tuple of four elements.
+  /// </summary>
+  /// <typeparam name="A">The type of the first element.</typeparam>
+  /// <typeparam name="B">The type of the second element.</typeparam>
+  /// <typeparam name="C">The type of the third element.</typeparam>
+  /// <typeparam name="D">The type of the fourth element.</typeparam>
+  /// <param name="input">The bumpy tuple.</param>
+  /// <returns>The flattened tuple.</returns>
+  public static (A A, B B, C C, D D) Flatten<A, B, C, D>(this ((A A, (B B, C C) BC) ABC, D D) input)
+    => (input.ABC.A, input.ABC.BC.B, input.ABC.BC.C, input.D);
+
+  /// <summary>
+  ///   Flattens a bumpy tuple of four elements.
+  /// </summary>
+  /// <typeparam name="A">The type of the first element.</typeparam>
+  /// <typeparam name="B">The type of the second element.</typeparam>
+  /// <typeparam name="C">The type of the third element.</typeparam>
+  /// <typeparam name="D">The type of the fourth element.</typeparam>
+  /// <param name="input">The bumpy tuple.</param>
+  /// <returns>The flattened tuple.</returns>
+  public static (A A, B B, C C, D D) Flatten<A, B, C, D>(this (A A, ((B B, C C) BC, D D) BCD) input)
+    => (input.A, input.BCD.BC.B, input.BCD.BC.C, input.BCD.D);
+
+  /// <summary>
+  ///   Flattens a bumpy tuple of four elements.
+  /// </summary>
+  /// <typeparam name="A">The type of the first element.</typeparam>
+  /// <typeparam name="B">The type of the second element.</typeparam>
+  /// <typeparam name="C">The type of the third element.</typeparam>
+  /// <typeparam name="D">The type of the fourth element.</typeparam>
+  /// <param name="input">The bumpy tuple.</param>
+  /// <returns>The flattened tuple.</returns>
+  public static (A A, B B, C C, D D) Flatten<A, B, C, D>(this (A A, (B B, (C C, D D) CD) BCD) input)
+    => (input.A, input.BCD.B, input.BCD.CD.C, input.BCD.CD.D);
 }
