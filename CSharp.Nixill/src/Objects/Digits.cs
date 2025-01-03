@@ -73,7 +73,7 @@ public class Digits : IEnumerable<(char, int)>
     string distinctDigits = (caseSetting != CaseOption.CaseSensitive
       ? digits.Select(char.ToLower) : digits).Distinct().FormString();
 
-    if (allDigits.Equals(distinctDigits, strCompare)) throw new InvalidOperationException($"Repeated digits ({allDigits})");
+    if (!allDigits.Equals(distinctDigits, strCompare)) throw new InvalidOperationException($"Repeated digits ({allDigits})");
     if (distinctDigits.Contains(negative, strCompare)) throw new InvalidOperationException($"Negative symbol repeats a digit");
     if (distinctDigits.Contains(decPoint, strCompare)) throw new InvalidOperationException($"Decimal point repeats a digit");
     if ((caseSetting == CaseOption.CaseSensitive

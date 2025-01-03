@@ -101,9 +101,9 @@ namespace Nixill.Test
 
     public void TestValues(BoxTriplet<int> ints, int? lower, int? equal, int? higher)
     {
-      Assert.AreEqual(ints.Lower, lower);
-      Assert.AreEqual(ints.Exact, equal);
-      Assert.AreEqual(ints.Higher, higher);
+      Assert.AreEqual(ints.Lower?.Value, lower);
+      Assert.AreEqual(ints.Exact?.Value, equal);
+      Assert.AreEqual(ints.Higher?.Value, higher);
     }
   }
 }
