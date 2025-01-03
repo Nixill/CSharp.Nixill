@@ -8,96 +8,6 @@ namespace Nixill.Utils.Extensions;
 public static class SequenceExtensions
 {
   /// <summary>
-  ///   Returns groups of consecutive items that meet a condition.
-  /// </summary>
-  /// <remarks>
-  ///   This is due for a rewrite.
-  /// </remarks>
-  /// <typeparam name="TSource">
-  ///   The type of items in the sequence.
-  /// </typeparam>
-  /// <param name="items">The sequence.</param>
-  /// <param name="predicate">The condition.</param>
-  /// <param name="appendFails">
-  ///   Whether or not items that fail the condition should be appended to
-  ///   the end of the group.
-  /// </param>
-  /// <param name="prependFails">
-  ///   Whether or not items that fail the condition should be prepended
-  ///   to the start of the next group.
-  /// </param>
-  /// <param name="skipEmpty">
-  ///   Whether or not empty groups should be skipped.
-  /// </param>
-  /// <returns>The sequence of sequences.</returns>
-  [Obsolete("To be rewritten soon; functionality may change at that point.")]
-  public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
-    Func<TSource, bool> predicate, bool appendFails = false, bool prependFails = false, bool skipEmpty = false)
-    => items.ChunkWhile((_, i) => predicate(i), default(TSource), appendFails, prependFails, skipEmpty);
-
-  /// <summary>
-  ///   Returns groups of consecutive items that meet a condition.
-  /// </summary>
-  /// <remarks>
-  ///   This is due for a rewrite.
-  /// </remarks>
-  /// <typeparam name="TSource">
-  ///   The type of items in the sequence.
-  /// </typeparam>
-  /// <param name="items">The sequence.</param>
-  /// <param name="predicate">The condition.</param>
-  /// <param name="firstComparison">
-  ///   The item to which the first item in the sequence should be
-  ///   compared.
-  /// </param>
-  /// <param name="appendFails">
-  ///   Whether or not items that fail the condition should be appended to
-  ///   the end of the group.
-  /// </param>
-  /// <param name="prependFails">
-  ///   Whether or not items that fail the condition should be prepended
-  ///   to the start of the next group.
-  /// </param>
-  /// <param name="skipEmpty">
-  ///   Whether or not empty groups should be skipped.
-  /// </param>
-  /// <returns>The sequence of sequences.</returns>
-  [Obsolete("To be rewritten soon; functionality may change at that point.")]
-  public static IEnumerable<IEnumerable<TSource>> ChunkWhile<TSource>(this IEnumerable<TSource> items,
-      Func<TSource, TSource, bool> predicate, TSource? firstComparison = default(TSource), bool appendFails = false,
-      bool prependFails = false, bool skipEmpty = false)
-  {
-    List<TSource>? list = null;
-
-    TSource priorItem = firstComparison!;
-
-    foreach (TSource item in items)
-    {
-      if (predicate(priorItem, item))
-      {
-        MakeListAdd(ref list, item);
-      }
-      else
-      {
-        if (appendFails) MakeListAdd(ref list, item);
-
-        if (list != null)
-        {
-          yield return list;
-          list = null;
-        }
-        else if (!skipEmpty) yield return Enumerable.Empty<TSource>();
-
-        if (prependFails) MakeListAdd(ref list, item);
-      }
-
-      priorItem = item;
-    }
-
-    if (list != null) yield return list;
-  }
-
-  /// <summary>
   ///   Returns the element at the given index in the list, or a
   ///   predetermined element if the list is not long enough to reach the
   ///   given index.
@@ -426,12 +336,6 @@ public static class SequenceExtensions
     foreach (T item in buffer.Skip(start - end)) yield return item;
   }
 
-  static void MakeListAdd<T>(ref List<T>? list, T item)
-  {
-    if (list == null) list = new();
-    list.Add(item);
-  }
-
   /// <summary>
   ///   Returns the sequence with multiple items removed.
   /// </summary>
@@ -619,6 +523,82 @@ public static class SequenceExtensions
     {
       if (TryRun(item, selector, out var selected)) yield return selected;
     }
+  }
+
+  /// <summary>
+  ///   Splits a sequence into subsequences when the positions between two
+  ///   consecutive elements meet a certain condition.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">
+  ///   The sequence.
+  /// </param>
+  /// <param name="check">
+  ///   The function to determine whether the sequence should be split
+  ///   between the given elements.
+  /// </param>
+  /// <returns>The split sequence.</returns>
+  public static IEnumerable<IEnumerable<T>> SplitBetween<T>(this IEnumerable<T> sequence, Func<T, T, bool> check)
+  {
+    var enumerator = sequence.GetEnumerator();
+    List<T> chunk = [];
+
+    if (!enumerator.MoveNext()) yield break;
+
+    chunk = [enumerator.Current];
+    T last = enumerator.Current;
+
+    while (enumerator.MoveNext())
+    {
+      if (check(last, enumerator.Current))
+      {
+        yield return chunk;
+        chunk = [enumerator.Current];
+      }
+      else
+      {
+        chunk.Add(enumerator.Current);
+      }
+    }
+
+    yield return chunk;
+  }
+
+  /// <summary>
+  ///   Splits a sequence into subsequences on elements that meet a
+  ///   certain condition (removing those elements from the sequence).
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">
+  ///   The sequence.
+  /// </param>
+  /// <param name="check">
+  ///   The function to determine whether the sequence should be split
+  ///   across the given element.
+  /// </param>
+  /// <returns>The split sequence.</returns>
+  public static IEnumerable<IEnumerable<T>> SplitOn<T>(this IEnumerable<T> sequence, Func<T, bool> check)
+  {
+    List<T> chunk = [];
+
+    foreach (T item in sequence)
+    {
+      if (check(item))
+      {
+        if (chunk.Count > 0) yield return chunk;
+        chunk = [];
+      }
+      else
+      {
+        chunk.Add(item);
+      }
+    }
+
+    if (chunk.Count > 0) yield return chunk;
   }
 
   static bool TryRun<TIn, TOut>(TIn item, Func<TIn, TOut> selector, out TOut selected)
