@@ -1,4 +1,5 @@
 using System.Reflection;
+using Nixill.Utils.Extensions;
 
 namespace Nixill.Utils;
 
@@ -120,7 +121,7 @@ public static class EnumUtils
   /// <typeparam name="TEnum">The enum type.</typeparam>
   /// <typeparam name="TAttribute">The attribute type.</typeparam>
   /// <param name="value">The enum constant.</param>
-  /// <returns>The attached attribute instance.</returns>
+  /// <returns>The attached attribute instances.</returns>
   /// <exception cref="InvalidCastException">
   ///   <c>value</c> isn't a constant of <c>TEnum</c>.
   /// </exception>
@@ -130,4 +131,16 @@ public static class EnumUtils
     .GetField(value.ToString())
       ?? throw new InvalidCastException($"No enum constant exists for ({typeof(TEnum).Name}).{value}"))
     .GetCustomAttributes<TAttribute>();
+
+  /// <summary>
+  ///   Returns the attributes of the given type on all enum constants
+  ///   that make up a flag.
+  /// </summary>
+  /// <typeparam name="TEnum">The enum type.</typeparam>
+  /// <typeparam name="TAttribute">The attribute type.</typeparam>
+  /// <param name="value">The flag value.</param>
+  /// <returns>The attached attribute instances.</returns>
+  public static IEnumerable<TAttribute> AttributesOfFlag<TEnum, TAttribute>(TEnum value)
+    where TEnum : struct, Enum where TAttribute : Attribute
+  => value.GetFlags().SelectMany(EnumUtils.AttributesOf<TEnum, TAttribute>);
 }
