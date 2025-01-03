@@ -55,6 +55,7 @@ public static class ActionExtensions
   ///   return values.
   /// </summary>
   /// <param name="tasks">The tasks to perform.</param>
+  [Obsolete("Not needed in .NET 9.")]
   public static void NoWait(this IEnumerable<Task> tasks)
   {
     tasks.Do(x => { });
@@ -68,6 +69,7 @@ public static class ActionExtensions
   /// <returns>
   ///   A single task tracking the completion of all input tasks.
   /// </returns>
+  [Obsolete("Not needed in .NET 9.")]
   public static async Task WaitAllNoReturn(this IEnumerable<Task> tasks)
   {
     Task[] array = [.. tasks];
@@ -86,6 +88,7 @@ public static class ActionExtensions
   /// </typeparam>
   /// <param name="tasks">The tasks to perform.</param>
   /// <returns></returns>
+  [Obsolete("Not needed in .NET 9.")]
   public static async IAsyncEnumerable<T> WaitAllReturns<T>(this IEnumerable<Task<T>> tasks)
   {
     Task<T>[] array = [.. tasks];
