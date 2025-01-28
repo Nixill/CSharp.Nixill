@@ -20,7 +20,6 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   #region Fields
   private AVLTreeSet<KeyValuePair<K, V>> BackingSet;
   private Comparison<K> KeyComparer;
-  private V DefaultValue = default(V)!;
   #endregion
 
   #region Properties
