@@ -3,7 +3,8 @@ using System.Numerics;
 namespace Nixill.Utils.Extensions;
 
 /// <summary>
-///   Extensions on sequences of classes that implement numeric interfaces.
+///   Extensions on sequences of classes that implement numeric or
+///   comparable interfaces.
 /// </summary>
 public static class NumericsExtensions
 {

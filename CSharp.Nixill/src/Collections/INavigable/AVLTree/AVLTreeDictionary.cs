@@ -61,12 +61,19 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <remarks>
   ///   The keys are returned ordered.
   /// </remarks>
-  public ICollection<K> Keys => BackingSet.Select(x => x.Key).ToArray();
+  public AVLKeySet<K, V> Keys => new AVLKeySet<K, V>(this);
+
+  IEnumerable<K> INavigableDictionary<K, V>.Keys => Keys;
+  IEnumerable<K> IReadOnlyDictionary<K, V>.Keys => Keys;
+  ICollection<K> IDictionary<K, V>.Keys => Keys.ToArray();
 
   /// <summary>
   ///   Get: A sequence of all the values in the dictionary.
   /// </summary>
   public ICollection<V> Values => BackingSet.Select(x => x.Value).ToArray();
+
+  IEnumerable<V> INavigableDictionary<K, V>.Values => Values;
+  IEnumerable<V> IReadOnlyDictionary<K, V>.Values => Values;
   #endregion
 
   #region Implementing ICollection<KeyValuePair<K, V>>
