@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Nixill.Utils;
@@ -51,5 +53,19 @@ public static class TextUtils
   {
     match = Regex.Match(input, pattern);
     return match.Success;
+  }
+
+  /// <summary>
+  ///   Computes the MD5 hash of a string and outputs it as hexadecimal.
+  /// </summary>
+  /// <param name="input">The input string.</param>
+  /// <param name="encoding">
+  ///   The input encoding, which defaults to UTF-8.
+  /// </param>
+  /// <returns>The hexadecimal string.</returns>
+  /// <seealso href="https://stackoverflow.com/a/24031467"/>
+  public static string MD5HexHash(string input, Encoding? encoding = null)
+  {
+    return Convert.ToHexString(MD5.HashData((encoding ?? Encoding.UTF8).GetBytes(input)));
   }
 }
