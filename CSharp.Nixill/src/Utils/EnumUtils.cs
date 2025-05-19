@@ -5,6 +5,10 @@ namespace Nixill.Utils;
 
 public static class EnumUtils
 {
+  private static IEnumerable<FieldInfo> GetEnumFields<TEnum>()
+    => typeof(TEnum).GetFields()
+      .Where(f => f.FieldType == typeof(TEnum));
+
   /// <summary>
   ///   Returns the constants of the given enum type that have the given
   ///   attribute attached.
@@ -14,7 +18,7 @@ public static class EnumUtils
   /// <returns>The matching enum constants.</returns>
   public static IEnumerable<TEnum> ValuesWith<TEnum, TAttribute>()
     where TEnum : struct, Enum where TAttribute : Attribute
-    => typeof(TEnum).GetFields()
+    => GetEnumFields<TEnum>()
       .Where(f => f.GetCustomAttributes<TAttribute>().Any())
       .Select(f => (TEnum)f.GetRawConstantValue()!);
 
@@ -43,7 +47,7 @@ public static class EnumUtils
   /// </returns>
   public static IEnumerable<(TEnum Value, TAttribute Attribute)> ValuesWithAttribute<TEnum, TAttribute>()
     where TEnum : struct, Enum where TAttribute : Attribute
-    => typeof(TEnum).GetFields()
+    => GetEnumFields<TEnum>()
       .Select(f => (Value: (TEnum)f.GetRawConstantValue()!, Attribute: f.GetCustomAttribute<TAttribute>()))
       .Where(f => f.Attribute != null)!;
 
@@ -75,7 +79,7 @@ public static class EnumUtils
   /// </returns>
   public static IEnumerable<(TEnum Value, IEnumerable<TAttribute> Attributes)> ValuesWithAttributes<TEnum, TAttribute>()
     where TEnum : struct, Enum where TAttribute : Attribute
-    => typeof(TEnum).GetFields()
+    => GetEnumFields<TEnum>()
       .Select(f => (Value: (TEnum)f.GetRawConstantValue()!, Attributes: f.GetCustomAttributes<TAttribute>()))
       .Where(f => f.Attributes.Any());
 
