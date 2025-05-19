@@ -17,7 +17,7 @@ public static class Program
 {
   static string Identify(string input)
   {
-    (TestEnum which, Match? mtc) = RegexTestAttribute.TestAgainst&lt;TestEnum&gt;(input);
+    (TestEnum which, Match? mtc) = RegexTestAttribute.TestAgainst<TestEnum>(input);
 
     if (which == TestEnum.Date)
       return $"A date with year {mtc.Groups[1].Value}, month {mtc.Groups[2].Value}, and day {mtc.Groups[3].Value}";
