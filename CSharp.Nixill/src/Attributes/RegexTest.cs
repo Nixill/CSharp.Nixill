@@ -61,6 +61,7 @@ public class RegexTestAttribute : Attribute
   ///     </item>
   ///   </list>
   /// </returns>
+  [Obsolete("Use TestAgainst<T>(string, Match?) instead.")]
   public static (T, Match?) TestAgainst<T>(string input)
     where T : struct, Enum
   {
@@ -77,4 +78,43 @@ public class RegexTestAttribute : Attribute
 
     return (default(T), null);
   }
+
+  /// <summary>
+  ///   Tests a string against the regexes of a given enum.
+  /// </summary>
+  /// <remarks>
+  ///   This overload could be directly passed into a <see langword="switch"/>
+  ///   statement.
+  /// </remarks>
+  /// <typeparam name="T">The enum type to test against.</typeparam>
+  /// <param name="input">The string to test.</param>
+  /// <param name="match">
+  ///   When this method returns, this parameter contains the <see cref="Match"/>
+  ///   associated with the match, if any match was found. Otherwise, it
+  ///   contains <see langword="null"/>.
+  /// </param>
+  /// <returns>
+  ///   The lowest-value enum constant that had a matching regex. If no
+  ///   enum constant had a matching regex, the constant with the value 0
+  ///   is returned.
+  /// </returns>
+  public static T TestAgainst<T>(string input, out Match? match)
+    where T : struct, Enum
+  {
+    foreach (var test in EnumUtils.ValuesWithAttribute<T, RegexTestAttribute>().OrderBy(t => t.Value))
+    {
+      Regex regex = test.Attribute.UsedRegex;
+      try
+      {
+        match = regex.Match(input);
+        if (match.Success) return test.Value;
+      }
+      catch (RegexMatchTimeoutException) { /* do nothing */ }
+    }
+
+    match = null;
+    return default(T);
+  }
+
+
 }

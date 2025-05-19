@@ -17,6 +17,22 @@ public static class Program
 {
   static string Identify(string input)
   {
+    switch (RegexTestAttribute.TestAgainst<TestEnum>(input, out Match? mtc))
+    {
+      case TestEnum.Date:
+        return $"A date with year {mtc.Groups[1].Value}, month {mtc.Groups[2].Value}, and day {mtc.Groups[3].Value}";
+      case TestEnum.Time:
+        return $"A time with hour {mtc.Groups[1].Value}, minute {mtc.Groups[2].Value}, and second {mtc.Groups[3].Value}";
+      case TestEnum.Number:
+        return $"The integer {input}";
+      default:
+        else return $"The string {input}";
+    }
+  }
+
+  [Obsolete]
+  static string IdentifyOld(string input)
+  {
     (TestEnum which, Match? mtc) = RegexTestAttribute.TestAgainst<TestEnum>(input);
 
     if (which == TestEnum.Date)
