@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Nixill.Utils;
 
@@ -98,7 +99,7 @@ public class RegexTestAttribute : Attribute
   ///   enum constant had a matching regex, the constant with the value 0
   ///   is returned.
   /// </returns>
-  public static T TestAgainst<T>(string input, out Match? match)
+  public static T TestAgainst<T>(string input, [MaybeNullWhen(default)] out Match match)
     where T : struct, Enum
   {
     foreach (var test in EnumUtils.ValuesWithAttribute<T, RegexTestAttribute>().OrderBy(t => t.Value))
@@ -112,7 +113,7 @@ public class RegexTestAttribute : Attribute
       catch (RegexMatchTimeoutException) { /* do nothing */ }
     }
 
-    match = null;
+    match = null!;
     return default(T);
   }
 
