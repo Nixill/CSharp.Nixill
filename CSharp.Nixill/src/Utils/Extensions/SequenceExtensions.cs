@@ -539,6 +539,92 @@ public static class SequenceExtensions
   }
 
   /// <summary>
+  ///   Aggregates all the values in a sequence, returning the aggregate
+  ///   value at every step in the sequence.
+  /// </summary>
+  /// <typeparam name="TIn">The type of items in the sequence.</typeparam>
+  /// <typeparam name="TOut">The type of the aggregate of the items.</typeparam>
+  /// <param name="input">The input sequence.</param>
+  /// <param name="seed">
+  ///   The initial aggregate value (not included in the output).
+  /// </param>
+  /// <param name="aggregator">
+  ///   The function that adds the current value to the aggregate.
+  /// </param>
+  /// <returns>A sequence of all the aggregate values.</returns>
+  /// <remarks>
+  ///   <c>aggregator</c> is never run if the input sequence is empty.
+  /// </remarks>
+  public static IEnumerable<TOut> SelectAggregate<TIn, TOut>(this IEnumerable<TIn> input, TOut seed,
+    Func<TOut, TIn, TOut> aggregator)
+  {
+    TOut agg = seed;
+    foreach (TIn item in input)
+      yield return agg = aggregator(agg, item);
+  }
+
+  /// <summary>
+  ///   Aggregates all the values in a sequence, returning the aggregate
+  ///   value at every step in the sequence.
+  /// </summary>
+  /// <typeparam name="TIn">The type of items in the sequence.</typeparam>
+  /// <typeparam name="TOut">The type of the aggregate of the items.</typeparam>
+  /// <param name="input">The input sequence.</param>
+  /// <param name="seeder">
+  ///   The function that turns the first item into an aggregate.
+  /// </param>
+  /// <param name="aggregator">
+  ///   The function that adds the current value to the aggregate.
+  /// </param>
+  /// <returns>A sequence of all the aggregate values.</returns>
+  /// <remarks>
+  ///   <c>seeder</c> is never run if the input sequence is empty.
+  ///   <c>aggregator</c> is never run if the input sequence has fewer
+  ///   than two items.
+  /// </remarks>
+  public static IEnumerable<TOut> SelectAggregate<TIn, TOut>(this IEnumerable<TIn> input, Func<TIn, TOut> seeder,
+    Func<TOut, TIn, TOut> aggregator)
+  {
+    IEnumerator<TIn> enm = input.GetEnumerator();
+
+    if (!enm.MoveNext()) yield break;
+
+    TOut agg = seeder(enm.Current);
+    yield return agg;
+
+    while (enm.MoveNext())
+      yield return agg = aggregator(agg, enm.Current);
+  }
+
+  /// <summary>
+  ///   Aggregates all the values in a sequence, returning the aggregate
+  ///   value at every step in the sequence, using the first item in the
+  ///   sequence as the seed.
+  /// </summary>
+  /// <typeparam name="T">The type of items in the sequence.</typeparam>
+  /// <param name="input">The input sequence.</param>
+  /// <param name="aggregator">
+  ///   The function that adds the current value to the aggregate.
+  /// </param>
+  /// <returns>A sequence of all the aggregate values.</returns>
+  /// <remarks>
+  ///   The first item is always returned unchanged. <c>aggregator</c> is
+  ///   never run if the input sequence has fewer than two items.
+  /// </remarks>
+  public static IEnumerable<T> SelectAggregate<T>(this IEnumerable<T> input, Func<T, T, T> aggregator)
+  {
+    IEnumerator<T> enm = input.GetEnumerator();
+
+    if (!enm.MoveNext()) yield break;
+
+    T agg = enm.Current;
+    yield return agg;
+
+    while (enm.MoveNext())
+      yield return agg = aggregator(agg, enm.Current);
+  }
+
+  /// <summary>
   ///   Applies a transformation function to the elements of a sequence,
   ///   ignoring and discarding errors.
   /// </summary>
@@ -556,6 +642,27 @@ public static class SequenceExtensions
     foreach (TIn item in items)
     {
       if (TryRun(item, selector, out var selected)) yield return selected;
+    }
+  }
+
+  /// <summary>
+  ///   Selects mutated elements for which a condition passes, such as if
+  ///   a value can be parsed or a key exists in a dictionary, while
+  ///   skipping elements for which the condition doesn't pass.
+  /// </summary>
+  /// <typeparam name="TIn">The input type.</typeparam>
+  /// <typeparam name="TOut">The output type.</typeparam>
+  /// <param name="input">The input sequence.</param>
+  /// <param name="outPredicate">
+  ///   The function that attempts to transform items.
+  /// </param>
+  /// <returns>The sequence of successful transformations.</returns>
+  public static IEnumerable<TOut> TrySelect<TIn, TOut>(this IEnumerable<TIn> input, Func<TIn, (bool Passed, TOut Mutated)> conditionalSelector)
+  {
+    foreach (TIn item in input)
+    {
+      (bool passed, TOut mutated) = conditionalSelector(item);
+      if (passed) yield return mutated;
     }
   }
 
