@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Nixill.Utils.Extensions;
 
 /// <summary>
@@ -160,4 +162,36 @@ public static class CollectionExtensions
   public static IDictionary<K, IEnumerable<V>> ToDictionary<K, V>(this IEnumerable<IGrouping<K, V>> items)
     where K : notnull
     => items.Select(g => new KeyValuePair<K, IEnumerable<V>>(g.Key, g)).ToDictionary();
+
+  /// <summary>
+  ///   Attempts to remove and return the first item in the list.
+  /// </summary>
+  /// <typeparam name="T">The type of items in the list.</typeparam>
+  /// <param name="list">The list.</param>
+  /// <param name="returnValue">
+  ///   When this method returns, this parameter is either:
+  ///   <list type="bullet">
+  ///     <item>
+  ///       The first item from the list, if the return value is <see langword="true"/>.
+  ///     </item>
+  ///     <item>
+  ///       <see langword="default"/>(T), if the return value is <see langword="false"/>.
+  ///     </item>
+  ///   </list>
+  /// </param>
+  /// <returns>Whether or not an item was successfully popped.</returns>
+  public static bool TryPop<T>(this IList<T> list, [MaybeNullWhen(false)] out T returnValue)
+  {
+    if (list.Count > 0)
+    {
+      returnValue = list[0];
+      list.RemoveAt(0);
+      return true;
+    }
+    else
+    {
+      returnValue = default;
+      return false;
+    }
+  }
 }
