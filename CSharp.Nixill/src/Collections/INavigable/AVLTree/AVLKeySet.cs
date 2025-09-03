@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace Nixill.Collections;
 
-public class AVLKeySet<K, V> : IReadOnlyNavigableSet<K>
+internal class AVLKeySet<K, V> : IReadOnlyNavigableSet<K>
 {
   readonly AVLTreeDictionary<K, V> Backing;
 

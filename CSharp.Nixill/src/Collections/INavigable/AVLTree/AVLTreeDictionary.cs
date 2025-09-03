@@ -61,7 +61,7 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// <remarks>
   ///   The keys are returned ordered.
   /// </remarks>
-  public AVLKeySet<K, V> Keys => new AVLKeySet<K, V>(this);
+  public IReadOnlyNavigableSet<K> Keys => new AVLKeySet<K, V>(this);
 
   IEnumerable<K> INavigableDictionary<K, V>.Keys => Keys;
   IEnumerable<K> IReadOnlyDictionary<K, V>.Keys => Keys;

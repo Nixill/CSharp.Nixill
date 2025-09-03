@@ -88,8 +88,8 @@ public class CatchEnumerable<T> : IEnumerable<T>
 }
 
 /// <summary>
-///   A wrapper around an <see cref="IEnumerable{T}"/> that absorbs
-///   exceptions thrown by the enumerable during enumeration.
+///   A wrapper around an <see cref="IEnumerator{T}"/> that absorbs
+///   exceptions thrown by the enumerator during enumeration.
 /// </summary>
 /// <remarks>
 ///   This class is approximately as thread-safe as the original

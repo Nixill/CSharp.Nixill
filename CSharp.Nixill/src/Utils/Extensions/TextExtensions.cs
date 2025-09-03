@@ -86,7 +86,7 @@ public static class TextExtensions
   /// <returns>The escaped string.</returns>
   public static string Escape(this IEnumerable<char> input, char escapeChar, IDictionary<char, string> sequences)
     => EscapeEnumerable(input, escapeChar, sequences).FormString();
-  
+
   static IEnumerable<char> EscapeEnumerable(IEnumerable<char> input, char escapeChar, IDictionary<char, string> sequences)
   {
     foreach (char chr in input)
@@ -126,7 +126,7 @@ public static class TextExtensions
   /// <returns>The string.</returns>
   public static string StringJoin<T>(this IEnumerable<T> objects, string with)
     => string.Join(with, objects);
-  
+
   /// <summary>
   ///   Parses escaped characters from a string.
   /// </summary>
@@ -136,15 +136,27 @@ public static class TextExtensions
   /// </param>
   /// <param name="sequences">
   ///   Map of escape sequences (without the escape character itself) to
-  ///   the haracters they represent.
+  ///   the characters they represent.
   /// </param>
   /// <returns>The parsed string.</returns>
-  public static string Unescape(this string input, char escapeChar, IDictionary<string, char> sequences)
+  public static string Unescape(this IEnumerable<char> input, char escapeChar, IDictionary<string, char> sequences)
     => UnescapeEnumerable(input, escapeChar, new RecursiveDictionary<char, char>(sequences.Select(kvp => new KeyValuePair<IEnumerable<char>, char>(kvp.Key, kvp.Value)))).FormString();
 
-  public static string Unescape(this string input, char escapeChar, IDictionary<IEnumerable<char>, char> sequences)
+  /// <summary>
+  ///   Parses escaped characters from a string.
+  /// </summary>
+  /// <param name="input">The input string.</param>
+  /// <param name="escapeChar">
+  ///   The escape character. Double this is treated as itself.
+  /// </param>
+  /// <param name="sequences">
+  ///   Map of escape sequences (without the escape character itself) to
+  ///   the characters they represent.
+  /// </param>
+  /// <returns>The parsed string.</returns>
+  public static string Unescape(this IEnumerable<char> input, char escapeChar, IDictionary<IEnumerable<char>, char> sequences)
     => UnescapeEnumerable(input, escapeChar, (sequences as RecursiveDictionary<char, char>) ?? new RecursiveDictionary<char, char>(sequences)).FormString();
-  
+
   static IEnumerable<char> UnescapeEnumerable(IEnumerable<char> input, char escapeChar, RecursiveDictionary<char, char> sequences)
   {
     IEnumerator<char> enm = input.GetEnumerator();
@@ -167,7 +179,7 @@ public static class TextExtensions
           if (!enm.MoveNext()) yield break;
 
           chr = enm.Current;
-          
+
           if (chr == escapeChar && object.ReferenceEquals(view, sequences))
           {
             yield return escapeChar;
@@ -175,7 +187,7 @@ public static class TextExtensions
           }
 
           if (!view.ContainsPrefix([chr])) break;
-          
+
           view = view.GetPrefix([chr]);
         }
       }
