@@ -3,7 +3,7 @@ namespace Nixill.Utils.Extensions;
 /// <summary>
 ///   Extension methods dealing with sets.
 /// </summary>
-public static class SetExtensions
+public static class SetExtensionsObsolete
 {
   /// <summary>
   ///   Returns all the combinations of <c>limit</c> of the elements in
