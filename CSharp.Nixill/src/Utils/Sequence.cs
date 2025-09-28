@@ -6,13 +6,13 @@ namespace Nixill.Utils;
 public static class Sequence
 {
   /// <summary>
-  ///   Returns the first non-zero argument in the sequence.
+  ///   Returns the first non-zero element in the sequence.
   /// </summary>
-  /// <param name="ints">The items.</param>
+  /// <param name="ints">The sequence.</param>
   /// <returns>
-  ///   The first item that is non-zero, or <c>0</c> if all items are <c>0</c>.
+  ///   The first item that is non-zero, or <c>0</c> if all elements are <c>0</c>.
   /// </returns>
-  public static int FirstNonZero(params int[] ints)
+  public static int FirstNonZero(params IEnumerable<int> ints)
   {
     foreach (int i in ints)
     {
@@ -20,6 +20,25 @@ public static class Sequence
       {
         return i;
       }
+    }
+    return 0;
+  }
+
+  /// <summary>
+  ///   Returns the first non-zero element in the sequence, or zero if
+  ///   an element is null.
+  /// </summary>
+  /// <param name="ints">The sequence.</param>
+  /// <returns>
+  ///   The first item that is non-zero, or <c>0</c> if a <c>null</c> is
+  ///   encountered or the end of the sequence is reached.
+  /// </returns>
+  public static int FirstNullOrNonZero(params IEnumerable<int?> ints)
+  {
+    foreach (int? i in ints)
+    {
+      if (i == null) return 0;
+      if (i != 0) return i.Value;
     }
     return 0;
   }
@@ -93,6 +112,7 @@ public static class Sequence
   /// </typeparam>
   /// <param name="items">The elements of the sequence.</param>
   /// <returns>The sequence.</returns>
+  [Obsolete("Use collection literal syntax")]
   public static IEnumerable<T> Of<T>(params T[] items)
   {
     foreach (T item in items) yield return item;
@@ -104,6 +124,7 @@ public static class Sequence
   /// <typeparam name="T">The type of element in the sequence.</typeparam>
   /// <param name="item">The item.</param>
   /// <returns>The sequence.</returns>
+  [Obsolete("Use collection literal syntax")]
   public static IEnumerable<T> Of<T>(T item)
   {
     yield return item;
@@ -121,7 +142,7 @@ public static class Sequence
   /// </typeparam>
   /// <param name="funcs">The functions.</param>
   /// <returns>The sequence.</returns>
-  public static IEnumerable<T> Of<T>(params Func<T>[] funcs)
+  public static IEnumerable<T> Of<T>(params IEnumerable<Func<T>> funcs)
   {
     foreach (Func<T> func in funcs) yield return func();
   }
