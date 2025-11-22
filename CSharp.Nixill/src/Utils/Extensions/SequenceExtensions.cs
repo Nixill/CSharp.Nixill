@@ -416,6 +416,29 @@ public static class SequenceExtensions
   }
 
   /// <summary>
+  ///   Returns an enumerable that incorporates an index value into a
+  ///   tuple.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">The sequence.</param>
+  /// <param name="start">The starting index for the sequence.</param>
+  /// <param name="step">
+  ///   The amount to increment the index for each item in the sequence.
+  /// </param>
+  /// <returns>The sequence of tuples.</returns>
+  public static IEnumerable<(int Index, T Item)> Index<T>(this IEnumerable<T> sequence, int start, int step = 1)
+  {
+    int index = start;
+    foreach (T item in sequence)
+    {
+      yield return (index, item);
+      index += step;
+    }
+  }
+
+  /// <summary>
   ///   Returns the element in the middle of the sequence.
   /// </summary>
   /// <remarks>
