@@ -45,7 +45,7 @@ public static class SetExtensions
       yield break;
     }
 
-    foreach ((T elem, int i) in elemList.Take(skips + 1).WithIndex())
+    foreach ((int i, T elem) in elemList.Take(skips + 1).Index())
     {
       if (keep == 1) yield return [elem];
       else
@@ -127,7 +127,7 @@ public static class SetExtensions
       yield break;
     }
 
-    foreach ((T elem, int i) in elemList.Take(skips + 1).WithIndex())
+    foreach ((int i, T elem) in elemList.Take(skips + 1).Index())
     {
       if (given.Contains(elem)) continue;
       given.Add(elem);

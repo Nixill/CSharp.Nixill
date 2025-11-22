@@ -84,7 +84,7 @@ public class Digits : IEnumerable<(char, int)>
     CharToIntMap = [];
     IntToCharMap = [];
 
-    foreach ((char c, int i) in digits.WithIndex())
+    foreach ((int i, char c) in digits.Index())
     {
       if (caseSetting == CaseOption.CaseSensitive)
       {
