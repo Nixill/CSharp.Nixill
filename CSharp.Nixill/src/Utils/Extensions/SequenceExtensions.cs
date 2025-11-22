@@ -902,6 +902,19 @@ public static class SequenceExtensions
     => sequence.WhereOrderedBy(x => x, Comparer<T>.Default, desc, distinctly);
 
   /// <summary>
+  ///   Splits <paramref name="sequence"/> into chunks of exactly <paramref name="size"/>
+  ///   elements, discarding any remainder.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">The sequence to split.</param>
+  /// <param name="size">The size of the chunks.</param>
+  /// <returns>The sequence of chunks.</returns>
+  public static IEnumerable<T[]> WholeChunk<T>(this IEnumerable<T> sequence, int size)
+    => sequence.Chunk(size).Where(c => c.Length == size);
+
+  /// <summary>
   ///   Returns each element of a sequence in a tuple with its index in
   ///   the sequence.
   /// </summary>
