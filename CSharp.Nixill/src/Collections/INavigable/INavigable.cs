@@ -210,6 +210,35 @@ public interface IReadOnlyNavigableSet<T> : IReadOnlyCollection<T>
   ///   The set contains no elements.
   /// </exception>
   public T HighestValue();
+
+  /// <summary>
+  ///   Returns a subsequence containing all of this set's elements
+  ///   greater than or equal to <paramref name="lowerBound"/> and less
+  ///   than or equal to <paramref name="upperBound"/>.
+  /// </summary>
+  /// <remarks>
+  ///   This method should never throw an exception from a lack of
+  ///   elements being found in the set.
+  /// </remarks>
+  /// <param name="lowerBound">The lower bound of the subsequence.</param>
+  /// <param name="upperBound">The upper bound of the subsequence.</param>
+  /// <param name="lowerBoundDirection">
+  ///   The direction in which to navigate from <paramref name="lowerBound"/>
+  ///   to the lowest element in the subsequence.
+  /// </param>
+  /// <param name="upperBoundDirection">
+  ///   The direction in which to navigate from <paramref name="upperBound"/>
+  ///   to the highest element in the subsequence.
+  /// </param>
+  /// <returns>
+  ///   The subsequence as described above.
+  /// </returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   <paramref name="lowerBound"/> is greater than <paramref name="upperBound"/>.
+  /// </exception>
+  public IEnumerable<T> GetSlice(T lowerBound, T upperBound,
+    NavigationDirection lowerBoundDirection = NavigationDirection.Floor,
+    NavigationDirection upperBoundDirection = NavigationDirection.Ceiling);
 }
 
 /// <summary>
@@ -528,4 +557,71 @@ public interface IReadOnlyNavigableDictionary<K, V> : IReadOnlyDictionary<K, V>
   ///   The dictionary contains no elements.
   /// </exception>
   public KeyValuePair<K, V> HighestEntry();
+
+  /// <summary>
+  ///   Returns a subsequence containing all of this dictionary's keys
+  ///   greater than or equal to <paramref name="lowerBound"/> and less
+  ///   than or equal to <paramref name="upperBound"/>.
+  /// </summary>
+  /// <remarks>
+  ///   This method should never throw an exception from a lack of entries
+  ///   being found in the dictionary.
+  /// </remarks>
+  /// <param name="lowerBound">The lower bound of the subsequence.</param>
+  /// <param name="upperBound">The upper bound of the subsequence.</param>
+  /// <param name="lowerBoundDirection">
+  ///   The direction in which to navigate from <paramref name="lowerBound"/>
+  ///   to the lowest key in the subsequence.
+  /// </param>
+  /// <param name="upperBoundDirection">
+  ///   The direction in which to navigate from <paramref name="upperBound"/>
+  ///   to the highest key in the subsequence.
+  /// </param>
+  /// <returns>
+  ///   The subsequence as described above.
+  /// </returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   <paramref name="lowerBound"/> is greater than <paramref name="upperBound"/>.
+  /// </exception>
+  public IEnumerable<K> GetKeySlice(K lowerBound, K upperBound,
+    NavigationDirection lowerBoundDirection = NavigationDirection.Ceiling,
+    NavigationDirection upperBoundDirection = NavigationDirection.Floor);
+
+  /// <summary>
+  ///   Returns a subsequence containing all of this dictionary's entries
+  ///   with keys greater than or equal to <paramref name="lowerBound"/>
+  ///   and less than or equal to <paramref name="upperBound"/>.
+  /// </summary>
+  /// <remarks>
+  ///   This method should never throw an exception from a lack of entries
+  ///   being found in the dictionary.
+  /// </remarks>
+  /// <param name="lowerBound">The lower bound of the subsequence.</param>
+  /// <param name="upperBound">The upper bound of the subsequence.</param>
+  /// <param name="lowerBoundDirection">
+  ///   The direction in which to navigate from <paramref name="lowerBound"/>
+  ///   to the lowest key in the subsequence.
+  /// </param>
+  /// <param name="upperBoundDirection">
+  ///   The direction in which to navigate from <paramref name="upperBound"/>
+  ///   to the highest key in the subsequence.
+  /// </param>
+  /// <returns>
+  ///   The subsequence as described above.
+  /// </returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   <paramref name="lowerBound"/> is greater than <paramref name="upperBound"/>.
+  /// </exception>
+  public IEnumerable<KeyValuePair<K, V>> GetEntrySlice(K lowerBound, K upperBound,
+    NavigationDirection lowerBoundDirection = NavigationDirection.Ceiling,
+    NavigationDirection upperBoundDirection = NavigationDirection.Floor);
+}
+
+public enum NavigationDirection
+{
+  Lower = -2,
+  Floor = -1,
+  Exact = 0,
+  Ceiling = 1,
+  Higher = 2
 }

@@ -550,6 +550,67 @@ public class AVLTreeDictionary<K, V> : INavigableDictionary<K, V>
   /// </summary>
   /// <returns>The highest key.</returns>
   public K HighestKey() => BackingSet.HighestValue().Key;
+
+  /// <summary>
+  ///   Returns a subsequence containing all of this dictionary's keys
+  ///   greater than or equal to <paramref name="lowerBound"/> and less
+  ///   than or equal to <paramref name="upperBound"/>.
+  /// </summary>
+  /// <remarks>
+  ///   This method should never throw an exception from a lack of entries
+  ///   being found in the dictionary.
+  /// </remarks>
+  /// <param name="lowerBound">The lower bound of the subsequence.</param>
+  /// <param name="upperBound">The upper bound of the subsequence.</param>
+  /// <param name="lowerBoundDirection">
+  ///   The direction in which to navigate from <paramref name="lowerBound"/>
+  ///   to the lowest key in the subsequence.
+  /// </param>
+  /// <param name="upperBoundDirection">
+  ///   The direction in which to navigate from <paramref name="upperBound"/>
+  ///   to the highest key in the subsequence.
+  /// </param>
+  /// <returns>
+  ///   The subsequence as described above.
+  /// </returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   <paramref name="lowerBound"/> is greater than <paramref name="upperBound"/>.
+  /// </exception>
+  public IEnumerable<K> GetKeySlice(K lowerBound, K upperBound,
+    NavigationDirection lowerBoundDirection = NavigationDirection.Ceiling,
+    NavigationDirection upperBoundDirection = NavigationDirection.Floor)
+      => BackingSet.GetSlice(PairUp(lowerBound), PairUp(upperBound), lowerBoundDirection, upperBoundDirection)
+        .Select(kvp => kvp.Key);
+
+  /// <summary>
+  ///   Returns a subsequence containing all of this dictionary's entries
+  ///   with keys greater than or equal to <paramref name="lowerBound"/>
+  ///   and less than or equal to <paramref name="upperBound"/>.
+  /// </summary>
+  /// <remarks>
+  ///   This method should never throw an exception from a lack of entries
+  ///   being found in the dictionary.
+  /// </remarks>
+  /// <param name="lowerBound">The lower bound of the subsequence.</param>
+  /// <param name="upperBound">The upper bound of the subsequence.</param>
+  /// <param name="lowerBoundDirection">
+  ///   The direction in which to navigate from <paramref name="lowerBound"/>
+  ///   to the lowest key in the subsequence.
+  /// </param>
+  /// <param name="upperBoundDirection">
+  ///   The direction in which to navigate from <paramref name="upperBound"/>
+  ///   to the highest key in the subsequence.
+  /// </param>
+  /// <returns>
+  ///   The subsequence as described above.
+  /// </returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   <paramref name="lowerBound"/> is greater than <paramref name="upperBound"/>.
+  /// </exception>
+  public IEnumerable<KeyValuePair<K, V>> GetEntrySlice(K lowerBound, K upperBound,
+    NavigationDirection lowerBoundDirection = NavigationDirection.Ceiling,
+    NavigationDirection upperBoundDirection = NavigationDirection.Floor)
+      => BackingSet.GetSlice(PairUp(lowerBound), PairUp(upperBound), lowerBoundDirection, upperBoundDirection);
   #endregion
 
   #region IDictionary<K, V>

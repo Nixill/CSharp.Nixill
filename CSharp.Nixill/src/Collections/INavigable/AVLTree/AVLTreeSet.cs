@@ -645,6 +645,50 @@ public class AVLTreeSet<T> : INavigableSet<T>
   }
 
   /// <summary>
+  ///   Returns a subsequence containing all of this set's elements
+  ///   greater than or equal to <paramref name="lowerBound"/> and less
+  ///   than or equal to <paramref name="upperBound"/>.
+  /// </summary>
+  /// <remarks>
+  ///   This method should never throw an exception from a lack of
+  ///   elements being found in the set.
+  /// </remarks>
+  /// <param name="lowerBound">The lower bound of the subsequence.</param>
+  /// <param name="upperBound">The upper bound of the subsequence.</param>
+  /// <param name="lowerBoundDirection">
+  ///   The direction in which to navigate from <paramref name="lowerBound"/>
+  ///   to the lowest element in the subsequence.
+  /// </param>
+  /// <param name="upperBoundDirection">
+  ///   The direction in which to navigate from <paramref name="upperBound"/>
+  ///   to the highest element in the subsequence.
+  /// </param>
+  /// <returns>
+  ///   The subsequence as described above.
+  /// </returns>
+  /// <exception cref="ArgumentOutOfRangeException">
+  ///   <paramref name="lowerBound"/> is greater than <paramref name="upperBound"/>.
+  /// </exception>
+  public IEnumerable<T> GetSlice(T lowerBound, T upperBound,
+    NavigationDirection lowerBoundDirection = NavigationDirection.Floor,
+    NavigationDirection upperBoundDirection = NavigationDirection.Ceiling)
+  {
+    if (Comparer.Invoke(lowerBound, upperBound) > 0)
+      throw new ArgumentOutOfRangeException(nameof(lowerBound), $"Cannot be higher than {nameof(upperBound)}");
+
+    // empty set = empty subset
+    if (Root is null) yield break;
+
+    if (!(TryGetLowerBound(lowerBound, lowerBoundDirection, out T? lowerBoundInclusive)
+      && TryGetUpperBound(upperBound, upperBoundDirection, out T? upperBoundInclusive)))
+      yield break;
+
+    if (Comparer.Invoke(lowerBoundInclusive, upperBoundInclusive) > 0) yield break;
+
+    foreach (T item in RecursiveEnumerateBetween(Root, lowerBoundInclusive, upperBoundInclusive)) yield return item;
+  }
+
+  /// <summary>
   ///   Removes all elements in <c>elems</c> from this set.
   /// </summary>
   /// <param name="elems">The elements to remove.</param>
@@ -845,6 +889,128 @@ public class AVLTreeSet<T> : INavigableSet<T>
     foreach (T item in RecursiveEnumerate(node.Left)) yield return item;
     yield return node.Data;
     foreach (T item in RecursiveEnumerate(node.Right)) yield return item;
+  }
+
+  private IEnumerable<T> RecursiveEnumerateBetween(Node<T>? node, T lowerBoundInclusive, T upperBoundInclusive)
+  {
+    if (node == null) yield break;
+
+    if (Comparer.Invoke(node.Data, lowerBoundInclusive) > 0)
+      foreach (T item in RecursiveEnumerateBetween(node.Left, lowerBoundInclusive, upperBoundInclusive))
+        yield return item;
+    if (Comparer.Invoke(node.Data, lowerBoundInclusive) >= 0 && Comparer.Invoke(node.Data, upperBoundInclusive) < 0)
+      yield return node.Data;
+    if (Comparer.Invoke(node.Data, upperBoundInclusive) < 0)
+      foreach (T item in RecursiveEnumerateBetween(node.Left, lowerBoundInclusive, upperBoundInclusive))
+        yield return item;
+  }
+
+  private bool TryGetLowerBound(T from, NavigationDirection dir, [MaybeNullWhen(false)] out T bound)
+  {
+    if (dir == NavigationDirection.Lower)
+    {
+      if (TryGetLower(from, out T to))
+      {
+        bound = to;
+        return true;
+      }
+      else
+      {
+        bound = LowestValue();
+        return true;
+      }
+    }
+    else if (dir == NavigationDirection.Floor)
+    {
+      if (TryGetFloor(from, out T to))
+      {
+        bound = to;
+        return true;
+      }
+      else
+      {
+        bound = LowestValue();
+        return true;
+      }
+    }
+    else if (dir == NavigationDirection.Exact)
+    {
+      bound = from;
+      return true;
+    }
+    else if (dir == NavigationDirection.Ceiling)
+    {
+      if (TryGetCeiling(from, out T to))
+      {
+        bound = to;
+        return true;
+      }
+    }
+    else if (dir == NavigationDirection.Higher)
+    {
+      if (TryGetHigher(from, out T to))
+      {
+        bound = to;
+        return true;
+      }
+    }
+
+    bound = default!;
+    return false;
+  }
+
+  private bool TryGetUpperBound(T from, NavigationDirection dir, [MaybeNullWhen(false)] out T bound)
+  {
+    if (dir == NavigationDirection.Higher)
+    {
+      if (TryGetHigher(from, out T to))
+      {
+        bound = to;
+        return true;
+      }
+      else
+      {
+        bound = HighestValue();
+        return true;
+      }
+    }
+    else if (dir == NavigationDirection.Ceiling)
+    {
+      if (TryGetCeiling(from, out T to))
+      {
+        bound = to;
+        return true;
+      }
+      else
+      {
+        bound = LowestValue();
+        return true;
+      }
+    }
+    else if (dir == NavigationDirection.Exact)
+    {
+      bound = from;
+      return true;
+    }
+    else if (dir == NavigationDirection.Floor)
+    {
+      if (TryGetFloor(from, out T to))
+      {
+        bound = to;
+        return true;
+      }
+    }
+    else if (dir == NavigationDirection.Lower)
+    {
+      if (TryGetLower(from, out T to))
+      {
+        bound = to;
+        return true;
+      }
+    }
+
+    bound = default!;
+    return false;
   }
 
   private static Comparison<T> GetComparer()
