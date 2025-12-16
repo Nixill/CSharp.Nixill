@@ -126,7 +126,7 @@ public static class NumericsExtensions
   /// <param name="list">The sequence.</param>
   /// <returns>The equally maximal values.</returns>
   public static IEnumerable<T> MaxMany<T>(this IEnumerable<T> list) where T : IComparable<T>
-    => ManyMax(list, x => x, x => x, Comparer<T>.Default);
+    => _ManyMax(list, x => x, x => x, Comparer<T>.Default);
 
   /// <summary>
   ///   Returns all equally maximal values in the sequence according to a
@@ -139,7 +139,7 @@ public static class NumericsExtensions
   /// <param name="comparer">The comparer.</param>
   /// <returns>The equally maximal values.</returns>
   public static IEnumerable<T> MaxMany<T>(this IEnumerable<T> list, IComparer<T> comparer)
-    => ManyMax(list, x => x, x => x, comparer);
+    => _ManyMax(list, x => x, x => x, comparer);
 
   /// <summary>
   ///   Invokes a transform function on each element of a sequence.
@@ -157,7 +157,7 @@ public static class NumericsExtensions
   /// <returns>The equally maximal transformed values.</returns>
   public static IEnumerable<TOut> MaxMany<TIn, TOut>(this IEnumerable<TIn> list, Func<TIn, TOut> mutator)
     where TOut : IComparable<TOut>
-    => ManyMax(list, mutator, y => y, Comparer<TOut>.Default);
+    => _ManyMax(list, mutator, y => y, Comparer<TOut>.Default);
 
   /// <summary>
   ///   Invokes a transform function on each element of a sequence.
@@ -175,7 +175,7 @@ public static class NumericsExtensions
   /// <returns>The equally maximal transformed values.</returns>
   public static IEnumerable<TOut> MaxMany<TIn, TOut>(this IEnumerable<TIn> list, Func<TIn, TOut> mutator,
     IComparer<TOut> comparer)
-    => ManyMax(list, mutator, y => y, comparer);
+    => _ManyMax(list, mutator, y => y, comparer);
 
   /// <summary>
   ///   Returns all values in a sequence which are equally maximal
@@ -194,7 +194,7 @@ public static class NumericsExtensions
   /// </returns>
   public static IEnumerable<TIn> MaxManyBy<TIn, TOut>(this IEnumerable<TIn> list, Func<TIn, TOut> mutator)
     where TOut : IComparable<TOut>
-    => ManyMax(list, x => x, mutator, Comparer<TOut>.Default);
+    => _ManyMax(list, x => x, mutator, Comparer<TOut>.Default);
 
   /// <summary>
   ///   Returns all values in a sequence which are equally maximal
@@ -213,7 +213,63 @@ public static class NumericsExtensions
   /// </returns>
   public static IEnumerable<TIn> MaxManyBy<TIn, TOut>(this IEnumerable<TIn> list, Func<TIn, TOut> mutator,
     IComparer<TOut> comparer)
-    => ManyMax(list, x => x, mutator, comparer);
+    => _ManyMax(list, x => x, mutator, comparer);
+
+  /// <summary>
+  ///   Returns the maximum value in a sequence, along with the index at
+  ///   which that maximum value is first located.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence, which must be naturally
+  ///   comparable.
+  /// </typeparam>
+  /// <param name="list">The sequence.</param>
+  /// <returns>A tuple of the index and the item in question.</returns>
+  public static (int Index, T Item) MaxWithFirstIndex<T>(this IEnumerable<T> list)
+    => _MaxWithIndex(list, Comparer<T>.Default);
+
+  /// <summary>
+  ///   Returns the maximum value in a sequence, along with the index at
+  ///   which that maximum value is first located.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="list">The sequence.</param>
+  /// <param name="comparer">
+  ///   The comparer for items in the sequence.
+  /// </param>
+  /// <returns>A tuple of the index and the item in question.</returns>
+  public static (int Index, T Item) MaxWithFirstIndex<T>(this IEnumerable<T> list, IComparer<T> comparer)
+    => _MaxWithIndex(list, comparer);
+
+  /// <summary>
+  ///   Returns the maximum value in a sequence, along with the index at
+  ///   which that maximum value is last located.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence, which must be naturally
+  ///   comparable.
+  /// </typeparam>
+  /// <param name="list">The sequence.</param>
+  /// <returns>A tuple of the index and the item in question.</returns>
+  public static (int Index, T Item) MaxWithLastIndex<T>(this IEnumerable<T> list)
+    => _MaxWithIndex(list, Comparer<T>.Default, fromEnd: true);
+
+  /// <summary>
+  ///   Returns the maximum value in a sequence, along with the index at
+  ///   which that maximum value is last located.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="list">The sequence.</param>
+  /// <param name="comparer">
+  ///   The comparer for items in the sequence.
+  /// </param>
+  /// <returns>A tuple of the index and the item in question.</returns>
+  public static (int Index, T Item) MaxWithLastIndex<T>(this IEnumerable<T> list, IComparer<T> comparer)
+    => _MaxWithIndex(list, comparer, fromEnd: true);
 
   /// <summary>
   ///   Returns all equally minimal values in the sequence.
@@ -225,7 +281,7 @@ public static class NumericsExtensions
   /// <param name="list">The sequence.</param>
   /// <returns>The equally minimal values.</returns>
   public static IEnumerable<T> MinMany<T>(this IEnumerable<T> list) where T : IComparable<T>
-    => ManyMax(list, x => x, x => x, Comparer<T>.Default.Invert());
+    => _ManyMax(list, x => x, x => x, Comparer<T>.Default.Invert());
 
   /// <summary>
   ///   Returns all equally minimal values in the sequence according to a
@@ -238,7 +294,7 @@ public static class NumericsExtensions
   /// <param name="comparer">The comparer.</param>
   /// <returns>The equally minimal values.</returns>
   public static IEnumerable<T> MinMany<T>(this IEnumerable<T> list, IComparer<T> comparer)
-    => ManyMax(list, x => x, x => x, comparer.Invert());
+    => _ManyMax(list, x => x, x => x, comparer.Invert());
 
   /// <summary>
   ///   Invokes a transform function on each element of a sequence.
@@ -256,7 +312,7 @@ public static class NumericsExtensions
   /// <returns>The equally minimal transformed values.</returns>
   public static IEnumerable<TOut> MinMany<TIn, TOut>(this IEnumerable<TIn> list, Func<TIn, TOut> mutator)
     where TOut : IComparable<TOut>
-    => ManyMax(list, mutator, y => y, Comparer<TOut>.Default.Invert());
+    => _ManyMax(list, mutator, y => y, Comparer<TOut>.Default.Invert());
 
   /// <summary>
   ///   Invokes a transform function on each element of a sequence.
@@ -274,7 +330,7 @@ public static class NumericsExtensions
   /// <returns>The equally minimal transformed values.</returns>
   public static IEnumerable<TOut> MinMany<TIn, TOut>(this IEnumerable<TIn> list, Func<TIn, TOut> mutator,
     IComparer<TOut> comparer)
-    => ManyMax(list, mutator, y => y, comparer.Invert());
+    => _ManyMax(list, mutator, y => y, comparer.Invert());
 
   /// <summary>
   ///   Returns all values in a sequence which are equally minimal
@@ -293,7 +349,7 @@ public static class NumericsExtensions
   /// </returns>
   public static IEnumerable<TIn> MinManyBy<TIn, TOut>(this IEnumerable<TIn> list, Func<TIn, TOut> mutator)
     where TOut : IComparable<TOut>
-    => ManyMax(list, x => x, mutator, Comparer<TOut>.Default.Invert());
+    => _ManyMax(list, x => x, mutator, Comparer<TOut>.Default.Invert());
 
   /// <summary>
   ///   Returns all values in a sequence which are equally minimal
@@ -312,36 +368,63 @@ public static class NumericsExtensions
   /// </returns>
   public static IEnumerable<TIn> MinManyBy<TIn, TOut>(this IEnumerable<TIn> list, Func<TIn, TOut> mutator,
     IComparer<TOut> comparer)
-    => ManyMax(list, x => x, mutator, comparer.Invert());
+    => _ManyMax(list, x => x, mutator, comparer.Invert());
 
-  static IEnumerable<TOut> ManyMax<TIn, TOut, TKey>(IEnumerable<TIn> list, Func<TIn, TOut> mutator,
-    Func<TOut, TKey> keySelector, IComparer<TKey> comparison)
-  {
-    TKey current = default(TKey)!;
-    List<TOut> output = [];
-    bool assigned = false;
+  /// <summary>
+  ///   Returns the minimum value in a sequence, along with the index at
+  ///   which that minimum value is first located.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence, which must be naturally
+  ///   comparable.
+  /// </typeparam>
+  /// <param name="list">The sequence.</param>
+  /// <returns>A tuple of the index and the item in question.</returns>
+  public static (int Index, T Item) MinWithFirstIndex<T>(this IEnumerable<T> list)
+    => _MaxWithIndex(list, Comparer<T>.Default.Invert());
 
-    foreach (TIn item in list)
-    {
-      TOut mutated = mutator(item);
-      TKey key = keySelector(mutated);
+  /// <summary>
+  ///   Returns the minimum value in a sequence, along with the index at
+  ///   which that minimum value is first located.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="list">The sequence.</param>
+  /// <param name="comparer">
+  ///   The comparer for items in the sequence.
+  /// </param>
+  /// <returns>A tuple of the index and the item in question.</returns>
+  public static (int Index, T Item) MinWithFirstIndex<T>(this IEnumerable<T> list, IComparer<T> comparer)
+    => _MaxWithIndex(list, comparer.Invert());
 
-      int result = comparison.Compare(current, key);
+  /// <summary>
+  ///   Returns the minimum value in a sequence, along with the index at
+  ///   which that minimum value is last located.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence, which must be naturally
+  ///   comparable.
+  /// </typeparam>
+  /// <param name="list">The sequence.</param>
+  /// <returns>A tuple of the index and the item in question.</returns>
+  public static (int Index, T Item) MinWithLastIndex<T>(this IEnumerable<T> list)
+    => _MaxWithIndex(list, Comparer<T>.Default.Invert(), fromEnd: true);
 
-      if (!assigned || result < 0)
-      {
-        current = key;
-        output = [mutated];
-        assigned = true;
-      }
-      else if (result == 0)
-      {
-        output.Add(mutated);
-      }
-    }
-
-    return output;
-  }
+  /// <summary>
+  ///   Returns the minimum value in a sequence, along with the index at
+  ///   which that minimum value is last located.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="list">The sequence.</param>
+  /// <param name="comparer">
+  ///   The comparer for items in the sequence.
+  /// </param>
+  /// <returns>A tuple of the index and the item in question.</returns>
+  public static (int Index, T Item) MinWithLastIndex<T>(this IEnumerable<T> list, IComparer<T> comparer)
+    => _MaxWithIndex(list, comparer.Invert(), fromEnd: true);
 
   /// <summary>
   ///   Returns the sum of a sequence.
@@ -390,6 +473,61 @@ public static class NumericsExtensions
     TOutput output = TInput.AdditiveIdentity;
     foreach (TInput input in inputs) output = input + output;
     return output;
+  }
+
+  static IEnumerable<TOut> _ManyMax<TIn, TOut, TKey>(IEnumerable<TIn> list, Func<TIn, TOut> mutator,
+    Func<TOut, TKey> keySelector, IComparer<TKey> comparison)
+  {
+    TKey current = default(TKey)!;
+    List<TOut> output = [];
+    bool assigned = false;
+
+    foreach (TIn item in list)
+    {
+      TOut mutated = mutator(item);
+      TKey key = keySelector(mutated);
+
+      int result = comparison.Compare(current, key);
+
+      if (!assigned || result < 0)
+      {
+        current = key;
+        output = [mutated];
+        assigned = true;
+      }
+      else if (result == 0)
+      {
+        output.Add(mutated);
+      }
+    }
+
+    return output;
+  }
+
+  static (int, T) _MaxWithIndex<T>(IEnumerable<T> list, IComparer<T> comparer, bool fromEnd = false)
+  {
+    int currentIndex = -1;
+    T currentItem = default!;
+
+    foreach ((int index, T item) in list.Index())
+    {
+      if (currentIndex == -1)
+      {
+        currentIndex = index;
+        currentItem = item;
+      }
+      else
+      {
+        int result = comparer.Compare(currentItem, item);
+        if (result < 0 || (fromEnd && result == 0))
+        {
+          currentIndex = index;
+          currentItem = item;
+        }
+      }
+    }
+
+    return (currentIndex, currentItem);
   }
 }
 
