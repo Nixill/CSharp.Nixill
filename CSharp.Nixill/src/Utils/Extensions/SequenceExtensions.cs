@@ -725,6 +725,8 @@ public static class SequenceExtensions
       {
         chunk.Add(enumerator.Current);
       }
+
+      last = enumerator.Current;
     }
 
     yield return chunk;
@@ -815,7 +817,7 @@ public static class SequenceExtensions
       else expected = (i) => i <= 0;
     else
       if (distinctly) expected = (i) => i > 0;
-    else expected = (i) => i >= 0;
+      else expected = (i) => i >= 0;
 
     foreach (TSource item in sequence)
     {
