@@ -119,7 +119,7 @@ public static class GridExtensions
   /// <param name="grid">The grid to check.</param>
   /// <param name="from">The original reference.</param>
   /// <returns>The sequence.</returns>
-  public static IEnumerable<(T Item, IntVector2 Reference)> OrthogonallyAdjacentCells<T>(this IGrid<T> grid,
+  public static IEnumerable<(IntVector2 Reference, T Item)> OrthogonallyAdjacentCells<T>(this IGrid<T> grid,
     IntVector2 from)
     => grid.NearbyCells(from, [(0, -1)], GridTransforms.Rotate90);
 
@@ -135,7 +135,7 @@ public static class GridExtensions
   /// <param name="grid">The grid to check.</param>
   /// <param name="from">The original reference.</param>
   /// <returns>The sequence.</returns>
-  public static IEnumerable<(T Item, IntVector2 Reference)> DiagonallyAdjacentCells<T>(this IGrid<T> grid,
+  public static IEnumerable<(IntVector2 Reference, T Item)> DiagonallyAdjacentCells<T>(this IGrid<T> grid,
     IntVector2 from)
     => grid.NearbyCells(from, [(1, -1)], GridTransforms.Rotate90);
 
@@ -151,7 +151,7 @@ public static class GridExtensions
   /// <param name="grid">The grid to check.</param>
   /// <param name="from">The original reference.</param>
   /// <returns>The sequence.</returns>
-  public static IEnumerable<(T Item, IntVector2 reference)> EightAdjacentCells<T>(this IGrid<T> grid, IntVector2 from)
+  public static IEnumerable<(IntVector2 Reference, T Item)> EightAdjacentCells<T>(this IGrid<T> grid, IntVector2 from)
     => grid.NearbyCells(from, [(0, -1), (1, -1)], GridTransforms.Rotate90);
 
   /// <summary>
@@ -180,9 +180,9 @@ public static class GridExtensions
   ///   transform reach it.
   /// </param>
   /// <returns>The sequence.</returns>
-  public static IEnumerable<(T Item, IntVector2 reference)> NearbyCells<T>(this IGrid<T> grid, IntVector2 from,
+  public static IEnumerable<(IntVector2 Reference, T Item)> NearbyCells<T>(this IGrid<T> grid, IntVector2 from,
     IEnumerable<IntVector2> offsets, IEnumerable<Func<IntVector2, IntVector2>> transforms = null!, bool distinct = true)
-    => grid.NearbyRefs(from, offsets, transforms, distinct).Select(r => (grid[r], r));
+    => grid.NearbyRefs(from, offsets, transforms, distinct).Select(r => (r, grid[r]));
 
   /// <summary>
   ///   Returns a sequence of <see cref="IntVector2"/> cell references

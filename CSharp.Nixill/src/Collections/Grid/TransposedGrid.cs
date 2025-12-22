@@ -45,12 +45,12 @@ internal class TransposedGrid<T> : IGrid<T>
   public void Clear() => BackingGrid.Clear();
   public bool Contains(T item) => BackingGrid.Contains(item);
 
-  public IEnumerable<(T Item, IntVector2 Reference)> Flatten()
+  public IEnumerable<(IntVector2 Reference, T Item)> Flatten()
     => BackingGrid
       .Flatten()
       .OrderBy(t => t.Reference.X)
       .ThenBy(t => t.Reference.Y)
-      .Select(t => (t.Item, t.Reference.Transposed()));
+      .Select(t => (t.Reference.Transposed(), t.Item));
 
   public IList<T> GetColumn(int which) => BackingGrid.GetRow(which);
 
