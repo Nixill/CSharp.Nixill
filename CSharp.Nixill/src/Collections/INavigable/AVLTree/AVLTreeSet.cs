@@ -898,10 +898,10 @@ public class AVLTreeSet<T> : INavigableSet<T>
     if (Comparer.Invoke(node.Data, lowerBoundInclusive) > 0)
       foreach (T item in RecursiveEnumerateBetween(node.Left, lowerBoundInclusive, upperBoundInclusive))
         yield return item;
-    if (Comparer.Invoke(node.Data, lowerBoundInclusive) >= 0 && Comparer.Invoke(node.Data, upperBoundInclusive) < 0)
+    if (Comparer.Invoke(node.Data, lowerBoundInclusive) >= 0 && Comparer.Invoke(node.Data, upperBoundInclusive) <= 0)
       yield return node.Data;
     if (Comparer.Invoke(node.Data, upperBoundInclusive) < 0)
-      foreach (T item in RecursiveEnumerateBetween(node.Left, lowerBoundInclusive, upperBoundInclusive))
+      foreach (T item in RecursiveEnumerateBetween(node.Right, lowerBoundInclusive, upperBoundInclusive))
         yield return item;
   }
 
