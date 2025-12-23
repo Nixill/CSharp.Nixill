@@ -202,7 +202,7 @@ public interface IGrid<T> : IEnumerable<IEnumerable<T>>
   ///   rows first.
   /// </summary>
   /// <returns>The sequence.</returns>
-  IEnumerable<(T Item, IntVector2 Reference)> Flatten();
+  IEnumerable<(IntVector2 Reference, T Item)> Flatten();
 
   /// <summary>
   ///   Returns a copy of the specified column as an <see cref="IList{T}"/>.

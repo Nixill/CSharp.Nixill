@@ -66,9 +66,19 @@ internal class ReadOnlyNavigableDictionaryWrapper<K, V> : IReadOnlyNavigableDict
     return Backing.FloorKey(from);
   }
 
+  public IEnumerable<KeyValuePair<K, V>> GetEntrySlice(K lowerBound, K upperBound, NavigationDirection lowerBoundDirection = NavigationDirection.Ceiling, NavigationDirection upperBoundDirection = NavigationDirection.Floor)
+  {
+    return Backing.GetEntrySlice(lowerBound, upperBound, lowerBoundDirection, upperBoundDirection);
+  }
+
   public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
   {
     return Backing.GetEnumerator();
+  }
+
+  public IEnumerable<K> GetKeySlice(K lowerBound, K upperBound, NavigationDirection lowerBoundDirection = NavigationDirection.Ceiling, NavigationDirection upperBoundDirection = NavigationDirection.Floor)
+  {
+    return Backing.GetKeySlice(lowerBound, upperBound, lowerBoundDirection, upperBoundDirection);
   }
 
   public KeyValuePair<K, V> HigherEntry(K from)
@@ -216,6 +226,11 @@ internal class ReadOnlyNavigableSetWrapper<T> : IReadOnlyNavigableSet<T>
   public IEnumerator<T> GetEnumerator()
   {
     return Backing.GetEnumerator();
+  }
+
+  public IEnumerable<T> GetSlice(T lowerBound, T upperBound, NavigationDirection lowerBoundDirection = NavigationDirection.Floor, NavigationDirection upperBoundDirection = NavigationDirection.Ceiling)
+  {
+    return Backing.GetSlice(lowerBound, upperBound, lowerBoundDirection, upperBoundDirection);
   }
 
   public T Higher(T from)

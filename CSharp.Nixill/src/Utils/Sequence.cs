@@ -148,6 +148,63 @@ public static class Sequence
   }
 
   /// <summary>
+  ///   Returns a sequence of all integers within a range.
+  /// </summary>
+  /// <param name="start">
+  ///   The start of the sequence range. This value is included by default.
+  /// </param>
+  /// <param name="end">
+  ///   The end of the sequence range. This value is not included by default.
+  /// </param>
+  /// <param name="startInclusive">
+  ///   Whether or not the start value is inclusive. <see langword="true"/>
+  ///   by default.
+  /// </param>
+  /// <param name="endInclusive">
+  ///   Whether or not the end value is inclusive. <see langword="false"/>
+  ///   by default.
+  /// </param>
+  /// <param name="forwards">
+  ///   Whether the range should be forced to be increasing (<see langword="true"/>),
+  ///   decreasing (<see langword="false"/>), or determined by how <paramref name="start"/>
+  ///   compares to <paramref name="end"/> (<see langword="null"/>, default).
+  /// </param>
+  /// <returns>The sequence.</returns>
+  public static IEnumerable<int> RangeBetween(int start, int end, bool startInclusive = true, bool endInclusive = false,
+    bool? forwards = null)
+  {
+    if (start == end)
+    {
+      if (startInclusive && endInclusive) return [start];
+      else return [];
+    }
+    else if (start < end)
+    {
+      if (forwards == false) return [];
+      else return ForwardRangeBetween(start, end, startInclusive, endInclusive);
+    }
+    else /* (start > end) */
+    {
+      if (forwards == true) return [];
+      else return ReverseRangeBetween(start, end, startInclusive, endInclusive);
+    }
+  }
+
+  static IEnumerable<int> ForwardRangeBetween(int start, int end, bool startInclusive, bool endInclusive)
+  {
+    if (!startInclusive) start++;
+    if (!endInclusive) end--;
+    for (int i = start; i <= end; i++) yield return i;
+  }
+
+  static IEnumerable<int> ReverseRangeBetween(int start, int end, bool startInclusive, bool endInclusive)
+  {
+    if (!startInclusive) start--;
+    if (!endInclusive) end++;
+    for (int i = start; i >= end; i--) yield return i;
+  }
+
+  /// <summary>
   ///   Calls a function to produce values a given number of times.
   /// </summary>
   /// <typeparam name="T">

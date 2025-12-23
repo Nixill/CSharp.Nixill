@@ -75,7 +75,7 @@ public static class SequenceExtensions
   /// </returns>
   public static T ElementAtOr<T>(this IEnumerable<T> items, int atIndex, Func<T> or)
   {
-    foreach ((T item, int index) in items.WithIndex())
+    foreach ((int index, T item) in items.Index())
     {
       if (index == atIndex) return item;
     }
@@ -114,7 +114,7 @@ public static class SequenceExtensions
 
     if (end <= start) yield break;
 
-    foreach ((T item, int index) in items.WithIndex())
+    foreach ((int index, T item) in items.Index())
     {
       if (index >= end) yield break;
       if (index >= start) yield return item;
@@ -128,7 +128,7 @@ public static class SequenceExtensions
 
     Buffer<(T, int)> buffer = new(end);
 
-    foreach ((T item, int index) in items.WithIndex())
+    foreach ((int index, T item) in items.Index())
     {
       (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
       if (bumped && bumpedIndex >= start) yield return bumpedItem;
@@ -144,7 +144,7 @@ public static class SequenceExtensions
 
     if (range.End.IsFromEnd)
     {
-      foreach ((T item, int index) in items.WithIndex())
+      foreach ((int index, T item) in items.Index())
       {
         buffer.Add((item, index));
         count = index;
@@ -152,7 +152,7 @@ public static class SequenceExtensions
     }
     else
     {
-      foreach ((T item, int index) in items.WithIndex())
+      foreach ((int index, T item) in items.Index())
       {
         (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
         count = index;
@@ -187,7 +187,7 @@ public static class SequenceExtensions
     Dictionary<int, T> elementsAt = [];
     Buffer<T> buffer = new Buffer<T>(indices.Where(i => i.IsFromEnd).Select(i => i.Value).DefaultIfEmpty(0).Max());
 
-    foreach ((T item, int index) in items.WithIndex())
+    foreach ((int index, T item) in items.Index())
     {
       buffer.Add(item);
 
@@ -212,7 +212,7 @@ public static class SequenceExtensions
       .ToList();
     Dictionary<int, T> elementsAtNegative = [];
 
-    foreach ((T item, int index) in buffer.WithIndex())
+    foreach ((int index, T item) in buffer.Index())
     {
       if (index + 1 == toStoreNegative[0])
       {
@@ -255,7 +255,7 @@ public static class SequenceExtensions
   /// <returns>The sequence, less the skipped item.</returns>
   public static IEnumerable<T> ExceptElementAt<T>(this IEnumerable<T> items, int index)
   {
-    foreach ((T item, int itemIndex) in items.WithIndex())
+    foreach ((int itemIndex, T item) in items.Index())
     {
       if (itemIndex != index) yield return item;
     }
@@ -307,7 +307,7 @@ public static class SequenceExtensions
     int start = range.Start.Value;
     int end = range.End.Value;
 
-    foreach ((T item, int index) in items.WithIndex())
+    foreach ((int index, T item) in items.Index())
     {
       if (index < start || index >= end) yield return item;
     }
@@ -320,7 +320,7 @@ public static class SequenceExtensions
 
     Buffer<(T, int)> buffer = new(end);
 
-    foreach ((T item, int index) in items.WithIndex())
+    foreach ((int index, T item) in items.Index())
     {
       (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
       if (bumped && bumpedIndex < start) yield return bumpedItem;
@@ -339,7 +339,7 @@ public static class SequenceExtensions
 
     Buffer<(T, int)> buffer = new(start);
 
-    foreach ((T item, int index) in items.WithIndex())
+    foreach ((int index, T item) in items.Index())
     {
       (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
       if (bumped)
@@ -386,7 +386,7 @@ public static class SequenceExtensions
 
     Buffer<(T, int)> buffer = new(negativeIndices.Select(i => i.Value).FirstOrDefault());
 
-    foreach ((T item, int index) in items.WithIndex())
+    foreach ((int index, T item) in items.Index())
     {
       (bool bumped, (T bumpedItem, int bumpedIndex)) = buffer.Add((item, index));
       if (bumped)
@@ -402,7 +402,7 @@ public static class SequenceExtensions
       }
     }
 
-    foreach (((T item, int wrongIndex), int index) in buffer.WithIndex())
+    foreach ((int index, (T item, int wrongIndex)) in buffer.Index())
     {
       if (negativeIndices.Count != 0 && index == negativeIndices[0].GetOffset(buffer.BufferSize))
       {
@@ -412,6 +412,29 @@ public static class SequenceExtensions
       {
         yield return item;
       }
+    }
+  }
+
+  /// <summary>
+  ///   Returns an enumerable that incorporates an index value into a
+  ///   tuple.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">The sequence.</param>
+  /// <param name="start">The starting index for the sequence.</param>
+  /// <param name="step">
+  ///   The amount to increment the index for each item in the sequence.
+  /// </param>
+  /// <returns>The sequence of tuples.</returns>
+  public static IEnumerable<(int Index, T Item)> Index<T>(this IEnumerable<T> sequence, int start, int step = 1)
+  {
+    int index = start;
+    foreach (T item in sequence)
+    {
+      yield return (index, item);
+      index += step;
     }
   }
 
@@ -702,6 +725,8 @@ public static class SequenceExtensions
       {
         chunk.Add(enumerator.Current);
       }
+
+      last = enumerator.Current;
     }
 
     yield return chunk;
@@ -792,7 +817,7 @@ public static class SequenceExtensions
       else expected = (i) => i <= 0;
     else
       if (distinctly) expected = (i) => i > 0;
-    else expected = (i) => i >= 0;
+      else expected = (i) => i >= 0;
 
     foreach (TSource item in sequence)
     {
@@ -879,6 +904,19 @@ public static class SequenceExtensions
     => sequence.WhereOrderedBy(x => x, Comparer<T>.Default, desc, distinctly);
 
   /// <summary>
+  ///   Splits <paramref name="sequence"/> into chunks of exactly <paramref name="size"/>
+  ///   elements, discarding any remainder.
+  /// </summary>
+  /// <typeparam name="T">
+  ///   The type of elements in the sequence.
+  /// </typeparam>
+  /// <param name="sequence">The sequence to split.</param>
+  /// <param name="size">The size of the chunks.</param>
+  /// <returns>The sequence of chunks.</returns>
+  public static IEnumerable<T[]> WholeChunk<T>(this IEnumerable<T> sequence, int size)
+    => sequence.Chunk(size).Where(c => c.Length == size);
+
+  /// <summary>
   ///   Returns each element of a sequence in a tuple with its index in
   ///   the sequence.
   /// </summary>
@@ -887,6 +925,7 @@ public static class SequenceExtensions
   /// </typeparam>
   /// <param name="original">The original sequence.</param>
   /// <returns>The sequence of tuples.</returns>
+  [Obsolete("Use Index() instead. Note switched tuple element order!")]
   public static IEnumerable<(T Item, int Index)> WithIndex<T>(this IEnumerable<T> original)
   {
     return original.Select((x, i) => (x, i));

@@ -520,8 +520,8 @@ public class Grid<T> : IGrid<T>
   ///   rows first.
   /// </summary>
   /// <returns>The sequence.</returns>
-  public IEnumerable<(T Item, IntVector2 Reference)> Flatten()
-    => this.SelectMany((r, y) => r.Select((i, x) => (i, new IntVector2(x, y))));
+  public IEnumerable<(IntVector2 Reference, T Item)> Flatten()
+    => this.SelectMany((r, y) => r.Select((i, x) => (new IntVector2(x, y), i)));
 
   /// <summary>
   ///   Returns a copy of the specified column as an <see cref="IList{T}"/>.

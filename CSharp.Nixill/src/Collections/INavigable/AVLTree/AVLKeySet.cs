@@ -35,4 +35,9 @@ internal class AVLKeySet<K, V> : IReadOnlyNavigableSet<K>
   public bool TryGetHigher(K from, out K value) => Backing.TryGetHigherKey(from, out value);
   public bool TryGetLower(K from, out K value) => Backing.TryGetLowerKey(from, out value);
   IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+  public IEnumerable<K> GetSlice(K lowerBound, K upperBound,
+    NavigationDirection lowerBoundDirection = NavigationDirection.Floor,
+    NavigationDirection upperBoundDirection = NavigationDirection.Ceiling)
+    => Backing.GetKeySlice(lowerBound, upperBound, lowerBoundDirection, upperBoundDirection);
 }

@@ -375,8 +375,8 @@ public class OffsetGrid<T> : IGrid<T>
   public bool Contains(T item) => BackingGrid.Contains(item);
 
   /// <inheritdoc/>
-  public IEnumerable<(T Item, IntVector2 Reference)> Flatten()
-    => this.SelectMany((r, y) => r.Select((i, x) => (i, GridRef.XY(x - ColumnOffset, y - RowOffset))));
+  public IEnumerable<(IntVector2 Reference, T Item)> Flatten()
+    => this.SelectMany((r, y) => r.Select((i, x) => (GridRef.XY(x - ColumnOffset, y - RowOffset), i)));
 
   /// <inheritdoc/>
   public IList<T> GetColumn(int index) => BackingGrid.GetColumn(index + ColumnOffset);
