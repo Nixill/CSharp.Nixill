@@ -3,13 +3,22 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Nixill.Collections;
 
-public class BlockDictionary<K, V>
+public class BlockDictionary<K, V> : IEnumerable<BlockDictionaryRecord<K, V>>
 {
   public V DefaultValue { get; private set; }
-  // TODO: MAKE THIS NOT PUBLIC (it's public for testing purposes)
-  public AVLTreeDictionary<K, (V Exact, V Higher)> Backing { get; }
+  AVLTreeDictionary<K, (V Exact, V Higher)> Backing { get; }
   IComparer<K> KeyComparer { get; }
   IEqualityComparer<V> ValueComparer { get; }
+
+  public int Count => this.Count();
+
+  public BlockDictionary()
+  {
+    KeyComparer = Comparer<K>.Default;
+    ValueComparer = EqualityComparer<V>.Default;
+    DefaultValue = default!;
+    Backing = [];
+  }
 
   public BlockDictionary(V defaultValue)
   {
@@ -121,4 +130,55 @@ public class BlockDictionary<K, V>
       Backing.Remove(lowerBound);
     }
   }
+
+  IEnumerable<BlockDictionaryRecord<K, V>> AsEnumerable()
+  {
+    V prevVal = DefaultValue;
+    BlockKey<K> prevPos = default;
+    Func<V, V, bool> eq = ValueComparer.Equals;
+
+    foreach ((K position, (V exactVal, V higherVal)) in Backing)
+    {
+      if (eq(prevVal, exactVal))
+      {
+        if (!eq(exactVal, higherVal))
+        {
+          if (!eq(prevVal, DefaultValue))
+          {
+            yield return new(prevPos, new(position, true), prevVal);
+          }
+          prevPos = new(position, false);
+        }
+      }
+      else
+      {
+        if (!eq(prevVal, DefaultValue))
+        {
+          yield return new(prevPos, new(position, false), prevVal);
+        }
+
+        if (!eq(exactVal, higherVal))
+        {
+          if (!eq(exactVal, DefaultValue))
+          {
+            yield return new(new(position, true), new(position, true), exactVal);
+          }
+          prevPos = new(position, false);
+        }
+        else
+        {
+          prevPos = new(position, true);
+        }
+      }
+
+      prevVal = higherVal;
+    }
+  }
+
+  public IEnumerator<BlockDictionaryRecord<K, V>> GetEnumerator() => AsEnumerable().GetEnumerator();
+  IEnumerator IEnumerable.GetEnumerator() => AsEnumerable().GetEnumerator();
 }
+
+public record struct BlockDictionaryRecord<K, V>(BlockKey<K> LowerBound, BlockKey<K> UpperBound, V Value);
+
+public record struct BlockKey<K>(K Key, bool Inclusive);
