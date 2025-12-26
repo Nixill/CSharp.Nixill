@@ -1,3 +1,4 @@
+using System.Collections;
 using Nixill.Collections;
 
 namespace Nixill.Utils.Extensions;
@@ -7,6 +8,43 @@ namespace Nixill.Utils.Extensions;
 /// </summary>
 public static class SequenceExtensions
 {
+  public static IEnumerable<IGrouping<TKey, TElement>> ChunkBy<TElement, TKey>(this IEnumerable<TElement> items,
+    Func<TElement, TKey> keySelector)
+    => items.ChunkBy(keySelector, EqualityComparer<TKey>.Default);
+
+  public static IEnumerable<IGrouping<TKey, TElement>> ChunkBy<TElement, TKey>(this IEnumerable<TElement> items,
+    Func<TElement, TKey> keySelector, IEqualityComparer<TKey> comparer)
+  {
+    List<TElement> latestGroup = [];
+    TKey latestKey = default!;
+
+    foreach (TElement item in items)
+    {
+      TKey thisKey = keySelector(item);
+      if (latestGroup.Count > 0 && !comparer.Equals(latestKey, thisKey))
+      {
+        yield return new Grouping<TKey, TElement>(latestKey, latestGroup);
+        latestKey = thisKey;
+        latestGroup = [item];
+      }
+      else
+      {
+        latestGroup.Add(item);
+      }
+    }
+
+    if (latestGroup.Count > 0) yield return new Grouping<TKey, TElement>(latestKey, latestGroup);
+  }
+
+  private readonly record struct Grouping<TKey, TElement>(TKey Key, List<TElement> Elements) : IGrouping<TKey, TElement>
+  {
+    public IEnumerator<TElement> GetEnumerator() => Elements.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return GetEnumerator();
+    }
+  }
+
   /// <summary>
   ///   Returns the element at the given index in the list, or a
   ///   predetermined element if the list is not long enough to reach the
