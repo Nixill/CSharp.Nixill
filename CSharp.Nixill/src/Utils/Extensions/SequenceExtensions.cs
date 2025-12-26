@@ -29,6 +29,7 @@ public static class SequenceExtensions
       }
       else
       {
+        latestKey = thisKey;
         latestGroup.Add(item);
       }
     }
