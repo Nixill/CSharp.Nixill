@@ -42,49 +42,8 @@ public interface IGrid<T> : IEnumerable<IEnumerable<T>>
   /// <summary>
   ///   Get or set: The value at a specified cell.
   /// </summary>
-  /// <remarks>
-  ///   This is obsolete, because two ints is ambiguous as a cell
-  ///   reference (they could be row/column or X/Y). This indexer uses
-  ///   the order of row/column, but you should use
-  ///   <see cref="this[IntVector2]">this</see>[<see cref="GridRef.RC(int, int)"/>]
-  ///   as an unambiguous call (or use the
-  ///   <see cref="GridRef.XY(int, int)"/> method if you actually meant
-  ///   that!).
-  /// </remarks>
-  /// <param name="r">The row of the cell to get or set.</param>
-  /// <param name="c">The column of the cell to get or set.</param>
-  [Obsolete("Use GridRef.RC(r, c) instead.")]
-  T this[int r, int c] { get; set; }
-
-  /// <summary>
-  ///   Get or set: The value at a specified cell.
-  /// </summary>
-  /// <remarks>
-  ///   This is obsolete, as the <see cref="GridReference"/> type itself
-  ///   is obsolete. Use <see cref="this[IntVector2]"/> instead.
-  /// </remarks>
-  /// <param name="gr">The cell to get or set.</param>
-  [Obsolete("Use IntVector2 instead.")]
-  T this[GridReference gr] { get; set; }
-
-  /// <summary>
-  ///   Get or set: The value at a specified cell.
-  /// </summary>
   /// <param name="iv2">The cell to get or set.</param>
   T this[IntVector2 iv2] { get; set; }
-
-  /// <summary>
-  ///   Get or set: The value at a specified cell.
-  /// </summary>
-  /// <remarks>
-  ///   This is obsolete, because a string reference to the cell is too
-  ///   niche to keep on the main Grid object itself. You can use
-  ///   <see cref="this[IntVector2]">this</see>[<see cref="GridRef.FromString(string)"/>]
-  ///   if you still need the functionality.
-  /// </remarks>
-  /// <param name="gr"></param>
-  [Obsolete("Use GridRef.FromString(str) instead.")]
-  T this[string gr] { get; set; }
 
   /// <summary>
   ///   Adds a new, empty column to the right side of this grid.

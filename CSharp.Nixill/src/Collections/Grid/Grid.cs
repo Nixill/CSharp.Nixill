@@ -211,65 +211,6 @@ public class Grid<T> : IGrid<T>
   }
 
   /// <summary>
-  ///   Get or set: The value at a specified cell.
-  /// </summary>
-  /// <remarks>
-  ///   This is obsolete, as the <see cref="GridReference"/> type itself
-  ///   is obsolete. Use <see cref="this[IntVector2]"/> instead.
-  /// </remarks>
-  /// <param name="gr">The cell to get or set.</param>
-  [Obsolete("Use IntVector2 instead.")]
-  public T this[GridReference gr]
-  {
-    get => BackingList[gr.Row][gr.Column];
-    set
-    {
-      BackingList[gr.Row][gr.Column] = value;
-    }
-  }
-
-  /// <summary>
-  ///   Get or set: The value at a specified cell.
-  /// </summary>
-  /// <remarks>
-  ///   This is obsolete, because two ints is ambiguous as a cell
-  ///   reference (they could be row/column or X/Y). This indexer uses
-  ///   the order of row/column, but you should use
-  ///   <see cref="this[IntVector2]">this</see>[<see cref="GridRef.RC(int, int)"/>]
-  ///   as an unambiguous call (or use the
-  ///   <see cref="GridRef.XY(int, int)"/> method if you actually meant
-  ///   that!).
-  /// </remarks>
-  /// <param name="r">The row of the cell to get or set.</param>
-  /// <param name="c">The column of the cell to get or set.</param>
-  [Obsolete("Use GridRef.RC(r, c) instead.")]
-  public T this[int r, int c]
-  {
-    get => BackingList[r][c];
-    set
-    {
-      BackingList[r][c] = value;
-    }
-  }
-
-  /// <summary>
-  ///   Get or set: The value at a specified cell.
-  /// </summary>
-  /// <remarks>
-  ///   This is obsolete, because a string reference to the cell is too
-  ///   niche to keep on the main Grid object itself. You can use
-  ///   <see cref="this[IntVector2]">this</see>[<see cref="GridRef.FromString(string)"/>]
-  ///   if you still need the functionality.
-  /// </remarks>
-  /// <param name="gr">The reference to get.</param>
-  [Obsolete("Use GridRef.FromString(str) instead.")]
-  public T this[string gr]
-  {
-    get => this[(GridReference)gr];
-    set => this[(GridReference)gr] = value;
-  }
-
-  /// <summary>
   ///   Get: The height of the grid (the number of rows it contains).
   /// </summary>
   public int Height => BackingList.Count;

@@ -38,20 +38,6 @@ public readonly struct IntVector2
   /// <param name="input">The IntVector2.</param>
   public static implicit operator (int X, int Y)(IntVector2 input) => (input.X, input.Y);
 
-  // warning disable justification: cannot suppress by tagging the cast
-  [Obsolete]
-  public static implicit operator IntVector2(
-#pragma warning disable CS0618 // GridReference is obsolete
-    GridReference
-#pragma warning restore CS0618
-  input) => new(input.Column, input.Row);
-  [Obsolete]
-  public static implicit operator
-#pragma warning disable CS0618
-    GridReference
-#pragma warning restore CS0618
-    (IntVector2 input) => GridReference.XY(input.X, input.Y);
-
   /// <summary>
   ///   Adds two IntVector2 by adding each individual coordinate.
   /// </summary>

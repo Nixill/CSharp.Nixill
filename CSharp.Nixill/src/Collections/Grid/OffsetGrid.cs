@@ -151,14 +151,6 @@ public class OffsetGrid<T> : IGrid<T>
   }
 
   /// <inheritdoc/>
-  [Obsolete("Use IntVector2 instead.")]
-  public T this[GridReference gr]
-  {
-    get => this[(IntVector2)gr];
-    set => this[(IntVector2)gr] = value;
-  }
-
-  /// <inheritdoc/>
   [Obsolete("Use GridRef.RC(r, c) instead.")]
   public T this[int r, int c]
   {

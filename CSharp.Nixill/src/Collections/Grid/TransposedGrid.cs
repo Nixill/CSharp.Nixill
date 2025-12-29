@@ -14,13 +14,6 @@ internal class TransposedGrid<T> : IGrid<T>
 
   public T this[IntVector2 iv2] { get => BackingGrid[iv2.Transposed()]; set => BackingGrid[iv2.Transposed()] = value; }
 
-  [Obsolete("Use IntVector2 instead.")]
-  public T this[GridReference gr] { get => BackingGrid[gr.Transposed]; set => BackingGrid[gr.Transposed] = value; }
-  [Obsolete("Use GridRef.FromString(str) instead.")]
-  public T this[string gr] { get => BackingGrid[((GridReference)gr).Transposed]; set => BackingGrid[((GridReference)gr).Transposed] = value; }
-  [Obsolete("Use GridRef.RC(r, c) instead.")]
-  public T this[int r, int c] { get => BackingGrid[c, r]; set => BackingGrid[c, r] = value; }
-
   public int Height => BackingGrid.Width;
   public int Width => BackingGrid.Height;
   public int Size => BackingGrid.Size;
