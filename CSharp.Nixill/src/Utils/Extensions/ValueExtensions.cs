@@ -71,4 +71,7 @@ public static class ValueExtensions
   /// </returns>
   public static string ValueIfEmptyString(this string? value, Func<string> defaultValue)
     => (value == null || value == "") ? defaultValue() : value;
+
+  public static TOut Mutate<TIn, TOut>(this TIn value, Func<TIn, TOut> mutator)
+    => mutator(value);
 }
