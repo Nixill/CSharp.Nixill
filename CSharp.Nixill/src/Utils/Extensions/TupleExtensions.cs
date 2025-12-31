@@ -201,4 +201,19 @@ public static class TupleExtensions
   /// <returns>The flattened tuple.</returns>
   public static (A A, B B, C C, D D) Flatten<A, B, C, D>(this (A A, (B B, (C C, D D) CD) BCD) input)
     => (input.A, input.BCD.B, input.BCD.CD.C, input.BCD.CD.D);
+
+  public static IEnumerable<(int Index, A First, B Second)> IndexFlatten<A, B>(this IEnumerable<(A A, B B)> input)
+    => input.Select((itm, ind) => (ind, itm.A, itm.B));
+
+  public static IEnumerable<(int Index, A First, B Second, C Third)> IndexFlatten<A, B, C>(
+      this IEnumerable<(A A, B B, C C)> input)
+    => input.Select((itm, ind) => (ind, itm.A, itm.B, itm.C));
+
+  public static IEnumerable<(int Index, A First, B Second, C Third, D Fourth)> IndexFlatten<A, B, C, D>(
+      this IEnumerable<(A A, B B, C C, D D)> input)
+    => input.Select((itm, ind) => (ind, itm.A, itm.B, itm.C, itm.D));
+
+  public static IEnumerable<(int Index, A First, B Second, C Third, D Fourth, E Fifth)> IndexFlatten<A, B, C, D, E>(
+      this IEnumerable<(A A, B B, C C, D D, E E)> input)
+    => input.Select((itm, ind) => (ind, itm.A, itm.B, itm.C, itm.D, itm.E));
 }
