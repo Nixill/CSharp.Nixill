@@ -5,67 +5,68 @@ namespace Nixill.Utils.Trials;
 
 public static class TrialExtensions
 {
-  public static IEnumerable<ITrialResult<TOut>> TrySelect<TIn, TOut>(this IEnumerable<TIn> elements,
+  public static IEnumerable<ITrialResult<TIn, TOut>> TrySelect<TIn, TOut>(this IEnumerable<TIn> elements,
     Func<TIn, TOut> mutator)
     => elements.Select((itm, ind) => GetTrialResult(itm, ind, mutator));
 
-  public static IEnumerable<ITrialResult<TOut>> TrySelect<TIn, TOut>(this IEnumerable<TIn> elements,
+  public static IEnumerable<ITrialResult<TIn, TOut>> TrySelect<TIn, TOut>(this IEnumerable<TIn> elements,
     Func<TIn, int, TOut> mutator)
     => elements.Select((itm, ind) => GetTrialResult(itm, ind, mutator));
 
-  public static SuccessesAndFailures<TOut> TrySelectSplit<TIn, TOut>(this IEnumerable<TIn> elements,
+  public static SuccessesAndFailures<TIn, TOut> TrySelectSplit<TIn, TOut>(this IEnumerable<TIn> elements,
     Func<TIn, TOut> mutator)
   {
-    ITrialResult<TOut>[] results = [.. elements.TrySelect(mutator)];
-    return new SuccessesAndFailures<TOut>(
-      results.Where(r => r.Success).Cast<SuccessfulTrialResult<TOut>>(),
-      results.Where(r => !r.Success).Cast<FailedTrialResult<TOut>>()
+    ITrialResult<TIn, TOut>[] results = [.. elements.TrySelect(mutator)];
+    return new SuccessesAndFailures<TIn, TOut>(
+      results.Where(r => r.Success).Cast<SuccessfulTrialResult<TIn, TOut>>(),
+      results.Where(r => !r.Success).Cast<FailedTrialResult<TIn, TOut>>()
     );
   }
 
-  public static SuccessesAndFailures<TOut> TrySelectSplit<TIn, TOut>(this IEnumerable<TIn> elements,
+  public static SuccessesAndFailures<TIn, TOut> TrySelectSplit<TIn, TOut>(this IEnumerable<TIn> elements,
     Func<TIn, int, TOut> mutator)
   {
-    ITrialResult<TOut>[] results = [.. elements.TrySelect(mutator)];
-    return new SuccessesAndFailures<TOut>(
-      results.Where(r => r.Success).Cast<SuccessfulTrialResult<TOut>>(),
-      results.Where(r => !r.Success).Cast<FailedTrialResult<TOut>>()
+    ITrialResult<TIn, TOut>[] results = [.. elements.TrySelect(mutator)];
+    return new SuccessesAndFailures<TIn, TOut>(
+      results.Where(r => r.Success).Cast<SuccessfulTrialResult<TIn, TOut>>(),
+      results.Where(r => !r.Success).Cast<FailedTrialResult<TIn, TOut>>()
     );
   }
 
-  static ITrialResult<TOut> GetTrialResult<TIn, TOut>(TIn element, int index, Func<TIn, TOut> mutator)
+  static ITrialResult<TIn, TOut> GetTrialResult<TIn, TOut>(TIn element, int index, Func<TIn, TOut> mutator)
   {
     try
     {
-      return new SuccessfulTrialResult<TOut>(index, mutator(element));
+      return new SuccessfulTrialResult<TIn, TOut>(index, element, mutator(element));
     }
     catch (Exception ex)
     {
-      return new FailedTrialResult<TOut>(index, ex);
+      return new FailedTrialResult<TIn, TOut>(index, element, ex);
     }
   }
 
-  static ITrialResult<TOut> GetTrialResult<TIn, TOut>(TIn element, int index, Func<TIn, int, TOut> mutator)
+  static ITrialResult<TIn, TOut> GetTrialResult<TIn, TOut>(TIn element, int index, Func<TIn, int, TOut> mutator)
   {
     try
     {
-      return new SuccessfulTrialResult<TOut>(index, mutator(element, index));
+      return new SuccessfulTrialResult<TIn, TOut>(index, element, mutator(element, index));
     }
     catch (Exception ex)
     {
-      return new FailedTrialResult<TOut>(index, ex);
+      return new FailedTrialResult<TIn, TOut>(index, element, ex);
     }
   }
 }
 
-public interface ITrialResult<T>
+public interface ITrialResult<TIn, TOut>
 {
   public bool Success { get; }
   public int Index { get; }
-  public T Result { get; }
+  public TIn Original { get; }
+  public TOut Result { get; }
   public Exception Exception { get; }
 
-  public bool TryGet([MaybeNullWhen(false)] out T result)
+  public bool TryGet([MaybeNullWhen(false)] out TOut result)
   {
     if (Success)
     {
@@ -82,20 +83,22 @@ public interface ITrialResult<T>
   public string? ToString();
 }
 
-public readonly struct SuccessfulTrialResult<T>(int index, T result) : ITrialResult<T>
+public readonly struct SuccessfulTrialResult<TIn, TOut>(int index, TIn original, TOut result) : ITrialResult<TIn, TOut>
 {
   public bool Success => true;
-  public T Result => result;
-  Exception ITrialResult<T>.Exception => throw new TrialSucceededException();
+  public TIn Original => original;
+  public TOut Result => result;
+  Exception ITrialResult<TIn, TOut>.Exception => throw new TrialSucceededException();
   public int Index => index;
 
   public override string? ToString() => Result?.ToString();
 }
 
-public readonly struct FailedTrialResult<T>(int index, Exception exception) : ITrialResult<T>
+public readonly struct FailedTrialResult<TIn, TOut>(int index, TIn original, Exception exception) : ITrialResult<TIn, TOut>
 {
   public bool Success => false;
-  T ITrialResult<T>.Result => throw new TrialFailedException(exception);
+  public TIn Original => original;
+  TOut ITrialResult<TIn, TOut>.Result => throw new TrialFailedException(exception);
   public Exception Exception => exception;
   public int Index => index;
 
@@ -112,17 +115,17 @@ public class TrialSucceededException : Exception
   public TrialSucceededException() : base("The trial did not fail.") { }
 }
 
-public record struct SuccessesAndFailures<T>(IEnumerable<SuccessfulTrialResult<T>> Successes,
-  IEnumerable<FailedTrialResult<T>> Failures)
-  : IEnumerable<ITrialResult<T>>
+public record struct SuccessesAndFailures<TIn, TOut>(IEnumerable<SuccessfulTrialResult<TIn, TOut>> Successes,
+  IEnumerable<FailedTrialResult<TIn, TOut>> Failures)
+  : IEnumerable<ITrialResult<TIn, TOut>>
 {
-  IEnumerable<ITrialResult<T>> Enumerate()
+  IEnumerable<ITrialResult<TIn, TOut>> Enumerate()
   {
     foreach (var t in Successes) yield return t;
     foreach (var t in Failures) yield return t;
   }
 
-  public IEnumerator<ITrialResult<T>> GetEnumerator() => Enumerate().GetEnumerator();
+  public IEnumerator<ITrialResult<TIn, TOut>> GetEnumerator() => Enumerate().GetEnumerator();
 
   IEnumerator IEnumerable.GetEnumerator()
   {
