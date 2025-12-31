@@ -88,4 +88,88 @@ public static class NumberUtils
   /// <param name="b">The other number.</param>
   /// <returns>The least common multiple.</returns>
   public static long LCM(long a, long b) => a / GCD(a, b) * b;
+
+  /// <summary>
+  ///   Calculates the linear interpolation of a value.
+  /// </summary>
+  /// <param name="x">
+  ///   The <c>x</c> value for which <c>y</c> should be calculated.
+  /// </param>
+  /// <param name="yAtX0">
+  ///   The <c>y</c> value for the line at <c>x = 0</c>.
+  /// </param>
+  /// <param name="yAtX1">
+  ///   The <c>y</c> value for the line at <c>x = 1</c>.
+  /// </param>
+  /// <returns>
+  ///   The <c>y</c> value for the given <c>x</c> value.
+  /// </returns>
+  public static double Lerp(double x, double yAtX0, double yAtX1)
+    => x * (yAtX0 - yAtX1) + yAtX1;
+
+  /// <summary>
+  ///   Calculates the inverse linear interpolation of a value.
+  /// </summary>
+  /// <param name="y">
+  ///   The <c>y</c> value for which <c>x</c> should be calculated.
+  /// </param>
+  /// <param name="yAtX0">
+  ///   The <c>y</c> value for the line at <c>x = 0</c>.
+  /// </param>
+  /// <param name="yAtX1">
+  ///   The <c>y</c> value for the line at <c>x = 1</c>.
+  /// </param>
+  /// <returns>
+  ///   The <c>x</c> value for the given <c>y</c> value.
+  /// </returns>
+  public static double InvLerp(double y, double yAtX0, double yAtX1)
+    => (y - yAtX0) / (yAtX1 - yAtX0);
+
+  /// <summary>
+  ///   Calculates the inverse linear interpolation of a value, from a
+  ///   presumably sorted array.
+  /// </summary>
+  /// <param name="args">
+  ///   An array which has at least three values, which are respectively:
+  ///   <list type="number">
+  ///     <item>The <c>y</c> value for the line at <c>x = 0</c>.</item>
+  ///     <item>
+  ///       The <c>y</c> value for which <c>x</c> should be calculated.
+  ///     </item>
+  ///     <item>The <c>y</c> value for the line at <c>x = 1</c>.</item>
+  ///   </list>
+  ///   Any values beyond the third are ignored.
+  /// </param>
+  /// <returns>
+  ///   The <c>x</c> value for the given <c>y</c> value.
+  /// </returns>
+  public static double InvLerp(double[] args)
+    => (args[1] - args[0]) / (args[2] - args[0]);
+
+  /// <summary>
+  ///   Calculates the inverse linear interpolation for three values, and
+  ///   then the linear interpolation for that result with two more.
+  /// </summary>
+  /// <param name="y1">
+  ///   The <c>y</c> value on the first line for which <c>y</c> on the
+  ///   second line should be calculated at the same <c>x</c>.
+  /// </param>
+  /// <param name="y1AtX0">
+  ///   The <c>y</c> value for the first line at <c>x = 0</c>.
+  /// </param>
+  /// <param name="y1AtX1">
+  ///   The <c>y</c> value for the first line at <c>x = 1</c>.
+  /// </param>
+  /// <param name="y2AtX0">
+  ///   The <c>y</c> value for the second line at <c>x = 0</c>.
+  /// </param>
+  /// <param name="y2AtX1">
+  ///   The <c>y</c> value for the second line at <c>x = 1</c>.
+  /// </param>
+  /// <returns>
+  ///   The <c>y</c> value on the second line at the same <c>x</c> as the
+  ///   given <c>y</c> on the first line.
+  /// </returns>
+  public static double ReLerp(double y1, double y1AtX0, double y1AtX1, double y2AtX0, double y2AtX1)
+    => Lerp(InvLerp(y1, y1AtX0, y1AtX1), y2AtX0, y2AtX1);
 }
