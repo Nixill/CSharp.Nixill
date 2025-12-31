@@ -91,7 +91,7 @@ public readonly struct SuccessfulTrialResult<TIn, TOut>(int index, TIn original,
   Exception ITrialResult<TIn, TOut>.Exception => throw new TrialSucceededException();
   public int Index => index;
 
-  public override string? ToString() => Result?.ToString();
+  public override string? ToString() => $"{Index}: {Original} => {Result}";
 }
 
 public readonly struct FailedTrialResult<TIn, TOut>(int index, TIn original, Exception exception) : ITrialResult<TIn, TOut>
@@ -102,7 +102,7 @@ public readonly struct FailedTrialResult<TIn, TOut>(int index, TIn original, Exc
   public Exception Exception => exception;
   public int Index => index;
 
-  public override string? ToString() => Exception.GetType().Name;
+  public override string? ToString() => $"{Index}: {Original} => {Exception.GetType().Name}";
 }
 
 public class TrialFailedException : Exception
