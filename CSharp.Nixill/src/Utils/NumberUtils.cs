@@ -105,7 +105,7 @@ public static class NumberUtils
   ///   The <c>y</c> value for the given <c>x</c> value.
   /// </returns>
   public static double Lerp(double x, double yAtX0, double yAtX1)
-    => x * (yAtX0 - yAtX1) + yAtX1;
+    => x * (yAtX1 - yAtX0) + yAtX1;
 
   /// <summary>
   ///   Calculates the inverse linear interpolation of a value.
