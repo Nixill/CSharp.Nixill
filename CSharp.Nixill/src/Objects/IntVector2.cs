@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Text.RegularExpressions;
 using Nixill.Collections;
 using Nixill.Utils;
 
@@ -7,7 +8,7 @@ namespace Nixill.Objects;
 /// <summary>
 ///   A vector of two ints.
 /// </summary>
-public readonly struct IntVector2
+public readonly partial struct IntVector2
 {
   /// <summary>
   ///   Get or init: The X coordinate of this vector.
@@ -25,6 +26,49 @@ public readonly struct IntVector2
   /// <param name="x">The x coordinate.</param>
   /// <param name="y">The y coordinate.</param>
   public IntVector2(int x, int y) => (X, Y) = (x, y);
+
+  /// <summary>
+  ///   Parses an IntVector2 from a string.
+  /// </summary>
+  /// <param name="str">
+  ///   The input string, which must consist of two integers (signed or
+  ///   not) that are valid <see cref="int"/> values, separated by a
+  ///   non-alphanumeric character, a space, or both (in that order).
+  /// </param>
+  /// <returns>The parsed IntVector2.</returns>
+  public static IntVector2 Parse(string str)
+  {
+    Match mtc = ParsingRegex.Match(str);
+    if (!mtc.Success) throw new FormatException($"The string {str} is not an IntVector2.");
+
+    try
+    {
+      int x = int.Parse(mtc.Groups[1].Value);
+      int y = int.Parse(mtc.Groups[2].Value);
+      return new IntVector2(x, y);
+    }
+    catch (Exception ex)
+    {
+      throw new FormatException($"The string {str} is not an IntVector2.", ex);
+    }
+  }
+
+  [GeneratedRegex(@"^([+-]?\d+)[^A-Za-z0-9-]? ?([+-]?\d+)$")]
+  static partial Regex ParsingRegex { get; }
+
+  public static bool TryParse(string str, out IntVector2 value)
+  {
+    try
+    {
+      value = Parse(str);
+      return true;
+    }
+    catch (Exception)
+    {
+      value = default;
+      return false;
+    }
+  }
 
   /// <summary>
   ///   Converts a pair of ints into an IntVector2.
