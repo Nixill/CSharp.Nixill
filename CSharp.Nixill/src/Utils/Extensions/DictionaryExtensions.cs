@@ -348,4 +348,30 @@ public static class DictionaryExtensions
   public static TValue ModuloOrSet<TKey, TValue, TDivide>(this IDictionary<TKey, TValue> dictionary, TKey key,
     TDivide divideBy, Func<TValue> defaultValue) where TValue : IModulusOperators<TValue, TDivide, TValue>
   => dictionary[key] = (dictionary.TryGetValue(key, out TValue? value) ? value : defaultValue()) % divideBy;
+
+  /// <summary>
+  ///   Null-coalescing get: Gets a value from a dictionary, if a key is
+  ///   not null. Returns null if it is null.
+  /// </summary>
+  /// <typeparam name="TKey">The type of key.</typeparam>
+  /// <typeparam name="TValue">The type of value.</typeparam>
+  /// <param name="dictionary">The dictionary.</param>
+  /// <param name="key">The key.</param>
+  /// <returns>The value in question, if the key is not null.</returns>
+  public static TValue? CoalescingGetStruct<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey? key)
+    where TValue : struct
+  => key is null ? null : dictionary[key];
+
+  /// <summary>
+  ///   Null-coalescing get: Gets a value from a dictionary, if a key is
+  ///   not null. Returns null if it is null.
+  /// </summary>
+  /// <typeparam name="TKey">The type of key.</typeparam>
+  /// <typeparam name="TValue">The type of value.</typeparam>
+  /// <param name="dictionary">The dictionary.</param>
+  /// <param name="key">The key.</param>
+  /// <returns>The value in question, if the key is not null.</returns>
+  public static TValue? CoalescingGetClass<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey? key)
+    where TValue : class
+  => key is null ? null : dictionary[key];
 }
