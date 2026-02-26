@@ -97,4 +97,9 @@ public static class NullableExtensions
       return null;
     }
   }
+
+  public static IEnumerable<T?> SelectNullable<T>(this IEnumerable<T> sequence) where T : struct
+  {
+    foreach (T item in sequence) yield return item;
+  }
 }
